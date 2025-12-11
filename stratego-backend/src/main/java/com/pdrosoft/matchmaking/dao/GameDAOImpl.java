@@ -17,6 +17,7 @@ import com.pdrosoft.matchmaking.exception.NotFoundException;
 import com.pdrosoft.matchmaking.model.Game;
 import com.pdrosoft.matchmaking.model.Player;
 import com.pdrosoft.matchmaking.repository.GameRepository;
+import com.pdrosoft.stratego.enums.GamePhase;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -58,6 +59,7 @@ public class GameDAOImpl implements GameDAO {
 				.name(game.getName()) //
 				.host(toPlayerDTO(game.getHost())) //
 				.guest(toPlayerDTO(game.getGuest())) //
+				.phase(game.getPhase()) //
 				.build()).orElse(null);
 	}
 
@@ -69,6 +71,7 @@ public class GameDAOImpl implements GameDAO {
 				.joinCode(game.getJoinCode()) //
 				.host(toPlayerDTO(game.getHost())) //
 				.guest(toPlayerDTO(game.getGuest())) //
+				.phase(game.getPhase()) //
 				.build()).orElse(null);
 	}
 
@@ -115,6 +118,7 @@ public class GameDAOImpl implements GameDAO {
 		}
 
 		game.setGuest(guest);
+		game.setPhase(GamePhase.WAITING_FOR_SETUP_2_PLAYERS);
 
 		return Optional.ofNullable(gameRepository.save(game)).map(this::toGameExtendedDTO) //
 				.orElseThrow(() -> new MatchmakingValidationException("Error saving game"));
@@ -132,6 +136,7 @@ public class GameDAOImpl implements GameDAO {
 
 			if (player.equals(game.getGuest())) {
 				game.setGuest(null);
+				game.setPhase(null);
 				return Optional.ofNullable(gameRepository.save(game)).map(this::toGameDTO) //
 						.orElseThrow(() -> new MatchmakingValidationException("Error saving game"));
 

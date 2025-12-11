@@ -5,13 +5,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {
-	    "com.pdrosoft.matchmaking.controller",
-	    "com.pdrosoft.matchmaking.service",
-	    "com.pdrosoft.matchmaking.dao",
-	    "com.pdrosoft.matchmaking.security",
-	    "com.pdrosoft.matchmaking.exception",
-	})
+@ComponentScan(basePackages = { //
+		"com.pdrosoft.matchmaking.controller", //
+		"com.pdrosoft.matchmaking.service", //
+		"com.pdrosoft.matchmaking.dao", //
+		"com.pdrosoft.matchmaking.security", //
+		"com.pdrosoft.matchmaking.exception", //
+
+		"com.pdrosoft.stratego.controller", //
+		"com.pdrosoft.stratego.service", //
+		"com.pdrosoft.stratego.dao", //
+})
 public class MatchmakingApplication {
 
 	public static void main(String[] args) {

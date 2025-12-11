@@ -5,6 +5,8 @@ import java.time.Instant;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.TimestampJdbcType;
 
+import com.pdrosoft.stratego.enums.GamePhase;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,4 +42,7 @@ public class Game {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "guest")
 	private Player guest;
+	
+	@Column(nullable = true)
+	private GamePhase phase;
 }

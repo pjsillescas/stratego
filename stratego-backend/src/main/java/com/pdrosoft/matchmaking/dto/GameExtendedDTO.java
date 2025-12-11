@@ -2,6 +2,8 @@ package com.pdrosoft.matchmaking.dto;
 
 import java.time.Instant;
 
+import com.pdrosoft.stratego.enums.GamePhase;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +25,6 @@ public class GameExtendedDTO {
 	private PlayerDTO guest;
 
 	private String joinCode;
+
+	private GamePhase phase;
 }
