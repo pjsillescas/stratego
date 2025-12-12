@@ -18,4 +18,6 @@ public interface GameDAO {
 	GameExtendedDTO joinGame(Player guest, Long gameId);
 
 	GameDTO leaveGame(Player leavingPlayer, Long gameId);
+	
+	GameDTO getGameById(Long gameId);
 }

@@ -146,4 +146,9 @@ public class GameDAOImpl implements GameDAO {
 					"Player %d is not a member of the game %s".formatted(player.getUserName(), game.getName()));
 		}).orElse(null);
 	}
+
+	@Override
+	public GameDTO getGameById(Long gameId) {
+		return loadGame(gameId).map(this::toGameDTO).orElse(null);
+	}
 }

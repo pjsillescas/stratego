@@ -12,5 +12,6 @@ public enum Rank {
 	SCOUT, //
 	SPY, //
 	BOMB, //
-	FLAG; //
+	FLAG, //
+	DISABLED, //
 }

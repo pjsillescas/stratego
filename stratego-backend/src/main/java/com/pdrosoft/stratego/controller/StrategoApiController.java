@@ -21,6 +21,7 @@ import com.pdrosoft.matchmaking.dto.GameExtendedDTO;
 import com.pdrosoft.matchmaking.dto.GameInputDTO;
 import com.pdrosoft.matchmaking.security.payload.MatchmakingUserDetails;
 import com.pdrosoft.stratego.dto.ArmySetupDTO;
+import com.pdrosoft.stratego.dto.GameStateDTO;
 import com.pdrosoft.stratego.dto.StrategoMovementDTO;
 import com.pdrosoft.stratego.service.StrategoService;
 
@@ -39,26 +40,14 @@ public class StrategoApiController {
 	}
 
 	@PutMapping(path = "/setup", produces = { "application/json" })
-	public GameExtendedDTO addSetup(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
+	public GameStateDTO addSetup(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
 			@PathVariable("gameId") Long gameId, @RequestBody @Valid ArmySetupDTO setupDto) {
 		return strategoService.addSetup(gameId, userDetails, setupDto);
 	}
 
 	@PutMapping(path = "/movement", produces = { "application/json" })
-	public GameExtendedDTO addMovement(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
+	public GameStateDTO addMovement(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
 			@PathVariable("gameId") Long gameId, @Valid @RequestBody StrategoMovementDTO movementDto) {
 		return strategoService.addMovement(userDetails.getPlayer(), movementDto);
-	}
-
-	@PostMapping(path = "/{gameId:[0-9]+}/join", produces = { "application/json" })
-	public GameExtendedDTO joinGame(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
-			@PathVariable("gameId") Long gameId) {
-		return strategoService.joinGame(userDetails.getPlayer(), gameId);
-	}
-
-	@PostMapping(path = "/{gameId:[0-9]+}/leave", produces = { "application/json" })
-	public GameDTO leaveGame(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
-			@PathVariable("gameId") Long gameId) {
-		return strategoService.leaveGame(userDetails.getPlayer(), gameId);
 	}
 }

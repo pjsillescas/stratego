@@ -1,0 +1,37 @@
+package com.pdrosoft.matchmaking.model;
+
+import java.util.List;
+
+import com.pdrosoft.matchmaking.converter.BoardConverter;
+import com.pdrosoft.stratego.enums.Rank;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import lombok.Data;
+
+@Entity
+@Data
+public class StrategoStatus {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "game_id", nullable = false)
+	private Game game;
+	
+	@Column(name = "is_guest_turn", nullable = false)
+	private Boolean isGuestTurn;
+
+	@Column(nullable = false)
+	@Convert(converter = BoardConverter.class)
+	private List<List<Rank>> board;
+}
