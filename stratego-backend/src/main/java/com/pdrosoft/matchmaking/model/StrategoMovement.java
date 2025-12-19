@@ -1,12 +1,8 @@
 package com.pdrosoft.matchmaking.model;
 
-import java.util.List;
-
-import com.pdrosoft.matchmaking.converter.BoardConverter;
-import com.pdrosoft.stratego.dto.BoardTileDTO;
+import com.pdrosoft.stratego.enums.Rank;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +14,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class StrategoStatus {
+public class StrategoMovement {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,13 +27,15 @@ public class StrategoStatus {
 	@Column(name = "is_guest_turn", nullable = false)
 	private Boolean isGuestTurn;
 
-	@Column(nullable = false)
-	@Convert(converter = BoardConverter.class)
-	private List<List<BoardTileDTO>> board;
-	
-	@Column(nullable = false)
-	private Boolean isHostInitialized;
+	@Column(nullable=false)
+	private Rank rank;
+	@Column(name = "row_initial", nullable=false)
+	private int rowInitial;
+	@Column(name = "col_initial", nullable=false)
+	private int colInitial;
+	@Column(name = "row_final", nullable=false)
+	private int rowFinal;
+	@Column(name = "col_final", nullable=false)
+	private int colFinal;
 
-	@Column(nullable = false)
-	private Boolean isGuestInitialized;
 }

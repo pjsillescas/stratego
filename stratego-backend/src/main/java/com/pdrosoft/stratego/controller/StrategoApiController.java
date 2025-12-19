@@ -1,24 +1,14 @@
 package com.pdrosoft.stratego.controller;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pdrosoft.matchmaking.dto.GameDTO;
-import com.pdrosoft.matchmaking.dto.GameExtendedDTO;
-import com.pdrosoft.matchmaking.dto.GameInputDTO;
 import com.pdrosoft.matchmaking.security.payload.MatchmakingUserDetails;
 import com.pdrosoft.stratego.dto.ArmySetupDTO;
 import com.pdrosoft.stratego.dto.GameStateDTO;
@@ -42,12 +32,25 @@ public class StrategoApiController {
 	@PutMapping(path = "/setup", produces = { "application/json" })
 	public GameStateDTO addSetup(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
 			@PathVariable("gameId") Long gameId, @RequestBody @Valid ArmySetupDTO setupDto) {
-		return strategoService.addSetup(gameId, userDetails, setupDto);
+		return strategoService.addSetup(gameId, userDetails.getPlayer(), setupDto);
 	}
 
 	@PutMapping(path = "/movement", produces = { "application/json" })
 	public GameStateDTO addMovement(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
 			@PathVariable("gameId") Long gameId, @Valid @RequestBody StrategoMovementDTO movementDto) {
-		return strategoService.addMovement(userDetails.getPlayer(), movementDto);
+		return strategoService.addMovement(gameId, userDetails.getPlayer(), movementDto);
 	}
+
+	@PutMapping(path = "/checkrank", produces = { "application/json" })
+	public GameStateDTO ask(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
+			@PathVariable("gameId") Long gameId, @Valid @RequestBody StrategoMovementDTO movementDto) {
+		return strategoService.checkRank(gameId, userDetails.getPlayer(), movementDto);
+	}
+
+	@GetMapping(path = "/status", produces = { "application/json" })
+	public GameStateDTO getStatus(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
+			@PathVariable("gameId") Long gameId) {
+		return strategoService.getStatus(gameId, userDetails.getPlayer());
+	}
+
 }

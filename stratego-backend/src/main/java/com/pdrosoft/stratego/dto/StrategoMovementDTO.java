@@ -22,18 +22,18 @@ public class StrategoMovementDTO {
 	@NotNull
 	@Min(1)
 	@Max(4)
-	private int xInitial;
+	private int rowInitial;
 	@NotNull
 	@Min(1)
 	@Max(10)
-	private int yInitial;
+	private int colInitial;
 
 	@NotNull
 	@Min(1)
 	@Max(4)
-	private int xFinal;
+	private int rowFinal;
 	@NotNull
 	@Min(1)
 	@Max(10)
-	private int yFinal;
+	private int colFinal;
 }
