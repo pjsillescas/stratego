@@ -5,7 +5,7 @@ import java.time.Instant;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.TimestampJdbcType;
 
-import com.pdrosoft.stratego.enums.GamePhase;
+import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

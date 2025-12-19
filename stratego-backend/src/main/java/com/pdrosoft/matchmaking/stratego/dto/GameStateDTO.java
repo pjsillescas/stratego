@@ -1,10 +1,10 @@
-package com.pdrosoft.stratego.dto;
+package com.pdrosoft.matchmaking.stratego.dto;
 
 import java.io.Serializable;
 import java.util.List;
 
 import com.pdrosoft.matchmaking.dto.PlayerDTO;
-import com.pdrosoft.stratego.enums.GamePhase;
+import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
 
 import lombok.Builder;
 import lombok.Data;

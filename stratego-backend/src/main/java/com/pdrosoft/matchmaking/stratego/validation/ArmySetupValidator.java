@@ -1,10 +1,10 @@
-package com.pdrosoft.stratego.validation;
+package com.pdrosoft.matchmaking.stratego.validation;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.pdrosoft.stratego.enums.Rank;
+import com.pdrosoft.matchmaking.stratego.enums.Rank;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

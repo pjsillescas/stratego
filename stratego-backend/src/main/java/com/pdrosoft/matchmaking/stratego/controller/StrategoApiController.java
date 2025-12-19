@@ -1,4 +1,4 @@
-package com.pdrosoft.stratego.controller;
+package com.pdrosoft.matchmaking.stratego.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pdrosoft.matchmaking.security.payload.MatchmakingUserDetails;
-import com.pdrosoft.stratego.dto.ArmySetupDTO;
-import com.pdrosoft.stratego.dto.GameStateDTO;
-import com.pdrosoft.stratego.dto.StrategoMovementDTO;
-import com.pdrosoft.stratego.service.StrategoService;
+import com.pdrosoft.matchmaking.stratego.dto.ArmySetupDTO;
+import com.pdrosoft.matchmaking.stratego.dto.GameStateDTO;
+import com.pdrosoft.matchmaking.stratego.dto.StrategoMovementDTO;
+import com.pdrosoft.matchmaking.stratego.service.StrategoService;
 
 import jakarta.validation.Valid;
 import lombok.NonNull;

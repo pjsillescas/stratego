@@ -1,4 +1,4 @@
-package com.pdrosoft.stratego.enums;
+package com.pdrosoft.matchmaking.stratego.enums;
 
 public enum GamePhase {
 	WAITING_FOR_SETUP_2_PLAYERS, //

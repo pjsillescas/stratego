@@ -1,4 +1,4 @@
-package com.pdrosoft.stratego.validation;
+package com.pdrosoft.matchmaking.stratego.validation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

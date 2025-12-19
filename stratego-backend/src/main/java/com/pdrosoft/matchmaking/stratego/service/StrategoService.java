@@ -1,9 +1,9 @@
-package com.pdrosoft.stratego.service;
+package com.pdrosoft.matchmaking.stratego.service;
 
 import com.pdrosoft.matchmaking.model.Player;
-import com.pdrosoft.stratego.dto.ArmySetupDTO;
-import com.pdrosoft.stratego.dto.GameStateDTO;
-import com.pdrosoft.stratego.dto.StrategoMovementDTO;
+import com.pdrosoft.matchmaking.stratego.dto.ArmySetupDTO;
+import com.pdrosoft.matchmaking.stratego.dto.GameStateDTO;
+import com.pdrosoft.matchmaking.stratego.dto.StrategoMovementDTO;
 
 public interface StrategoService {
 

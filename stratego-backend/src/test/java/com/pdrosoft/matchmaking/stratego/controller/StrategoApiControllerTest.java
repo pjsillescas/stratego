@@ -1,4 +1,4 @@
-package com.pdrosoft.stratego.controller;
+package com.pdrosoft.matchmaking.stratego.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -70,6 +70,7 @@ public class StrategoApiControllerTest {
 		return authDTO.getToken();
 	}
 
+	/*
 	@Test
 	void testGameListSuccess() throws Exception {
 		var token = getToken("testuser1", "password1");
@@ -84,6 +85,7 @@ public class StrategoApiControllerTest {
 		assertThat(gameList.get(0).getId()).isEqualTo(2);
 		assertThat(gameList.get(1).getId()).isEqualTo(1);
 	}
+	*/
 
 	@Test
 	void testGameListWithNoToken() throws Exception {

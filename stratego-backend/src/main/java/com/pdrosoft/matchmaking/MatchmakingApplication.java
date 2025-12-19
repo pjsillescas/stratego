@@ -12,9 +12,9 @@ import org.springframework.context.annotation.ComponentScan;
 		"com.pdrosoft.matchmaking.security", //
 		"com.pdrosoft.matchmaking.exception", //
 
-		"com.pdrosoft.stratego.controller", //
-		"com.pdrosoft.stratego.service", //
-		"com.pdrosoft.stratego.dao", //
+		"com.pdrosoft.matchmaking.stratego.controller", //
+		"com.pdrosoft.matchmaking.stratego.service", //
+		"com.pdrosoft.matchmaking.stratego.dao", //
 })
 public class MatchmakingApplication {
 

@@ -1,6 +1,6 @@
-package com.pdrosoft.stratego.dto;
+package com.pdrosoft.matchmaking.stratego.dto;
 
-import com.pdrosoft.stratego.enums.Rank;
+import com.pdrosoft.matchmaking.stratego.enums.Rank;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

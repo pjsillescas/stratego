@@ -17,7 +17,7 @@ import com.pdrosoft.matchmaking.exception.NotFoundException;
 import com.pdrosoft.matchmaking.model.Game;
 import com.pdrosoft.matchmaking.model.Player;
 import com.pdrosoft.matchmaking.repository.GameRepository;
-import com.pdrosoft.stratego.enums.GamePhase;
+import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

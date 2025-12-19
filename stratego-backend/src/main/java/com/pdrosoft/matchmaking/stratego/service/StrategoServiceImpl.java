@@ -1,4 +1,4 @@
-package com.pdrosoft.stratego.service;
+package com.pdrosoft.matchmaking.stratego.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,12 +23,12 @@ import com.pdrosoft.matchmaking.repository.GameRepository;
 import com.pdrosoft.matchmaking.repository.PlayerRepository;
 import com.pdrosoft.matchmaking.repository.StrategoMovementRepository;
 import com.pdrosoft.matchmaking.repository.StrategoStatusRepository;
-import com.pdrosoft.stratego.dto.ArmySetupDTO;
-import com.pdrosoft.stratego.dto.BoardTileDTO;
-import com.pdrosoft.stratego.dto.GameStateDTO;
-import com.pdrosoft.stratego.dto.StrategoMovementDTO;
-import com.pdrosoft.stratego.enums.GamePhase;
-import com.pdrosoft.stratego.enums.Rank;
+import com.pdrosoft.matchmaking.stratego.dto.ArmySetupDTO;
+import com.pdrosoft.matchmaking.stratego.dto.BoardTileDTO;
+import com.pdrosoft.matchmaking.stratego.dto.GameStateDTO;
+import com.pdrosoft.matchmaking.stratego.dto.StrategoMovementDTO;
+import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
+import com.pdrosoft.matchmaking.stratego.enums.Rank;
 
 import jakarta.validation.Valid;
 import lombok.NonNull;

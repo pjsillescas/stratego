@@ -1,8 +1,8 @@
-package com.pdrosoft.stratego.dto;
+package com.pdrosoft.matchmaking.stratego.dto;
 
 import java.io.Serializable;
 
-import com.pdrosoft.stratego.enums.Rank;
+import com.pdrosoft.matchmaking.stratego.enums.Rank;
 
 import lombok.Builder;
 import lombok.Data;

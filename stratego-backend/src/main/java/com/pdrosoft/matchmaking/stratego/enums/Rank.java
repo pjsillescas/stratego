@@ -1,4 +1,4 @@
-package com.pdrosoft.stratego.enums;
+package com.pdrosoft.matchmaking.stratego.enums;
 
 public enum Rank {
 	MARSHAL, //

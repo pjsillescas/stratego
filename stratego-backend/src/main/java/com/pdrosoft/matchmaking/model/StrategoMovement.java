@@ -1,6 +1,6 @@
 package com.pdrosoft.matchmaking.model;
 
-import com.pdrosoft.stratego.enums.Rank;
+import com.pdrosoft.matchmaking.stratego.enums.Rank;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

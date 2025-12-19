@@ -3,7 +3,7 @@ package com.pdrosoft.matchmaking.model;
 import java.util.List;
 
 import com.pdrosoft.matchmaking.converter.BoardConverter;
-import com.pdrosoft.stratego.dto.BoardTileDTO;
+import com.pdrosoft.matchmaking.stratego.dto.BoardTileDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

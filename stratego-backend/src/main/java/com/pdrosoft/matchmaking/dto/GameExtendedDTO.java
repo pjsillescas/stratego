@@ -2,7 +2,7 @@ package com.pdrosoft.matchmaking.dto;
 
 import java.time.Instant;
 
-import com.pdrosoft.stratego.enums.GamePhase;
+import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

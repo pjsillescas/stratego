@@ -1,9 +1,9 @@
-package com.pdrosoft.stratego.dto;
+package com.pdrosoft.matchmaking.stratego.dto;
 
 import java.util.List;
 
-import com.pdrosoft.stratego.enums.Rank;
-import com.pdrosoft.stratego.validation.ArmySetupValidation;
+import com.pdrosoft.matchmaking.stratego.enums.Rank;
+import com.pdrosoft.matchmaking.stratego.validation.ArmySetupValidation;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
