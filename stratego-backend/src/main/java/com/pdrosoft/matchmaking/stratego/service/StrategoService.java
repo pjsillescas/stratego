@@ -10,7 +10,6 @@ public interface StrategoService {
 	GameStateDTO addSetup(Long gameId, Player player, ArmySetupDTO setupDto);
 
 	GameStateDTO addMovement(Long gameId, Player player, StrategoMovementDTO movementDto);
-	GameStateDTO checkRank(Long gameId, Player player, StrategoMovementDTO movementDto);
 
 	GameStateDTO getStatus(Long gameId, Player player);
 

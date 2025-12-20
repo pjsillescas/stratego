@@ -34,7 +34,6 @@ import com.pdrosoft.matchmaking.repository.PlayerRepository;
 import com.pdrosoft.matchmaking.repository.StrategoMovementRepository;
 import com.pdrosoft.matchmaking.repository.StrategoStatusRepository;
 import com.pdrosoft.matchmaking.stratego.dto.BoardTileDTO;
-import com.pdrosoft.matchmaking.stratego.dto.GameStateDTO;
 import com.pdrosoft.matchmaking.stratego.dto.StrategoMovementDTO;
 import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
 import com.pdrosoft.matchmaking.stratego.enums.Rank;
@@ -128,8 +127,6 @@ public class StrategoServiceTest {
 
 		var statusDto = strategoService.getStatus(GAME_ID, player);
 
-		// .currentPlayer(toPlayerDTO(player)) //
-
 		assertThat(statusDto.getCurrentPlayer().getId()).isEqualTo(PLAYER_ID);
 		assertThat(statusDto.getCurrentPlayer().getUsername()).isEqualTo(PLAYER_USERNAME);
 		assertThat(statusDto.getGameId()).isEqualTo(GAME_ID);
@@ -150,20 +147,20 @@ public class StrategoServiceTest {
 	}
 
 	@Test
-	void testCheckRankNoGame() {
+	void testAddMovementNoGame() {
 		var player = getTestPlayer();
 		var movementDto = getTestMovementDto();
 
 		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> strategoService.checkRank(GAME_ID, player, movementDto))
+		assertThatThrownBy(() -> strategoService.addMovement(GAME_ID, player, movementDto))
 				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game does not exist");
 	}
 
 	@ParameterizedTest
 	@EnumSource(value = GamePhase.class, names = { "WAITING_FOR_SETUP_2_PLAYERS", "WAITING_FOR_SETUP_1_PLAYER",
 			"FINISHED" })
-	void testCheckRankWrongPlayerTurn(GamePhase wrongPhase) {
+	void testAddMovementWrongPlayerTurn(GamePhase wrongPhase) {
 		var player = getTestPlayer();
 		var game = getTestGame(player, player);
 		game.setPhase(wrongPhase);
@@ -171,12 +168,12 @@ public class StrategoServiceTest {
 
 		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
 
-		assertThatThrownBy(() -> strategoService.checkRank(GAME_ID, player, movementDto))
+		assertThatThrownBy(() -> strategoService.addMovement(GAME_ID, player, movementDto))
 				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game not in playing state");
 	}
 
 	@Test
-	void testCheckRankNoStatus() {
+	void testAddMovementNoStatus() {
 		var player = getTestPlayer();
 		var game = getTestGame(player, player);
 		var movementDto = getTestMovementDto();
@@ -185,7 +182,7 @@ public class StrategoServiceTest {
 
 		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> strategoService.checkRank(GAME_ID, player, movementDto))
+		assertThatThrownBy(() -> strategoService.addMovement(GAME_ID, player, movementDto))
 				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game has not been started");
 	}
 

@@ -199,7 +199,11 @@ public class StrategoServiceImpl implements StrategoService {
 		if (finalTile != null && (finalTile.isHostOwner() == isHost || Rank.DISABLED.equals(finalTile.getRank()))) {
 			throw new MatchmakingValidationException("Invalid destination square");
 		}
+	}
 
+	private void applyMovement(StrategoMovementDTO movementDto, List<List<BoardTileDTO>> board) {
+		var initialTile = board.get(movementDto.getRowInitial()).get(movementDto.getColInitial());
+		var finalTile = board.get(movementDto.getRowFinal()).get(movementDto.getColFinal());
 		if (finalTile != null) {
 			var result = compareRanks(initialTile.getRank(), finalTile.getRank());
 
@@ -280,12 +284,6 @@ public class StrategoServiceImpl implements StrategoService {
 		board.get(row).set(col, tile);
 	}
 
-	private void applyMovement(StrategoMovementDTO movement, List<List<BoardTileDTO>> board, boolean isHost) {
-		setBoardPosition(board, movement.getRowInitial(), movement.getColInitial(), null);
-		var tile = BoardTileDTO.builder().rank(movement.getRank()).isHostOwner(isHost).build();
-		setBoardPosition(board, movement.getRowFinal(), movement.getColFinal(), tile);
-	}
-
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public GameStateDTO addMovement(Long gameId, Player player, @Valid StrategoMovementDTO movementDto) {
@@ -303,56 +301,7 @@ public class StrategoServiceImpl implements StrategoService {
 		board = status.getBoard();
 
 		checkValidMovement(movementDto, board, game, status, player.getId());
-
-		// var isHost = isPlayerId(player.getId(), game.getHost());
-		// applyMovement(movementDto, board, isHost);
-
-		status.setBoard(board);
-		var isGuestTurn = status.getIsGuestTurn();
-		status.setIsGuestTurn(!isGuestTurn);
-		strategoStatusRepository.save(status);
-
-		var move = new StrategoMovement();
-		move.setGame(game);
-		move.setRank(movementDto.getRank());
-		move.setRowInitial(movementDto.getRowInitial());
-		move.setColInitial(movementDto.getColInitial());
-		move.setRowFinal(movementDto.getRowFinal());
-		move.setColFinal(movementDto.getColFinal());
-		move.setIsGuestTurn(isGuestTurn);
-
-		strategoMovementRepository.save(move);
-
-		return GameStateDTO.builder() //
-				.currentPlayer(toPlayerDTO(player)) //
-				.gameId(gameId) //
-				.phase(game.getPhase()) //
-				.movement(movementDto) //
-				.board(board) //
-				.isMyTurn(false) //
-				.build();
-	}
-
-	@Override
-	@Transactional(rollbackFor = Exception.class)
-	public GameStateDTO checkRank(Long gameId, Player player, @Valid StrategoMovementDTO movementDto) {
-
-		var game = gameRepository.findById(gameId)
-				.orElseThrow(() -> new MatchmakingValidationException("Game does not exist"));
-
-		if (!GamePhase.PLAYING.equals(game.getPhase())) {
-			throw new MatchmakingValidationException("Game not in playing state");
-		}
-
-		List<List<BoardTileDTO>> board = null;
-		var status = strategoStatusRepository.findByGameId(gameId)
-				.orElseThrow(() -> new MatchmakingValidationException("Game has not been started"));
-		board = status.getBoard();
-
-		checkValidMovement(movementDto, board, game, status, player.getId());
-
-		var isHost = isPlayerId(player.getId(), game.getHost());
-		applyMovement(movementDto, board, isHost);
+		applyMovement(movementDto, board);
 
 		status.setBoard(board);
 		var isGuestTurn = status.getIsGuestTurn();

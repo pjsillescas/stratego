@@ -41,12 +41,6 @@ public class StrategoApiController {
 		return strategoService.addMovement(gameId, userDetails.getPlayer(), movementDto);
 	}
 
-	@PutMapping(path = "/checkrank", produces = { "application/json" })
-	public GameStateDTO ask(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
-			@PathVariable("gameId") Long gameId, @Valid @RequestBody StrategoMovementDTO movementDto) {
-		return strategoService.checkRank(gameId, userDetails.getPlayer(), movementDto);
-	}
-
 	@GetMapping(path = "/status", produces = { "application/json" })
 	public GameStateDTO getStatus(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
 			@PathVariable("gameId") Long gameId) {
