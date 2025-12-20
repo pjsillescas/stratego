@@ -229,39 +229,51 @@ public class StrategoServiceImpl implements StrategoService {
 			return 0;
 		}
 
+		List<Rank> upperRanks = List.of();
 		switch (rankDefender) {
 		case FLAG:
-			return 1;
+			upperRanks = Arrays.asList(Rank.values());
+			break;
 		case BOMB:
-			return Rank.MINER.equals(rankAttacker) ? 1 : -1;
+			upperRanks = List.of(Rank.MINER);
+			break;
 		case SPY:
-			return -1;
+			upperRanks = List.of();
+			break;
 		case MARSHAL:
-			return List.of(Rank.SPY).contains(rankAttacker) ? 1 : -1;
+			upperRanks = List.of(Rank.SPY);
+			break;
 		case GENERAL:
-			return List.of(Rank.MARSHAL).contains(rankAttacker) ? 1 : -1;
+			upperRanks = List.of(Rank.MARSHAL);
+			break;
 		case COLONEL:
-			return List.of(Rank.MARSHAL, Rank.GENERAL).contains(rankAttacker) ? 1 : -1;
+			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL);
+			break;
 		case MAJOR:
-			return List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL).contains(rankAttacker) ? 1 : -1;
+			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL);
+			break;
 		case CAPTAIN:
-			return List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR).contains(rankAttacker) ? 1 : -1;
+			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR);
+			break;
 		case LIEUTENANT:
-			return List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN).contains(rankAttacker)
-					? 1
-					: -1;
+			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN);
+			break;
 		case SERGEANT:
-			return List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT)
-					.contains(rankAttacker) ? 1 : -1;
+			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT);
+			break;
 		case MINER:
-			return List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
-					Rank.SERGEANT).contains(rankAttacker) ? 1 : -1;
+			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
+					Rank.SERGEANT);
+			break;
 		case SCOUT:
-			return List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
-					Rank.SERGEANT, Rank.MINER).contains(rankAttacker) ? 1 : -1;
+			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
+					Rank.SERGEANT, Rank.MINER);
+			break;
 		default:
 			throw new MatchmakingValidationException("Invalid Ranks compared");
 		}
+
+		return upperRanks.contains(rankAttacker) ? 1 : -1;
 	}
 
 	private void setBoardPosition(List<List<BoardTileDTO>> board, Integer row, Integer col, BoardTileDTO tile) {
@@ -392,13 +404,15 @@ public class StrategoServiceImpl implements StrategoService {
 				.orElseThrow(() -> new MatchmakingValidationException("Game has not been started"));
 		board = status.getBoard();
 
-		var movement = strategoMovementRepository.findAllByGameId(gameId).getLast();
+		// var movement = strategoMovementRepository.findAllByGameId(gameId).getLast();
+		var allMovements = strategoMovementRepository.findAllByGameId(gameId);
+		var movement = Optional.ofNullable((allMovements.size() == 0) ? null : allMovements.getLast());
 
 		return GameStateDTO.builder() //
 				.currentPlayer(toPlayerDTO(player)) //
 				.gameId(gameId) //
 				.phase(game.getPhase()) //
-				.movement(toMovementDTO(movement)) //
+				.movement(movement.map(this::toMovementDTO).orElse(null)) //
 				.board(board) //
 				.isMyTurn(false) //
 				.build();
