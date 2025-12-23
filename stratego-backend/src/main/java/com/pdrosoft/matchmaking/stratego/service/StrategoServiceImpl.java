@@ -3,7 +3,6 @@ package com.pdrosoft.matchmaking.stratego.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +49,13 @@ public class StrategoServiceImpl implements StrategoService {
 	private final StrategoStatusRepository strategoStatusRepository;
 	@NonNull
 	private final StrategoMovementRepository strategoMovementRepository;
+	@NonNull
+	private final RankService rankService;
 
 	public StrategoServiceImpl(@Autowired GameDAO gameDao, @Autowired PlayerRepository playerRepository,
-			PlayerDAO playerDao, PasswordEncoder passwordEncoder, StrategoStatusRepository strategoStatusRepository,
-			GameRepository gameRepository, StrategoMovementRepository strategoMovementRepository) {
+			@Autowired PlayerDAO playerDao, @Autowired PasswordEncoder passwordEncoder,
+			@Autowired StrategoStatusRepository strategoStatusRepository, @Autowired GameRepository gameRepository,
+			@Autowired StrategoMovementRepository strategoMovementRepository, @Autowired RankService rankService) {
 		this.gameDao = gameDao;
 		this.playerRepository = playerRepository;
 		this.playerDao = playerDao;
@@ -61,6 +63,7 @@ public class StrategoServiceImpl implements StrategoService {
 		this.strategoStatusRepository = strategoStatusRepository;
 		this.gameRepository = gameRepository;
 		this.strategoMovementRepository = strategoMovementRepository;
+		this.rankService = rankService;
 	}
 
 	private PlayerDTO toPlayerDTO(Player player) {
@@ -177,15 +180,16 @@ public class StrategoServiceImpl implements StrategoService {
 		return isHost && !status.getIsGuestTurn() || isGuest && status.getIsGuestTurn();
 	}
 
-	private void checkValidMovement(StrategoMovementDTO movementDto, List<List<BoardTileDTO>> board, Game game,
-			StrategoStatus status, Integer playerId) {
+	private void checkValidMovement(StrategoMovementDTO movementDto, Game game, StrategoStatus status,
+			Integer playerId) {
 
 		var isMyTurn = getIsMyTurn(playerId, game, status);
 		if (!isMyTurn) {
-			throw new MatchmakingValidationException("Invalid movement");
+			throw new MatchmakingValidationException("Invalid player turn");
 		}
 
 		var isHost = isPlayerId(playerId, game.getHost());
+		List<List<BoardTileDTO>> board = status.getBoard();
 		var initialTile = board.get(movementDto.getRowInitial()).get(movementDto.getColInitial());
 		if (initialTile == null || initialTile.isHostOwner() != isHost || Rank.DISABLED.equals(initialTile.getRank())) {
 			throw new MatchmakingValidationException("Invalid chosen square");
@@ -205,7 +209,7 @@ public class StrategoServiceImpl implements StrategoService {
 		var initialTile = board.get(movementDto.getRowInitial()).get(movementDto.getColInitial());
 		var finalTile = board.get(movementDto.getRowFinal()).get(movementDto.getColFinal());
 		if (finalTile != null) {
-			var result = compareRanks(initialTile.getRank(), finalTile.getRank());
+			var result = rankService.compareRanks(initialTile.getRank(), finalTile.getRank());
 
 			if (result < 0) {
 				// player lost, destination tile stays
@@ -220,64 +224,16 @@ public class StrategoServiceImpl implements StrategoService {
 				setBoardPosition(board, movementDto.getRowInitial(), movementDto.getColInitial(), null);
 				setBoardPosition(board, movementDto.getRowFinal(), movementDto.getColFinal(), initialTile);
 			}
+		} else {
+			// empty final tile, move directly
+			setBoardPosition(board, movementDto.getRowInitial(), movementDto.getColInitial(), null);
+			setBoardPosition(board, movementDto.getRowFinal(), movementDto.getColFinal(), initialTile);
 		}
 	}
 
 	private boolean isInmobileRank(Rank rank) {
 		var inmobileRanks = List.of(Rank.BOMB, Rank.DISABLED, Rank.FLAG);
 		return inmobileRanks.contains(rank);
-	}
-
-	private int compareRanks(Rank rankAttacker, Rank rankDefender) {
-		if (Objects.equals(rankAttacker, rankDefender)) {
-			return 0;
-		}
-
-		List<Rank> upperRanks = List.of();
-		switch (rankDefender) {
-		case FLAG:
-			upperRanks = Arrays.asList(Rank.values());
-			break;
-		case BOMB:
-			upperRanks = List.of(Rank.MINER);
-			break;
-		case SPY:
-			upperRanks = List.of();
-			break;
-		case MARSHAL:
-			upperRanks = List.of(Rank.SPY);
-			break;
-		case GENERAL:
-			upperRanks = List.of(Rank.MARSHAL);
-			break;
-		case COLONEL:
-			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL);
-			break;
-		case MAJOR:
-			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL);
-			break;
-		case CAPTAIN:
-			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR);
-			break;
-		case LIEUTENANT:
-			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN);
-			break;
-		case SERGEANT:
-			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT);
-			break;
-		case MINER:
-			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
-					Rank.SERGEANT);
-			break;
-		case SCOUT:
-			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
-					Rank.SERGEANT, Rank.MINER);
-			break;
-		default:
-			throw new MatchmakingValidationException("Invalid Ranks compared");
-		}
-
-		return upperRanks.contains(rankAttacker) ? 1 : -1;
 	}
 
 	private void setBoardPosition(List<List<BoardTileDTO>> board, Integer row, Integer col, BoardTileDTO tile) {
@@ -295,15 +251,15 @@ public class StrategoServiceImpl implements StrategoService {
 			throw new MatchmakingValidationException("Game not in playing state");
 		}
 
-		List<List<BoardTileDTO>> board = null;
 		var status = strategoStatusRepository.findByGameId(gameId)
 				.orElseThrow(() -> new MatchmakingValidationException("Game has not been started"));
-		board = status.getBoard();
 
-		checkValidMovement(movementDto, board, game, status, player.getId());
+		checkValidMovement(movementDto, game, status, player.getId());
+
+		var board = status.getBoard();
 		applyMovement(movementDto, board);
-
 		status.setBoard(board);
+
 		var isGuestTurn = status.getIsGuestTurn();
 		status.setIsGuestTurn(!isGuestTurn);
 		strategoStatusRepository.save(status);

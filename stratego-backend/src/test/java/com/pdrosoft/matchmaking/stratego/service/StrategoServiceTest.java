@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -16,6 +17,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -33,6 +36,7 @@ import com.pdrosoft.matchmaking.repository.GameRepository;
 import com.pdrosoft.matchmaking.repository.PlayerRepository;
 import com.pdrosoft.matchmaking.repository.StrategoMovementRepository;
 import com.pdrosoft.matchmaking.repository.StrategoStatusRepository;
+import com.pdrosoft.matchmaking.stratego.dto.ArmySetupDTO;
 import com.pdrosoft.matchmaking.stratego.dto.BoardTileDTO;
 import com.pdrosoft.matchmaking.stratego.dto.StrategoMovementDTO;
 import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
@@ -61,6 +65,8 @@ public class StrategoServiceTest {
 	private StrategoStatusRepository strategoStatusRepository;
 	@Mock
 	private StrategoMovementRepository strategoMovementRepository;
+	@Mock
+	private RankService rankService;
 
 	@InjectMocks
 	private StrategoServiceImpl strategoService;
@@ -184,6 +190,235 @@ public class StrategoServiceTest {
 
 		assertThatThrownBy(() -> strategoService.addMovement(GAME_ID, player, movementDto))
 				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game has not been started");
+	}
+
+	private static final Integer STATUS_ID = 1;
+
+	private StrategoStatus getTestStatus(List<List<BoardTileDTO>> board, Game game) {
+		var status = new StrategoStatus();
+		status.setBoard(board);
+		status.setGame(game);
+		status.setId(STATUS_ID);
+		status.setIsGuestInitialized(true);
+		status.setIsHostInitialized(true);
+		status.setIsGuestTurn(true);
+		return status;
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void testAddMovementNotMyTurn(boolean isGuestTurn) {
+		var host = getTestPlayer();
+		var guest = getTestPlayer();
+		guest.setId(GUEST_ID);
+		var game = getTestGame(host, guest);
+		var movementDto = getTestMovementDto();
+		List<List<BoardTileDTO>> board = List.of();
+		var status = getTestStatus(board, game);
+		status.setIsGuestTurn(isGuestTurn);
+
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.of(status));
+
+		var movingPlayer = isGuestTurn ? host : guest;
+		assertThatThrownBy(() -> strategoService.addMovement(GAME_ID, movingPlayer, movementDto))
+				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Invalid player turn");
+	}
+
+	@Test
+	void testAddMovementChosenSquare() {
+		var player = getTestPlayer();
+		var guest = getTestPlayer();
+		guest.setId(GUEST_ID);
+		var game = getTestGame(player, guest);
+		var movementDto = getTestMovementDto();
+		var tile = new BoardTileDTO(Rank.BOMB, true);
+		List<List<BoardTileDTO>> board = List.of(
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, null, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }));
+		var status = getTestStatus(board, game);
+		status.setIsGuestTurn(false);
+
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.of(status));
+
+		assertThatThrownBy(() -> strategoService.addMovement(GAME_ID, player, movementDto))
+				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Invalid chosen square");
+	}
+
+	@Test
+	void testAddMovementChosenSquareCannotMove() {
+		var player = getTestPlayer();
+		var guest = getTestPlayer();
+		guest.setId(GUEST_ID);
+		var game = getTestGame(player, guest);
+		var movementDto = getTestMovementDto();
+		var tile = new BoardTileDTO(Rank.BOMB, true);
+		List<List<BoardTileDTO>> board = List.of(
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }));
+		var status = getTestStatus(board, game);
+		status.setIsGuestTurn(false);
+
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.of(status));
+
+		assertThatThrownBy(() -> strategoService.addMovement(GAME_ID, player, movementDto))
+				.isInstanceOf(MatchmakingValidationException.class).hasMessage("This square cannot move");
+	}
+
+	private static class CannotMoveArguments implements ArgumentsProvider {
+		@Override
+		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+			return Stream.of(//
+					Arguments.of(new BoardTileDTO(Rank.DISABLED, false)), // Disabled tile
+					Arguments.of(new BoardTileDTO(Rank.GENERAL, true)) // Same team tile
+			);
+		}
+
+	}
+
+	@ParameterizedTest
+	@ArgumentsSource(value = CannotMoveArguments.class)
+	void testAddMovementChosenSquareCannotMove(BoardTileDTO destinationTile) {
+		var player = getTestPlayer();
+		var guest = getTestPlayer();
+		guest.setId(GUEST_ID);
+		var game = getTestGame(player, guest);
+		var movementDto = getTestMovementDto();
+		var tile = new BoardTileDTO(Rank.SCOUT, true);
+		List<List<BoardTileDTO>> board = List.of(
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(
+						new BoardTileDTO[] { tile, tile, tile, tile, destinationTile, tile, tile, tile, tile, tile }));
+		var status = getTestStatus(board, game);
+		status.setIsGuestTurn(false);
+
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.of(status));
+
+		assertThatThrownBy(() -> strategoService.addMovement(GAME_ID, player, movementDto))
+				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Invalid destination square");
+	}
+
+	private static class AddMovementRanksArguments implements ArgumentsProvider {
+		@Override
+		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+			return Stream.of(//
+					Arguments.of(Rank.MARSHAL, Rank.MARSHAL, null), // Same ranks
+					Arguments.of(Rank.MARSHAL, Rank.GENERAL, Rank.MARSHAL), // Player wins
+					Arguments.of(Rank.SCOUT, Rank.MARSHAL, Rank.MARSHAL), // Player loses
+					Arguments.of(Rank.SCOUT, null, Rank.SCOUT) // empty destination
+			);
+		}
+
+	}
+
+	@ParameterizedTest
+	@ArgumentsSource(value = AddMovementRanksArguments.class)
+	void testAddMovement(Rank initialRank, Rank destinationRank, Rank finalRank) {
+		var player = getTestPlayer();
+		var guest = getTestPlayer();
+		guest.setId(GUEST_ID);
+		var game = getTestGame(player, guest);
+		var movementDto = getTestMovementDto();
+		var tile = new BoardTileDTO(Rank.SCOUT, true);
+		var initialTile = new BoardTileDTO(initialRank, true);
+		BoardTileDTO destinationTile = Optional.ofNullable(destinationRank).map(rank -> new BoardTileDTO(rank, false))
+				.orElse(null);
+		List<List<BoardTileDTO>> board = List.of(
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, initialTile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(new BoardTileDTO[] { tile, tile, tile, tile, tile, tile, tile, tile, tile, tile }),
+				Arrays.asList(
+						new BoardTileDTO[] { tile, tile, tile, tile, destinationTile, tile, tile, tile, tile, tile }) //
+		);
+		var status = getTestStatus(board, game);
+		status.setIsGuestTurn(false);
+
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.of(status));
+		if (destinationRank != null) {
+			Mockito.when(rankService.compareRanks(initialRank, destinationRank)).thenAnswer(inv -> {
+				Rank initRank = inv.getArgument(0);
+				Rank destRank = inv.getArgument(1);
+
+				if (Rank.MARSHAL.equals(initRank) && Rank.MARSHAL.equals(destRank)) {
+					return 0;
+				} else if (Rank.MARSHAL.equals(initRank) && Rank.GENERAL.equals(destRank)) {
+					return 1;
+				} else if (Rank.SCOUT.equals(initRank) && Rank.MARSHAL.equals(destRank)) {
+					return -1;
+				} else {
+					return 0;
+				}
+			});
+		}
+
+		strategoService.addMovement(GAME_ID, player, movementDto);
+
+		var captor = ArgumentCaptor.forClass(StrategoStatus.class);
+		Mockito.verify(strategoStatusRepository).save(captor.capture());
+
+		assertThat(captor.getValue()).isNotNull().satisfies(savedStatus -> {
+			var savedBoard = savedStatus.getBoard();
+			var init = savedBoard.get(1).get(2);
+			var dest = savedBoard.get(3).get(4);
+
+			assertThat(init).isNull();
+
+			if (finalRank == null) {
+				assertThat(dest).isNull();
+			} else {
+				assertThat(dest.getRank()).isEqualTo(finalRank);
+			}
+		});
+	}
+
+	private ArmySetupDTO getValidSetup() {
+		return ArmySetupDTO.builder().army(List.of(//
+				Arrays.asList(new Rank[] { Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB,
+						Rank.BOMB, Rank.BOMB, Rank.BOMB }), //
+				Arrays.asList(new Rank[] { Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB,
+						Rank.BOMB, Rank.BOMB, Rank.BOMB }), //
+				Arrays.asList(new Rank[] { Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB,
+						Rank.BOMB, Rank.BOMB, Rank.BOMB }), //
+				Arrays.asList(new Rank[] { Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB,
+						Rank.BOMB, Rank.BOMB, Rank.BOMB }) //
+		)) //
+				.build();
+	}
+
+	@Test
+	void testAddSetupNoGame() {
+		var player = getTestPlayer();
+		var setup = getValidSetup();
+
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> strategoService.addSetup(GAME_ID, player, setup))
+				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game does not exist");
+	}
+
+	@ParameterizedTest
+	//@EnumSource(value = GamePhase.class, names = { "WAITING_FOR_SETUP_2_PLAYERS", "WAITING_FOR_SETUP_1_PLAYER",
+	//		"FINISHED" })
+	void testAddSetupWrongPlayerTurn(GamePhase wrongPhase) {
+		var player = getTestPlayer();
+		var game = getTestGame(player, player);
+		var setup = getValidSetup();
+		game.setPhase(wrongPhase);
+
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+
+		assertThatThrownBy(() -> strategoService.addSetup(GAME_ID, player, setup))
+				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game not in playing state");
 	}
 
 	private static StrategoMovement getTestMovement() {
