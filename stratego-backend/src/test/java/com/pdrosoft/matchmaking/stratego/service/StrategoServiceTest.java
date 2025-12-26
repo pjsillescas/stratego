@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -209,8 +210,7 @@ public class StrategoServiceTest {
 	@ValueSource(booleans = { true, false })
 	void testAddMovementNotMyTurn(boolean isGuestTurn) {
 		var host = getTestPlayer();
-		var guest = getTestPlayer();
-		guest.setId(GUEST_ID);
+		var guest = getTestPlayer(GUEST_ID);
 		var game = getTestGame(host, guest);
 		var movementDto = getTestMovementDto();
 		List<List<BoardTileDTO>> board = List.of();
@@ -228,8 +228,8 @@ public class StrategoServiceTest {
 	@Test
 	void testAddMovementChosenSquare() {
 		var player = getTestPlayer();
-		var guest = getTestPlayer();
-		guest.setId(GUEST_ID);
+		var guest = getTestPlayer(GUEST_ID);
+
 		var game = getTestGame(player, guest);
 		var movementDto = getTestMovementDto();
 		var tile = new BoardTileDTO(Rank.BOMB, true);
@@ -251,8 +251,7 @@ public class StrategoServiceTest {
 	@Test
 	void testAddMovementChosenSquareCannotMove() {
 		var player = getTestPlayer();
-		var guest = getTestPlayer();
-		guest.setId(GUEST_ID);
+		var guest = getTestPlayer(GUEST_ID);
 		var game = getTestGame(player, guest);
 		var movementDto = getTestMovementDto();
 		var tile = new BoardTileDTO(Rank.BOMB, true);
@@ -286,8 +285,7 @@ public class StrategoServiceTest {
 	@ArgumentsSource(value = CannotMoveArguments.class)
 	void testAddMovementChosenSquareCannotMove(BoardTileDTO destinationTile) {
 		var player = getTestPlayer();
-		var guest = getTestPlayer();
-		guest.setId(GUEST_ID);
+		var guest = getTestPlayer(GUEST_ID);
 		var game = getTestGame(player, guest);
 		var movementDto = getTestMovementDto();
 		var tile = new BoardTileDTO(Rank.SCOUT, true);
@@ -324,8 +322,8 @@ public class StrategoServiceTest {
 	@ArgumentsSource(value = AddMovementRanksArguments.class)
 	void testAddMovement(Rank initialRank, Rank destinationRank, Rank finalRank) {
 		var player = getTestPlayer();
-		var guest = getTestPlayer();
-		guest.setId(GUEST_ID);
+		var guest = getTestPlayer(GUEST_ID);
+
 		var game = getTestGame(player, guest);
 		var movementDto = getTestMovementDto();
 		var tile = new BoardTileDTO(Rank.SCOUT, true);
@@ -406,26 +404,246 @@ public class StrategoServiceTest {
 				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game does not exist");
 	}
 
+	private static class InvalidSetupArguments implements ArgumentsProvider {
+		@Override
+		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+			return Stream.of(//
+					Arguments.of(HOST_ID, true, false), // Same ranks
+					Arguments.of(GUEST_ID, false, true)// , // Player wins
+			);
+		}
+	}
+
 	@ParameterizedTest
-	//@EnumSource(value = GamePhase.class, names = { "WAITING_FOR_SETUP_2_PLAYERS", "WAITING_FOR_SETUP_1_PLAYER",
-	//		"FINISHED" })
-	void testAddSetupWrongPlayerTurn(GamePhase wrongPhase) {
-		var player = getTestPlayer();
-		var game = getTestGame(player, player);
+	@ArgumentsSource(value = InvalidSetupArguments.class)
+	void testAddSetupInvalidSetup(Integer playerId, boolean isHostInitialized, boolean isGuestInitialized) {
+		var player = getTestPlayer(playerId);
+		var host = getTestPlayer(HOST_ID);
+		var guest = getTestPlayer(GUEST_ID);
+
+		var game = getTestGame(host, guest);
 		var setup = getValidSetup();
-		game.setPhase(wrongPhase);
+		game.setPhase(GamePhase.WAITING_FOR_SETUP_1_PLAYER);
+
+		var statusMock = Mockito.mock(StrategoStatus.class);
+		if (isHostInitialized) {
+			Mockito.when(statusMock.getIsHostInitialized()).thenReturn(isHostInitialized);
+		} else {
+			Mockito.when(statusMock.getIsGuestInitialized()).thenReturn(isGuestInitialized);
+		}
+
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.of(statusMock));
+
+		assertThatThrownBy(() -> strategoService.addSetup(GAME_ID, player, setup))
+				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Invalid player setup");
+
+		Mockito.verifyNoMoreInteractions(strategoStatusRepository);
+	}
+
+	@Test
+	void testAddSetupNotInSetupState() {
+		var host = getTestPlayer(HOST_ID);
+		var guest = getTestPlayer(GUEST_ID);
+		var player = host;
+
+		var game = getTestGame(host, guest);
+		game.setPhase(GamePhase.PLAYING);
+		var setup = getValidSetup();
 
 		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
 
 		assertThatThrownBy(() -> strategoService.addSetup(GAME_ID, player, setup))
-				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game not in playing state");
+				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game not in setup state");
+
+		Mockito.verifyNoMoreInteractions(strategoStatusRepository);
+	}
+
+	private List<List<BoardTileDTO>> getEmptyBoard() {
+		var disa = BoardTileDTO.builder().rank(Rank.DISABLED).build();
+		var row1 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, null, null, null, null, null, null, null, null));
+		var row2 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, null, null, null, null, null, null, null, null));
+		var row3 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, null, null, null, null, null, null, null, null));
+		var row4 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, null, null, null, null, null, null, null, null));
+		var row5 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, disa, disa, null, null, disa, disa, null, null));
+		var row6 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, disa, disa, null, null, disa, disa, null, null));
+		var row7 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, null, null, null, null, null, null, null, null));
+		var row8 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, null, null, null, null, null, null, null, null));
+		var row9 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, null, null, null, null, null, null, null, null));
+		var row10 = new ArrayList<BoardTileDTO>(
+				Arrays.asList(null, null, null, null, null, null, null, null, null, null));
+
+		var board = new ArrayList<List<BoardTileDTO>>(
+				Arrays.asList(row1, row2, row3, row4, row5, row6, row7, row8, row9, row10));
+
+		return board;
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void testAddSetupHost(boolean useExistingStatus) {
+		var host = getTestPlayer(HOST_ID);
+		var guest = getTestPlayer(GUEST_ID);
+		var player = host;
+
+		var game = getTestGame(host, guest);
+		var setup = getValidSetup();
+		game.setPhase(GamePhase.WAITING_FOR_SETUP_1_PLAYER);
+
+		StrategoStatus status = null;
+		if (useExistingStatus) {
+			status = getTestStatus(getEmptyBoard(), game);
+			status.setIsHostInitialized(false);
+			status.setIsGuestInitialized(true);
+		}
+
+		Mockito.when(strategoStatusRepository.save(Mockito.any(StrategoStatus.class))).thenAnswer(inv -> {
+			StrategoStatus statusToSave = inv.getArgument(0);
+			statusToSave.setId(STATUS_ID);
+			return statusToSave;
+		});
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.ofNullable(status));
+
+		var gameStateDto = strategoService.addSetup(GAME_ID, player, setup);
+
+		var captor = ArgumentCaptor.forClass(StrategoStatus.class);
+		var numInvocationsToSave = useExistingStatus ? 1 : 2;
+		Mockito.verify(strategoStatusRepository, Mockito.times(numInvocationsToSave)).save(captor.capture());
+
+		assertThat(captor.getAllValues()).hasSize(numInvocationsToSave).anySatisfy(aStatus -> {
+			assertThat(aStatus.getId()).isEqualTo(STATUS_ID);
+		});
+
+		assertThat(gameStateDto).isNotNull().satisfies(gameState -> {
+			checkHostBoard(gameState.getBoard(), setup);
+		});
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void testAddSetupGuest(boolean useExistingStatus) {
+		var host = getTestPlayer(HOST_ID);
+		var guest = getTestPlayer(GUEST_ID);
+		var player = guest;
+
+		var game = getTestGame(host, guest);
+		var setup = getValidSetup();
+		game.setPhase(GamePhase.WAITING_FOR_SETUP_1_PLAYER);
+
+		StrategoStatus status = null;
+		if (useExistingStatus) {
+			status = getTestStatus(getEmptyBoard(), game);
+			status.setIsHostInitialized(true);
+			status.setIsGuestInitialized(false);
+		}
+
+		Mockito.when(strategoStatusRepository.save(Mockito.any(StrategoStatus.class))).thenAnswer(inv -> {
+			StrategoStatus statusToSave = inv.getArgument(0);
+			statusToSave.setId(STATUS_ID);
+			return statusToSave;
+		});
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.ofNullable(status));
+
+		var gameStateDto = strategoService.addSetup(GAME_ID, player, setup);
+
+		var captor = ArgumentCaptor.forClass(StrategoStatus.class);
+		var numInvocationsToSave = useExistingStatus ? 1 : 2;
+		Mockito.verify(strategoStatusRepository, Mockito.times(numInvocationsToSave)).save(captor.capture());
+
+		assertThat(captor.getAllValues()).hasSize(numInvocationsToSave).anySatisfy(aStatus -> {
+			assertThat(aStatus.getId()).isEqualTo(STATUS_ID);
+		});
+
+		assertThat(gameStateDto).isNotNull().satisfies(gameState -> {
+			checkGuestBoard(gameState.getBoard(), setup);
+		});
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = GamePhase.class, names = { //
+			"WAITING_FOR_SETUP_2_PLAYERS", //
+			"WAITING_FOR_SETUP_1_PLAYER", //
+	})
+	void testAddSetupState(GamePhase gamePhase) {
+		var host = getTestPlayer(HOST_ID);
+		var guest = getTestPlayer(GUEST_ID);
+		var player = guest;
+
+		var game = getTestGame(host, guest);
+		var setup = getValidSetup();
+		game.setPhase(gamePhase);
+
+		var status = getTestStatus(getEmptyBoard(), game);
+		status.setIsHostInitialized(true);
+		status.setIsGuestInitialized(false);
+
+		Mockito.when(strategoStatusRepository.save(Mockito.any(StrategoStatus.class))).thenAnswer(inv -> {
+			StrategoStatus statusToSave = inv.getArgument(0);
+			statusToSave.setId(STATUS_ID);
+			return statusToSave;
+		});
+		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
+		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.ofNullable(status));
+
+		var gameStateDto = strategoService.addSetup(GAME_ID, player, setup);
+
+		var nextPhase = GamePhase.WAITING_FOR_SETUP_1_PLAYER.equals(gamePhase) //
+				? GamePhase.PLAYING //
+				: GamePhase.WAITING_FOR_SETUP_1_PLAYER;
+
+		var gameCaptor = ArgumentCaptor.forClass(Game.class);
+		Mockito.verify(gameRepository).save(gameCaptor.capture());
+
+		assertThat(gameCaptor.getValue()).satisfies(aGame -> {
+			assertThat(aGame.getId()).isEqualTo(GAME_ID.intValue());
+			assertThat(aGame.getPhase()).isEqualTo(nextPhase);
+		});
+
+		var captor = ArgumentCaptor.forClass(StrategoStatus.class);
+		Mockito.verify(strategoStatusRepository).save(captor.capture());
+
+		assertThat(captor.getAllValues()).hasSize(1).anySatisfy(aStatus -> {
+			assertThat(aStatus.getId()).isEqualTo(STATUS_ID);
+			assertThat(aStatus.getGame().getPhase()).isEqualTo(nextPhase);
+		});
+
+		assertThat(gameStateDto).isNotNull().satisfies(gameState -> {
+			checkGuestBoard(gameState.getBoard(), setup);
+		});
+	}
+
+	private void checkHostBoard(List<List<BoardTileDTO>> board, ArmySetupDTO setup) {
+		var ranks = setup.getArmy();
+		for (int row = 0; row < 3; row++) {
+			for (int col = 0; col < 10; col++) {
+				assertThat(board.get(3 - row).get(col).getRank()).isEqualTo(ranks.get(row).get(col));
+			}
+		}
+	}
+
+	private void checkGuestBoard(List<List<BoardTileDTO>> board, ArmySetupDTO setup) {
+		var ranks = setup.getArmy();
+		for (int row = 0; row < 3; row++) {
+			for (int col = 0; col < 10; col++) {
+				assertThat(board.get(6 + row).get(col).getRank()).isEqualTo(ranks.get(row).get(col));
+			}
+		}
 	}
 
 	private static StrategoMovement getTestMovement() {
-		var host = getTestPlayer();
-		host.setId(HOST_ID);
-		var guest = getTestPlayer();
-		guest.setId(GUEST_ID);
+		var host = getTestPlayer(HOST_ID);
+		var guest = getTestPlayer(GUEST_ID);
 		var movement = new StrategoMovement();
 		movement.setId(1);
 		movement.setIsGuestTurn(true);
@@ -459,9 +677,14 @@ public class StrategoServiceTest {
 	}
 
 	private static Player getTestPlayer() {
+		return getTestPlayer(PLAYER_ID);
+	}
+
+	private static Player getTestPlayer(Integer playerId) {
 		var player = new Player();
-		player.setId(PLAYER_ID);
+		player.setId(playerId);
 		player.setUserName(PLAYER_USERNAME);
 		return player;
 	}
+
 }

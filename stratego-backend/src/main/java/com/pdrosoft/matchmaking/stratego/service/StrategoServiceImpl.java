@@ -135,6 +135,12 @@ public class StrategoServiceImpl implements StrategoService {
 		var game = gameRepository.findById(gameId)
 				.orElseThrow(() -> new MatchmakingValidationException("Game does not exist"));
 
+		var setupPhases = List.of(GamePhase.WAITING_FOR_SETUP_1_PLAYER, GamePhase.WAITING_FOR_SETUP_2_PLAYERS);
+
+		if (!setupPhases.contains(game.getPhase())) {
+			throw new MatchmakingValidationException("Game not in setup state");
+		}
+
 		List<List<BoardTileDTO>> board = null;
 		var status = strategoStatusRepository.findByGameId(gameId).orElseGet(() -> getNewStrategoGame(game));
 		board = status.getBoard();
@@ -147,7 +153,7 @@ public class StrategoServiceImpl implements StrategoService {
 			copySetup(setupDto, board, 0, true);
 		} else if (isGuest && !status.getIsGuestInitialized()) {
 			status.setIsGuestInitialized(true);
-			copySetup(setupDto, board, 7, false);
+			copySetup(setupDto, board, 6, false);
 		} else {
 			throw new MatchmakingValidationException("Invalid player setup");
 		}
@@ -158,9 +164,8 @@ public class StrategoServiceImpl implements StrategoService {
 			game.setPhase(GamePhase.PLAYING);
 		} else if (GamePhase.WAITING_FOR_SETUP_2_PLAYERS.equals(game.getPhase())) {
 			game.setPhase(GamePhase.WAITING_FOR_SETUP_1_PLAYER);
-		} else {
-			throw new MatchmakingValidationException("Game not in setup state");
 		}
+		gameRepository.save(game);
 
 		strategoStatusRepository.save(status);
 		return GameStateDTO.builder() //

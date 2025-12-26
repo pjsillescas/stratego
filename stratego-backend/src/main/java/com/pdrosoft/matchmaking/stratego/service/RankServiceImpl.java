@@ -11,6 +11,11 @@ public class RankServiceImpl implements RankService {
 
 	@Override
 	public int compareRanks(Rank rankAttacker, Rank rankDefender) {
+		var immobileRanks = List.of(Rank.BOMB, Rank.FLAG, Rank.DISABLED);
+		if (immobileRanks.contains(rankAttacker) || Rank.DISABLED.equals(rankDefender)) {
+			throw new MatchmakingValidationException("Invalid ranks compared");
+		}
+
 		if (Objects.equals(rankAttacker, rankDefender)) {
 			return 0;
 		}
@@ -22,9 +27,6 @@ public class RankServiceImpl implements RankService {
 			break;
 		case BOMB:
 			upperRanks = List.of(Rank.MINER);
-			break;
-		case SPY:
-			upperRanks = List.of();
 			break;
 		case MARSHAL:
 			upperRanks = List.of(Rank.SPY);
@@ -55,8 +57,12 @@ public class RankServiceImpl implements RankService {
 			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
 					Rank.SERGEANT, Rank.MINER);
 			break;
+		case SPY:
+			upperRanks = List.of(Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
+					Rank.SERGEANT, Rank.MINER, Rank.SCOUT);
+			break;
 		default:
-			throw new MatchmakingValidationException("Invalid Ranks compared");
+			throw new MatchmakingValidationException("Invalid ranks compared");
 		}
 
 		return upperRanks.contains(rankAttacker) ? 1 : -1;
