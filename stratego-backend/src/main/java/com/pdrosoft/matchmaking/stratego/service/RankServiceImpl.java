@@ -4,9 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.stereotype.Service;
+
 import com.pdrosoft.matchmaking.exception.MatchmakingValidationException;
 import com.pdrosoft.matchmaking.stratego.enums.Rank;
 
+@Service
 public class RankServiceImpl implements RankService {
 
 	@Override
