@@ -21,7 +21,7 @@ public class StrategoMovementDTO {
 
 	@NotNull
 	@Min(1)
-	@Max(4)
+	@Max(10)
 	private int rowInitial;
 	@NotNull
 	@Min(1)
@@ -30,7 +30,7 @@ public class StrategoMovementDTO {
 
 	@NotNull
 	@Min(1)
-	@Max(4)
+	@Max(10)
 	private int rowFinal;
 	@NotNull
 	@Min(1)

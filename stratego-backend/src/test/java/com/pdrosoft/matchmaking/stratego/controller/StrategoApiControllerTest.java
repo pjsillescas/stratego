@@ -1,6 +1,7 @@
 package com.pdrosoft.matchmaking.stratego.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,13 +29,14 @@ import com.pdrosoft.matchmaking.dto.UserAuthDTO;
 import com.pdrosoft.matchmaking.stratego.dto.ArmySetupDTO;
 import com.pdrosoft.matchmaking.stratego.dto.BoardTileDTO;
 import com.pdrosoft.matchmaking.stratego.dto.GameStateDTO;
+import com.pdrosoft.matchmaking.stratego.dto.StrategoMovementDTO;
 import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
 import com.pdrosoft.matchmaking.stratego.enums.Rank;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "classpath:test-gameplay-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
+@Sql(scripts = "classpath:test-gameplay-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class StrategoApiControllerTest {
 
@@ -163,170 +165,187 @@ public class StrategoApiControllerTest {
 		}
 	}
 
-	
-	/*
-	@Test
-	void testGameListWithNoToken() throws Exception {
-		mockMvc.perform(get("/api/game")).andExpect(status().isForbidden());
+	private List<List<BoardTileDTO>> initializeGame() throws Exception {
+		var board = getValidSetup();
+		var setupDto = ArmySetupDTO.builder().army(board).build();
+		var json = getObjectMapper().writeValueAsString(setupDto);
+
+		// Host
+		var token1 = getToken("testuser1", "password1");
+		mockMvc.perform(put("/api/stratego/%d/setup".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token1)) //
+				.contentType(MediaType.APPLICATION_JSON) //
+				.content(json) //
+		).andExpect(status().isOk()).andReturn();
+
+		// Guest
+		var token2 = getToken("testuser2", "password2");
+		var resultGuest = mockMvc.perform(put("/api/stratego/%d/setup".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token2)) //
+				.contentType(MediaType.APPLICATION_JSON) //
+				.content(json) //
+		).andExpect(status().isOk()).andReturn();
+		GameStateDTO gameState2 = getObjectMapper().readValue(resultGuest.getResponse().getContentAsString(),
+				new TypeReference<GameStateDTO>() {
+				});
+
+		return gameState2.getBoard();
 	}
 
 	@Test
-	void testGameListWithInvalidToken() throws Exception {
-		var token = "invalid.token";
+	void testAddMovementInvalidDetination() throws Exception {
 
-		mockMvc.perform(get("/api/game").header("Authorization", "Bearer %s".formatted(token)))//
-				.andExpect(status().isForbidden());
-	}
+		initializeGame();
+		var movementDto = StrategoMovementDTO.builder() //
+				.rowInitial(3) //
+				.colInitial(7) //
+				.rowFinal(4) //
+				.colFinal(7) //
+				.rank(Rank.SPY) //
+				.build();
+		var json = getObjectMapper().writeValueAsString(movementDto);
 
-	@Test
-	void testCreateGameWithInvalidToken() throws Exception {
-		var token = "invalid.token";
-
-		mockMvc.perform(put("/api/game").header("Authorization", "Bearer %s".formatted(token)))//
-				.andExpect(status().isForbidden());
-	}
-
-	@Test
-	void testCreateJoinLeaveGuestFirstGameSuccess() throws Exception {
-		var tokenHost = getToken("testuser1", "password1");
-		var tokenGuest = getToken("testuser2", "password2");
-
-		var gameInputDto = GameInputDTO.builder().joinCode("test-code").build();
-		var json = getObjectMapper().writeValueAsString(gameInputDto);
-		var result = mockMvc.perform(put("/api/game") //
-				.header("Authorization", "Bearer %s".formatted(tokenHost)) //
-				.contentType(MediaType.APPLICATION_JSON)//
-				.content(json))//
-				.andExpect(status().isOk()).andReturn();
-
-		var game = getObjectMapper().readValue(result.getResponse().getContentAsString(), GameDTO.class);
-		var newGameId = game.getId();
-		assertThat(game.getCreationDate()).isBetween(Instant.now().minus(Duration.ofSeconds(2)),
-				Instant.now().plus(Duration.ofSeconds(2)));
-		assertThat(game.getName()).isEqualTo("testuser1's game");
-		assertThat(game.getHost().getUsername()).isEqualTo("testuser1");
-		assertThat(game.getGuest()).isNull();
-
-		var resultJoin = mockMvc.perform(post("/api/game/{gameId}/join", Integer.toString(newGameId)) //
-				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
-				.andExpect(status().isOk()).andReturn();
-
-		var gameJoined = getObjectMapper().readValue(resultJoin.getResponse().getContentAsString(),
-				GameExtendedDTO.class);
-		assertThat(gameJoined.getId()).isEqualTo(game.getId());
-		assertThat(gameJoined.getCreationDate()).isNotNull();
-		assertThat(gameJoined.getJoinCode()).isEqualTo(gameInputDto.getJoinCode());
-		assertThat(gameJoined.getName()).isEqualTo(game.getName());
-		assertThat(gameJoined.getHost().getUsername()).isEqualTo("testuser1");
-		assertThat(gameJoined.getGuest().getUsername()).isEqualTo("testuser2");
-
-		var resultLeaveGuest = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
-				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
-				.andExpect(status().isOk()).andReturn();
-
-		var gameLeft = getObjectMapper().readValue(resultLeaveGuest.getResponse().getContentAsString(), GameDTO.class);
-		assertThat(gameLeft.getId()).isEqualTo(newGameId);
-		assertThat(gameLeft.getCreationDate()).isNotNull();
-		assertThat(gameLeft.getName()).isEqualTo("testuser1's game");
-		assertThat(gameLeft.getHost().getUsername()).isEqualTo("testuser1");
-		assertThat(gameLeft.getGuest()).isNull();
-
-		var resultLeaveHost = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
-				.header("Authorization", "Bearer %s".formatted(tokenHost)))//
-				.andExpect(status().isOk()).andReturn();
-
-		assertThat(resultLeaveHost.getResponse().getContentAsString()).isNullOrEmpty();
-
-	}
-
-	@Test
-	void testCreateJoinLeaveHostFirstGameSuccess() throws Exception {
-		final var testCode = "test-code";
-
-		var tokenHost = getToken("testuser1", "password1");
-		var tokenGuest = getToken("testuser2", "password2");
-
-		var gameInputDto = GameInputDTO.builder().joinCode(testCode).build();
-		var json = getObjectMapper().writeValueAsString(gameInputDto);
-		var result = mockMvc.perform(put("/api/game") //
-				.header("Authorization", "Bearer %s".formatted(tokenHost)) //
-				.contentType(MediaType.APPLICATION_JSON)//
-				.content(json))//
-				.andExpect(status().isOk()).andReturn();
-
-		var game = getObjectMapper().readValue(result.getResponse().getContentAsString(), GameDTO.class);
-		var newGameId = game.getId();
-		assertThat(game.getCreationDate()).isBetween(Instant.now().minus(Duration.ofSeconds(2)),
-				Instant.now().plus(Duration.ofSeconds(2)));
-		assertThat(game.getName()).isEqualTo("testuser1's game");
-		assertThat(game.getHost().getUsername()).isEqualTo("testuser1");
-		assertThat(game.getGuest()).isNull();
-
-		var resultJoin = mockMvc.perform(post("/api/game/{gameId}/join", Integer.toString(newGameId)) //
-				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
-				.andExpect(status().isOk()).andReturn();
-
-		var gameJoined = getObjectMapper().readValue(resultJoin.getResponse().getContentAsString(),
-				GameExtendedDTO.class);
-		assertThat(gameJoined.getId()).isEqualTo(game.getId());
-		assertThat(gameJoined.getCreationDate()).isNotNull();
-		assertThat(gameJoined.getName()).isEqualTo(game.getName());
-		assertThat(gameJoined.getJoinCode()).isEqualTo(gameInputDto.getJoinCode());
-		assertThat(gameJoined.getHost().getUsername()).isEqualTo("testuser1");
-		assertThat(gameJoined.getGuest().getUsername()).isEqualTo("testuser2");
-
-		var resultLeaveHost = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
-				.header("Authorization", "Bearer %s".formatted(tokenHost)))//
-				.andExpect(status().isOk()).andReturn();
-
-		assertThat(resultLeaveHost.getResponse().getContentAsString()).isNullOrEmpty();
-
-		var resultLeaveGuest = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
-				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
-				.andExpect(status().isOk()).andReturn();
-
-		assertThat(resultLeaveGuest.getResponse().getContentAsString()).isNullOrEmpty();
-	}
-
-	@Test
-	void testCreateWithEmptyJoinCode() throws Exception {
-		final var testCode = "";
-
-		var tokenHost = getToken("testuser1", "password1");
-
-		var gameInputDto = GameInputDTO.builder().joinCode(testCode).build();
-		var json = getObjectMapper().writeValueAsString(gameInputDto);
-		var result = mockMvc.perform(put("/api/game") //
-				.header("Authorization", "Bearer %s".formatted(tokenHost)) //
-				.contentType(MediaType.APPLICATION_JSON)//
-				.content(json))//
-				.andExpect(status().isBadRequest()).andReturn();
+		// Host
+		var token1 = getToken("testuser1", "password1");
+		var result = mockMvc.perform(put("/api/stratego/%d/movement".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token1)) //
+				.contentType(MediaType.APPLICATION_JSON) //
+				.content(json) //
+		).andExpect(status().isBadRequest()).andReturn();
 
 		var resultDto = getObjectMapper().readValue(result.getResponse().getContentAsString(), ErrorResultDTO.class);
-		assertThat(resultDto.getMessage()).contains("joinCode").contains("must not be blank");
+		assertThat(resultDto.getMessage()).contains("Invalid destination square");
+
 	}
 
 	@Test
-	void testLeaveInexistentGame() throws Exception {
-		var token = getToken("testuser1", "password1");
-		var inexistentGameId = 1200;
+	void testAddMovementSuccess() throws Exception {
 
-		var resultLeaveGuest = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(inexistentGameId)) //
-				.header("Authorization", "Bearer %s".formatted(token)))//
-				.andExpect(status().isOk()).andReturn();
+		initializeGame();
+		var movementDto = StrategoMovementDTO.builder() //
+				.rowInitial(3) //
+				.colInitial(9) //
+				.rowFinal(4) //
+				.colFinal(9) //
+				.rank(Rank.SCOUT) //
+				.build();
+		var json = getObjectMapper().writeValueAsString(movementDto);
 
-		assertThat(resultLeaveGuest.getResponse().getContentAsString()).isNullOrEmpty();
+		// Host
+		var token1 = getToken("testuser1", "password1");
+		var resultHost = mockMvc.perform(put("/api/stratego/%d/movement".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token1)) //
+				.contentType(MediaType.APPLICATION_JSON) //
+				.content(json) //
+		).andExpect(status().isOk()).andReturn();
+
+		GameStateDTO gameState = getObjectMapper().readValue(resultHost.getResponse().getContentAsString(),
+				new TypeReference<GameStateDTO>() {
+				});
+		assertThat(gameState).isNotNull();
+		assertThat(gameState.getGameId()).isEqualTo(GAME_ID);
+		assertThat(gameState.getMovement()).isNotNull().satisfies(movement -> {
+			assertThat(movement.getRank()).isEqualTo(movementDto.getRank());
+			assertThat(movement.getRowInitial()).isEqualTo(movementDto.getRowInitial());
+			assertThat(movement.getRowFinal()).isEqualTo(movementDto.getRowFinal());
+			assertThat(movement.getColInitial()).isEqualTo(movementDto.getColInitial());
+			assertThat(movement.getColFinal()).isEqualTo(movementDto.getColFinal());
+		});
+		assertThat(gameState.getPhase()).isEqualTo(GamePhase.PLAYING);
+		assertThat(gameState.getBoard().get(movementDto.getRowFinal()).get(movementDto.getColFinal())).isNotNull()
+				.satisfies(tile -> {
+					assertThat(tile.getRank()).isEqualTo(Rank.SCOUT);
+					assertThat(tile.isHostOwner()).isTrue();
+				});
+		assertThat(gameState.getBoard().get(movementDto.getRowInitial()).get(movementDto.getColInitial())).isNull();
+		assertThat(gameState.isMyTurn()).isFalse();
+
+		// Guest
+		var movementDtoGuest = StrategoMovementDTO.builder() //
+				.rowInitial(6) //
+				.colInitial(9) //
+				.rowFinal(5) //
+				.colFinal(9) //
+				.rank(Rank.GENERAL) //
+				.build();
+		var jsonGuest = getObjectMapper().writeValueAsString(movementDtoGuest);
+
+		var token2 = getToken("testuser2", "password2");
+		var resultGuest = mockMvc.perform(put("/api/stratego/%d/movement".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token2)) //
+				.contentType(MediaType.APPLICATION_JSON) //
+				.content(jsonGuest) //
+		).andExpect(status().isOk()).andReturn();
+
+		GameStateDTO gameStateGuest = getObjectMapper().readValue(resultGuest.getResponse().getContentAsString(),
+				new TypeReference<GameStateDTO>() {
+				});
+		assertThat(gameStateGuest).isNotNull();
+		assertThat(gameStateGuest.getGameId()).isEqualTo(GAME_ID);
+		assertThat(gameStateGuest.getMovement()).isNotNull().satisfies(movement -> {
+			assertThat(movement.getRank()).isEqualTo(movementDtoGuest.getRank());
+			assertThat(movement.getRowInitial()).isEqualTo(movementDtoGuest.getRowInitial());
+			assertThat(movement.getRowFinal()).isEqualTo(movementDtoGuest.getRowFinal());
+			assertThat(movement.getColInitial()).isEqualTo(movementDtoGuest.getColInitial());
+			assertThat(movement.getColFinal()).isEqualTo(movementDtoGuest.getColFinal());
+		});
+		assertThat(gameStateGuest.getPhase()).isEqualTo(GamePhase.PLAYING);
+		assertThat(gameStateGuest.getBoard().get(movementDtoGuest.getRowFinal()).get(movementDtoGuest.getColFinal()))
+				.isNotNull().satisfies(tile -> {
+					assertThat(tile.getRank()).isEqualTo(Rank.GENERAL);
+					assertThat(tile.isHostOwner()).isFalse();
+				});
+		assertThat(
+				gameStateGuest.getBoard().get(movementDtoGuest.getRowInitial()).get(movementDtoGuest.getColInitial()))
+				.isNull();
+		assertThat(gameStateGuest.isMyTurn()).isFalse();
 	}
 
 	@Test
-	void testJoinInexistentGame() throws Exception {
-		var token = getToken("testuser1", "password1");
-		var inexistentGameId = 1200;
+	void testGetStatus() throws Exception {
 
-		mockMvc.perform(post("/api/game/{gameId}/join", Integer.toString(inexistentGameId)) //
-				.header("Authorization", "Bearer %s".formatted(token)))//
-				.andExpect(status().isNotFound());
+		initializeGame();
+		var movementDto = StrategoMovementDTO.builder() //
+				.rowInitial(3) //
+				.colInitial(9) //
+				.rowFinal(4) //
+				.colFinal(9) //
+				.rank(Rank.SCOUT) //
+				.build();
+		var json = getObjectMapper().writeValueAsString(movementDto);
+
+		// Host
+		var token1 = getToken("testuser1", "password1");
+		mockMvc.perform(put("/api/stratego/%d/movement".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token1)) //
+				.contentType(MediaType.APPLICATION_JSON) //
+				.content(json) //
+		).andExpect(status().isOk()).andReturn();
+
+		var resultStatus = mockMvc.perform(get("/api/stratego/%d/status".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token1)) //
+		).andExpect(status().isOk()).andReturn();
+
+		GameStateDTO gameState = getObjectMapper().readValue(resultStatus.getResponse().getContentAsString(),
+				new TypeReference<GameStateDTO>() {
+				});
+		assertThat(gameState).isNotNull();
+		assertThat(gameState.getGameId()).isEqualTo(GAME_ID);
+		assertThat(gameState.getMovement()).isNotNull().satisfies(movement -> {
+			assertThat(movement.getRank()).isEqualTo(movementDto.getRank());
+			assertThat(movement.getRowInitial()).isEqualTo(movementDto.getRowInitial());
+			assertThat(movement.getRowFinal()).isEqualTo(movementDto.getRowFinal());
+			assertThat(movement.getColInitial()).isEqualTo(movementDto.getColInitial());
+			assertThat(movement.getColFinal()).isEqualTo(movementDto.getColFinal());
+		});
+		assertThat(gameState.getPhase()).isEqualTo(GamePhase.PLAYING);
+		assertThat(gameState.getBoard().get(movementDto.getRowFinal()).get(movementDto.getColFinal())).isNotNull()
+				.satisfies(tile -> {
+					assertThat(tile.getRank()).isEqualTo(Rank.SCOUT);
+					assertThat(tile.isHostOwner()).isTrue();
+				});
+		assertThat(gameState.getBoard().get(movementDto.getRowInitial()).get(movementDto.getColInitial())).isNull();
+		assertThat(gameState.isMyTurn()).isFalse();
+
 	}
-	*/
-
 }
