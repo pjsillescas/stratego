@@ -9,6 +9,8 @@ import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,6 +45,7 @@ public class Game {
 	@JoinColumn(name = "guest")
 	private Player guest;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = true)
 	private GamePhase phase;
 }

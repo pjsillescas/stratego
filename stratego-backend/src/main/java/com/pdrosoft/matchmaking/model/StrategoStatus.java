@@ -13,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 
@@ -31,6 +32,7 @@ public class StrategoStatus {
 	@Column(name = "is_guest_turn", nullable = false)
 	private Boolean isGuestTurn;
 
+	@Lob
 	@Column(nullable = false)
 	@Convert(converter = BoardConverter.class)
 	private List<List<BoardTileDTO>> board;

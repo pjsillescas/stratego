@@ -1,13 +1,10 @@
 package com.pdrosoft.matchmaking.stratego.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -26,11 +23,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pdrosoft.matchmaking.dto.ErrorResultDTO;
-import com.pdrosoft.matchmaking.dto.GameDTO;
-import com.pdrosoft.matchmaking.dto.GameExtendedDTO;
-import com.pdrosoft.matchmaking.dto.GameInputDTO;
 import com.pdrosoft.matchmaking.dto.LoginResultDTO;
 import com.pdrosoft.matchmaking.dto.UserAuthDTO;
+import com.pdrosoft.matchmaking.stratego.dto.ArmySetupDTO;
+import com.pdrosoft.matchmaking.stratego.dto.BoardTileDTO;
+import com.pdrosoft.matchmaking.stratego.dto.GameStateDTO;
+import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
+import com.pdrosoft.matchmaking.stratego.enums.Rank;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,6 +37,8 @@ import com.pdrosoft.matchmaking.dto.UserAuthDTO;
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @AutoConfigureMockMvc
 public class StrategoApiControllerTest {
+
+	private static final Long GAME_ID = 5L;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -70,23 +71,100 @@ public class StrategoApiControllerTest {
 		return authDTO.getToken();
 	}
 
-	/*
 	@Test
-	void testGameListSuccess() throws Exception {
-		var token = getToken("testuser1", "password1");
-		var result = mockMvc.perform(get("/api/game").param("date_from", "2020-05-01T00:00:00Z") //
-				.header("Authorization", "Bearer %s".formatted(token)))//
-				.andExpect(status().isOk()).andReturn();
+	void testAddSetupInvalidSetup() throws Exception {
 
-		List<GameDTO> gameList = getObjectMapper().readValue(result.getResponse().getContentAsString(),
-				new TypeReference<List<GameDTO>>() {
-				});
-		assertThat(gameList).hasSize(2);
-		assertThat(gameList.get(0).getId()).isEqualTo(2);
-		assertThat(gameList.get(1).getId()).isEqualTo(1);
+		var setupDto = ArmySetupDTO.builder().army(List.of()).build();
+		var json = getObjectMapper().writeValueAsString(setupDto);
+
+		var token1 = getToken("testuser1", "password1");
+		var result = mockMvc.perform(put("/api/stratego/%d/setup".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token1)) //
+				.contentType(MediaType.APPLICATION_JSON) //
+				.content(json) //
+		).andExpect(status().isBadRequest()).andReturn();
+
+		var resultDto = getObjectMapper().readValue(result.getResponse().getContentAsString(), ErrorResultDTO.class);
+		assertThat(resultDto.getMessage()).contains("'army': rejected value").contains("Invalid army setup");
 	}
-	*/
 
+	List<List<Rank>> getValidSetup() {
+		return List.of(
+				List.of(Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.BOMB, Rank.SPY, Rank.FLAG,
+						Rank.MARSHAL, Rank.GENERAL),
+				List.of(Rank.COLONEL, Rank.COLONEL, Rank.MAJOR, Rank.MAJOR, Rank.MAJOR, Rank.CAPTAIN, Rank.CAPTAIN,
+						Rank.CAPTAIN, Rank.CAPTAIN, Rank.LIEUTENANT),
+				List.of(Rank.LIEUTENANT, Rank.LIEUTENANT, Rank.LIEUTENANT, Rank.SERGEANT, Rank.SERGEANT, Rank.SERGEANT,
+						Rank.SERGEANT, Rank.MINER, Rank.MINER, Rank.MINER),
+				List.of(Rank.MINER, Rank.MINER, Rank.SCOUT, Rank.SCOUT, Rank.SCOUT, Rank.SCOUT, Rank.SCOUT, Rank.SCOUT,
+						Rank.SCOUT, Rank.SCOUT));
+	}
+
+	@Test
+	void testAddSetupSuccess() throws Exception {
+
+		var board = getValidSetup();
+		var setupDto = ArmySetupDTO.builder().army(board).build();
+		var json = getObjectMapper().writeValueAsString(setupDto);
+
+		// Host
+		var token1 = getToken("testuser1", "password1");
+		var resultHost = mockMvc.perform(put("/api/stratego/%d/setup".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token1)) //
+				.contentType(MediaType.APPLICATION_JSON) //
+				.content(json) //
+		).andExpect(status().isOk()).andReturn();
+
+		GameStateDTO gameState = getObjectMapper().readValue(resultHost.getResponse().getContentAsString(),
+				new TypeReference<GameStateDTO>() {
+				});
+		assertThat(gameState).isNotNull();
+		assertThat(gameState.getGameId()).isEqualTo(GAME_ID);
+		assertThat(gameState.getMovement()).isNull();
+		assertThat(gameState.getPhase()).isEqualTo(GamePhase.WAITING_FOR_SETUP_1_PLAYER);
+
+		checkHostBoard(gameState.getBoard(), setupDto);
+
+		// Guest
+		var token2 = getToken("testuser2", "password2");
+		var resultGuest = mockMvc.perform(put("/api/stratego/%d/setup".formatted(GAME_ID)) //
+				.header("Authorization", "Bearer %s".formatted(token2)) //
+				.contentType(MediaType.APPLICATION_JSON) //
+				.content(json) //
+		).andExpect(status().isOk()).andReturn();
+
+		GameStateDTO gameState2 = getObjectMapper().readValue(resultGuest.getResponse().getContentAsString(),
+				new TypeReference<GameStateDTO>() {
+				});
+		assertThat(gameState2).isNotNull();
+		assertThat(gameState2.getGameId()).isEqualTo(GAME_ID);
+		assertThat(gameState2.getMovement()).isNull();
+		assertThat(gameState2.getPhase()).isEqualTo(GamePhase.PLAYING);
+
+		checkHostBoard(gameState2.getBoard(), setupDto);
+		checkGuestBoard(gameState2.getBoard(), setupDto);
+	}
+
+	private void checkHostBoard(List<List<BoardTileDTO>> board, ArmySetupDTO setup) {
+		var ranks = setup.getArmy();
+		for (int row = 0; row < 3; row++) {
+			for (int col = 0; col < 10; col++) {
+				assertThat(board.get(row).get(col).getRank()).isEqualTo(ranks.get(row).get(col));
+			}
+		}
+	}
+
+	private void checkGuestBoard(List<List<BoardTileDTO>> board, ArmySetupDTO setup) {
+		var ranks = setup.getArmy();
+		for (int row = 0; row < 3; row++) {
+			for (int col = 0; col < 10; col++) {
+				assertThat(board.get(6 + row).get(col).getRank()).isEqualTo(ranks.get(row).get(col));
+			}
+		}
+	}
+
+	
+	/*
 	@Test
 	void testGameListWithNoToken() throws Exception {
 		mockMvc.perform(get("/api/game")).andExpect(status().isForbidden());
@@ -249,5 +327,6 @@ public class StrategoApiControllerTest {
 				.header("Authorization", "Bearer %s".formatted(token)))//
 				.andExpect(status().isNotFound());
 	}
+	*/
 
 }

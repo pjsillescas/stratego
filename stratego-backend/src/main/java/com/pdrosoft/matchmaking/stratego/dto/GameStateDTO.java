@@ -6,10 +6,14 @@ import java.util.List;
 import com.pdrosoft.matchmaking.dto.PlayerDTO;
 import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class GameStateDTO implements Serializable {
 
