@@ -12,10 +12,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "stratego_movement")
 public class StrategoMovement {
 
 	@Id
@@ -29,7 +31,7 @@ public class StrategoMovement {
 	@Column(name = "is_guest_turn", nullable = false)
 	private Boolean isGuestTurn;
 
-	@Column(nullable=false)
+	@Column(name = "rank_", nullable=false)
 	@Enumerated(EnumType.STRING)
 	private Rank rank;
 	@Column(name = "row_initial", nullable=false)

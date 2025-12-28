@@ -15,10 +15,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "stratego_status")
 public class StrategoStatus {
 
 	@Id
@@ -37,9 +39,9 @@ public class StrategoStatus {
 	@Convert(converter = BoardConverter.class)
 	private List<List<BoardTileDTO>> board;
 	
-	@Column(nullable = false)
+	@Column(name = "is_host_initialized",nullable = false)
 	private Boolean isHostInitialized;
 
-	@Column(nullable = false)
+	@Column(name = "is_guest_initialized",nullable = false)
 	private Boolean isGuestInitialized;
 }
