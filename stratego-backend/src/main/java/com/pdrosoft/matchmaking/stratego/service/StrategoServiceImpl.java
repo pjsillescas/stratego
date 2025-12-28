@@ -100,13 +100,26 @@ public class StrategoServiceImpl implements StrategoService {
 		return board;
 	}
 
-	private void copySetup(ArmySetupDTO setupDto, List<List<BoardTileDTO>> board, int offset, boolean isHost) {
-		for (int iRow = 3; iRow >= 0; iRow--) {
+	private void copySetupHost(ArmySetupDTO setupDto, List<List<BoardTileDTO>> board) {
+		var offset = 0;
+		for (int iRow = 0; iRow <= 3; iRow++) {
 			var setupRow = setupDto.getArmy().get(iRow);
 			var boardRow = board.get(offset + iRow);
 
 			for (int iCol = 0; iCol < 10; iCol++) {
-				var tile = BoardTileDTO.builder().rank(setupRow.get(iCol)).isHostOwner(isHost).build();
+				var tile = BoardTileDTO.builder().rank(setupRow.get(iCol)).isHostOwner(true).build();
+				boardRow.set(iCol, tile);
+			}
+		}
+	}
+
+	private void copySetupGuest(ArmySetupDTO setupDto, List<List<BoardTileDTO>> board) {
+		for (int iRow = 0; iRow <= 3; iRow++) {
+			var setupRow = setupDto.getArmy().get(iRow);
+			var boardRow = board.get(9 - iRow);
+
+			for (int iCol = 0; iCol < 10; iCol++) {
+				var tile = BoardTileDTO.builder().rank(setupRow.get(iCol)).isHostOwner(false).build();
 				boardRow.set(iCol, tile);
 			}
 		}
@@ -150,10 +163,10 @@ public class StrategoServiceImpl implements StrategoService {
 
 		if (isHost && !status.getIsHostInitialized()) {
 			status.setIsHostInitialized(true);
-			copySetup(setupDto, board, 0, true);
+			copySetupHost(setupDto, board);
 		} else if (isGuest && !status.getIsGuestInitialized()) {
 			status.setIsGuestInitialized(true);
-			copySetup(setupDto, board, 6, false);
+			copySetupGuest(setupDto, board);
 		} else {
 			throw new MatchmakingValidationException("Invalid player setup");
 		}

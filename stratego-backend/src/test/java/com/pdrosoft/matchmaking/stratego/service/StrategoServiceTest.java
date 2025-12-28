@@ -627,7 +627,7 @@ public class StrategoServiceTest {
 		var ranks = setup.getArmy();
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 10; col++) {
-				assertThat(board.get(3 - row).get(col).getRank()).isEqualTo(ranks.get(row).get(col));
+				assertThat(board.get(row).get(col).getRank()).isEqualTo(ranks.get(row).get(col));
 			}
 		}
 	}
