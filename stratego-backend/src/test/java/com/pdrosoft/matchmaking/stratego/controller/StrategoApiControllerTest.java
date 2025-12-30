@@ -2,7 +2,6 @@ package com.pdrosoft.matchmaking.stratego.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,7 +62,7 @@ public class StrategoApiControllerTest {
 		var authData = UserAuthDTO.builder().username(user).password(password).build();
 
 		var json = getObjectMapper().writeValueAsString(authData);
-		var result = mockMvc.perform(post("/api/auth/login")//
+		var result = mockMvc.perform(put("/api/auth/login")//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(json))//
 				.andExpect(status().isOk()).andReturn();

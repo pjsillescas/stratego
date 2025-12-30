@@ -9,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +44,8 @@ public class AuthController {
 		this.matchmakingService = matchmakingService;
 	}
 
-	@PostMapping("/login")
+	@PutMapping("/login")
+	//@PostMapping("/login")
 	public LoginResultDTO login(@Valid @RequestBody UserAuthDTO request, Errors errors) {
 		if (errors.hasErrors()) {
 			throw new MatchmakingValidationException(errors.getFieldErrors().stream().map(FieldError::getDefaultMessage)//

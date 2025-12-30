@@ -1,7 +1,6 @@
 package com.pdrosoft.matchmaking.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -67,7 +66,7 @@ public class AuthControllerTest {
 		var authData = UserAuthDTO.builder().username("testuser1").password("password1").build();
 
 		var json = getObjectWriter().writeValueAsString(authData);
-		var result = mockMvc.perform(post("/api/auth/login")//
+		var result = mockMvc.perform(put("/api/auth/login")//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(json))//
 				.andExpect(status().isOk()).andReturn();
@@ -82,7 +81,7 @@ public class AuthControllerTest {
 		var authData = UserAuthDTO.builder().username(user).password(password).build();
 
 		var json = getObjectWriter().writeValueAsString(authData);
-		var result = mockMvc.perform(post("/api/auth/login")//
+		var result = mockMvc.perform(put("/api/auth/login")//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(json))//
 				.andExpect(status().isForbidden()).andReturn();
@@ -96,7 +95,7 @@ public class AuthControllerTest {
 	void testLoginWithMissingData(String username, String password, String message) throws Exception {
 		var authData = UserAuthDTO.builder().username(username).password(password).build();
 		var json = getObjectWriter().writeValueAsString(authData);
-		var result = mockMvc.perform(post("/api/auth/login")//
+		var result = mockMvc.perform(put("/api/auth/login")//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(json))//
 				.andExpect(status().isBadRequest()).andReturn();
@@ -113,7 +112,7 @@ public class AuthControllerTest {
 
 		var json = getObjectWriter().writeValueAsString(authData);
 		
-		var resultLogin1 = mockMvc.perform(post("/api/auth/login")//
+		var resultLogin1 = mockMvc.perform(put("/api/auth/login")//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(json))//
 				.andExpect(status().isForbidden()).andReturn();
@@ -132,7 +131,7 @@ public class AuthControllerTest {
 		assertThat(playerDTO.getId()).isEqualTo(4);
 		assertThat(playerDTO.getUsername()).isEqualTo("user5");
 
-		var resultLogin = mockMvc.perform(post("/api/auth/login")//
+		var resultLogin = mockMvc.perform(put("/api/auth/login")//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(json))//
 				.andExpect(status().isOk()).andReturn();

@@ -2,7 +2,6 @@ package com.pdrosoft.matchmaking.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -60,7 +59,7 @@ public class GameControllerTest {
 		var authData = UserAuthDTO.builder().username(user).password(password).build();
 
 		var json = getObjectMapper().writeValueAsString(authData);
-		var result = mockMvc.perform(post("/api/auth/login")//
+		var result = mockMvc.perform(put("/api/auth/login")//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(json))//
 				.andExpect(status().isOk()).andReturn();
@@ -127,7 +126,7 @@ public class GameControllerTest {
 		assertThat(game.getHost().getUsername()).isEqualTo("testuser1");
 		assertThat(game.getGuest()).isNull();
 
-		var resultJoin = mockMvc.perform(post("/api/game/{gameId}/join", Integer.toString(newGameId)) //
+		var resultJoin = mockMvc.perform(put("/api/game/{gameId}/join", Integer.toString(newGameId)) //
 				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
 				.andExpect(status().isOk()).andReturn();
 
@@ -140,7 +139,7 @@ public class GameControllerTest {
 		assertThat(gameJoined.getHost().getUsername()).isEqualTo("testuser1");
 		assertThat(gameJoined.getGuest().getUsername()).isEqualTo("testuser2");
 
-		var resultLeaveGuest = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
+		var resultLeaveGuest = mockMvc.perform(put("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
 				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
 				.andExpect(status().isOk()).andReturn();
 
@@ -151,7 +150,7 @@ public class GameControllerTest {
 		assertThat(gameLeft.getHost().getUsername()).isEqualTo("testuser1");
 		assertThat(gameLeft.getGuest()).isNull();
 
-		var resultLeaveHost = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
+		var resultLeaveHost = mockMvc.perform(put("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
 				.header("Authorization", "Bearer %s".formatted(tokenHost)))//
 				.andExpect(status().isOk()).andReturn();
 
@@ -182,7 +181,7 @@ public class GameControllerTest {
 		assertThat(game.getHost().getUsername()).isEqualTo("testuser1");
 		assertThat(game.getGuest()).isNull();
 
-		var resultJoin = mockMvc.perform(post("/api/game/{gameId}/join", Integer.toString(newGameId)) //
+		var resultJoin = mockMvc.perform(put("/api/game/{gameId}/join", Integer.toString(newGameId)) //
 				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
 				.andExpect(status().isOk()).andReturn();
 
@@ -195,13 +194,13 @@ public class GameControllerTest {
 		assertThat(gameJoined.getHost().getUsername()).isEqualTo("testuser1");
 		assertThat(gameJoined.getGuest().getUsername()).isEqualTo("testuser2");
 
-		var resultLeaveHost = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
+		var resultLeaveHost = mockMvc.perform(put("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
 				.header("Authorization", "Bearer %s".formatted(tokenHost)))//
 				.andExpect(status().isOk()).andReturn();
 
 		assertThat(resultLeaveHost.getResponse().getContentAsString()).isNullOrEmpty();
 
-		var resultLeaveGuest = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
+		var resultLeaveGuest = mockMvc.perform(put("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
 				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
 				.andExpect(status().isOk()).andReturn();
 
@@ -231,7 +230,7 @@ public class GameControllerTest {
 		var token = getToken("testuser1", "password1");
 		var inexistentGameId = 1200;
 
-		var resultLeaveGuest = mockMvc.perform(post("/api/game/{gameId}/leave", Integer.toString(inexistentGameId)) //
+		var resultLeaveGuest = mockMvc.perform(put("/api/game/{gameId}/leave", Integer.toString(inexistentGameId)) //
 				.header("Authorization", "Bearer %s".formatted(token)))//
 				.andExpect(status().isOk()).andReturn();
 
@@ -243,7 +242,7 @@ public class GameControllerTest {
 		var token = getToken("testuser1", "password1");
 		var inexistentGameId = 1200;
 
-		mockMvc.perform(post("/api/game/{gameId}/join", Integer.toString(inexistentGameId)) //
+		mockMvc.perform(put("/api/game/{gameId}/join", Integer.toString(inexistentGameId)) //
 				.header("Authorization", "Bearer %s".formatted(token)))//
 				.andExpect(status().isNotFound());
 	}
