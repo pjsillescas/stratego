@@ -6,26 +6,17 @@ using UnityEngine.Networking;
 
 public class BackendService: MonoBehaviour
 {
-	private static string URL = "http://127.0.0.1:8080/api";
-
-	private static BackendService instance;
-
-	private void Start()
-	{
-		if (instance != null)
-		{
-			Debug.Log("there is more than one backend service");
-		}
-		
-		instance = this;
-	}
+	//private const string URL = "http://127.0.0.1:8080/api";
+	private const string URL = "http://192.168.1.13:8080/api";
+	//private const string URL = "http://localhost:8080/api";
 
 	public IEnumerator Login(string username, string password, Action<string> onLoggedIn)
 	{
 		string body = JsonUtility.ToJson(new LoginDTO(username, password));
-
-		using UnityWebRequest request = UnityWebRequest.Put(URL + "/login", body);
-		request.SetRequestHeader("Accept", "application/json");
+		
+		using UnityWebRequest request = UnityWebRequest.Put(URL + "/auth/login", body);
+		//request.SetRequestHeader("Accept", "application/json");
+		request.SetRequestHeader("Content-Type", "application/json");
 		yield return request.SendWebRequest();
 
 		if (request.result == UnityWebRequest.Result.Success)
@@ -39,7 +30,6 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
-
 			Debug.LogError("Failed to load JSON: " + request.error);
 		}
 	}
@@ -48,8 +38,13 @@ public class BackendService: MonoBehaviour
 	{
 		string body = JsonUtility.ToJson(new LoginDTO(username, password));
 
-		using UnityWebRequest request = UnityWebRequest.Put(URL + "/signup", body);
-		request.SetRequestHeader("Accept", "application/json");
+		Debug.Log($"body {body}");
+		var url = URL + "/auth/signup";
+		Debug.Log($"url: {url}");
+
+		using UnityWebRequest request = UnityWebRequest.Put(URL + "/auth/signup", body);
+		//request.SetRequestHeader("Accept", "application/json");
+		request.SetRequestHeader("Content-Type", "application/json");
 		yield return request.SendWebRequest();
 
 		if (request.result == UnityWebRequest.Result.Success)
@@ -108,7 +103,8 @@ public class BackendService: MonoBehaviour
 	{
 		var data = JsonUtility.ToJson(new GameInputDTO(GetJoinCode()));
 		using UnityWebRequest request = UnityWebRequest.Put(URL + "/game", data);
-		request.SetRequestHeader("Accept", "application/json");
+		//request.SetRequestHeader("Accept", "application/json");
+		request.SetRequestHeader("Content-Type", "application/json");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
 		yield return request.SendWebRequest();
 
@@ -129,8 +125,8 @@ public class BackendService: MonoBehaviour
 
 	public IEnumerator JoinGame(int gameId, string token, Action<GameExtendedDTO> onJoinedGame)
 	{
-		var data = JsonUtility.ToJson(new GameInputDTO(GetJoinCode()));
-		using UnityWebRequest request = UnityWebRequest.Post(URL + $"/game/{gameId}/join", new WWWForm());
+		//var data = JsonUtility.ToJson(new GameInputDTO(GetJoinCode()));
+		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/game/{gameId}/join", "");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
 		yield return request.SendWebRequest();
 
@@ -151,8 +147,7 @@ public class BackendService: MonoBehaviour
 
 	public IEnumerator LeaveGame(int gameId, string token, Action<GameDTO> onLeftGame)
 	{
-		var data = JsonUtility.ToJson(new GameInputDTO(GetJoinCode()));
-		using UnityWebRequest request = UnityWebRequest.Post(URL + $"/game/{gameId}/leave", new WWWForm());
+		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/game/{gameId}/leave", "");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
 		yield return request.SendWebRequest();
 
@@ -175,7 +170,8 @@ public class BackendService: MonoBehaviour
 	{
 		var data = JsonUtility.ToJson(new ArmySetupDTO(setup));
 		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/{gameId}/setup", data);
-		request.SetRequestHeader("Accept", "application/json");
+		//request.SetRequestHeader("Accept", "application/json");
+		request.SetRequestHeader("Content-Type", "application/json");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
 		yield return request.SendWebRequest();
 
@@ -198,7 +194,8 @@ public class BackendService: MonoBehaviour
 	{
 		var data = JsonUtility.ToJson(movement);
 		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/{gameId}/setup", data);
-		request.SetRequestHeader("Accept", "application/json");
+		//request.SetRequestHeader("Accept", "application/json");
+		request.SetRequestHeader("Content-Type", "application/json");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
 		yield return request.SendWebRequest();
 
