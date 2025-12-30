@@ -15,15 +15,35 @@ public class LoginWidget : MonoBehaviour
 	private TMP_InputField PasswordInput;
 
 	[SerializeField]
+	private TextMeshProUGUI ErrorText;
+
+	[SerializeField]
 	private Button LoginButton;
 	[SerializeField]
 	private Button SignupButton;
 
+	[SerializeField]
+	private GameListWidget GameListWidget;
+
 	private BackendService backendService;
+
+	private void OnError(StrategoErrorDTO errorDto)
+	{
+		ErrorText.enabled = true;
+
+		ErrorText.text = errorDto.message;
+	}
+
+	private void DisableError()
+	{
+		ErrorText.enabled = false;
+	}
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
+		PlayerPrefsManager.Reset();
+		DisableError();
 		SignupButton.onClick.AddListener(ButtonSignupClick);
 		LoginButton.onClick.AddListener(ButtonLoginClick);
 
@@ -33,24 +53,29 @@ public class LoginWidget : MonoBehaviour
 	private void ButtonSignupClick()
 	{
 		Debug.Log("signup click");
-		StartCoroutine(backendService.Signup(UsernameInput.text, PasswordInput.text, OnSignedUp));
+		StartCoroutine(backendService.Signup(UsernameInput.text, PasswordInput.text, OnSignedUp, OnError));
 	}
 
 	private void ButtonLoginClick()
 	{
 		Debug.Log("login click");
-		StartCoroutine(backendService.Login(UsernameInput.text, PasswordInput.text, OnLoggedIn));
+		StartCoroutine(backendService.Login(UsernameInput.text, PasswordInput.text, OnLoggedIn, OnError));
 	}
 
 	private void OnSignedUp(PlayerDTO player)
 	{
 		Debug.Log("onsignedup");
+		DisableError();
 		ButtonLoginClick();
 	}
 
 	private void OnLoggedIn(string token)
 	{
+		DisableError();
+		PlayerPrefsManager.SetToken(token);
 		Debug.Log($"token: {token}");
+		GameListWidget.gameObject.SetActive(true);
+		gameObject.SetActive(false);
 	}
 
 	// Update is called once per frame

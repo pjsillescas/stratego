@@ -6,11 +6,10 @@ using UnityEngine.Networking;
 
 public class BackendService: MonoBehaviour
 {
-	//private const string URL = "http://127.0.0.1:8080/api";
-	private const string URL = "http://192.168.1.13:8080/api";
-	//private const string URL = "http://localhost:8080/api";
+	//private const string URL = "http://192.168.1.13:8080/api";
+	private const string URL = "http://192.168.1.12:8080/api";
 
-	public IEnumerator Login(string username, string password, Action<string> onLoggedIn)
+	public IEnumerator Login(string username, string password, Action<string> onLoggedIn, Action<StrategoErrorDTO> onError)
 	{
 		string body = JsonUtility.ToJson(new LoginDTO(username, password));
 		
@@ -30,11 +29,16 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("Failed to load JSON: " + request.error);
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to login: " + request.error);
+			
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
 		}
 	}
 
-	public IEnumerator Signup(string username, string password, Action<PlayerDTO> onSignedUp)
+	public IEnumerator Signup(string username, string password, Action<PlayerDTO> onSignedUp, Action<StrategoErrorDTO> onError)
 	{
 		string body = JsonUtility.ToJson(new LoginDTO(username, password));
 
@@ -58,12 +62,16 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
+			string json = request.downloadHandler.text;
 
-			Debug.LogError("Failed to load JSON: " + request.error);
+			Debug.LogError("Failed to sign up: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
 		}
 	}
 
-	public IEnumerator GetGameList(string token, Action<List<GameDTO>> onGamesGot)
+	public IEnumerator GetGameList(string token, Action<List<GameDTO>> onGamesGot, Action<StrategoErrorDTO> onError)
 	{
 		using UnityWebRequest request = UnityWebRequest.Get(URL + "/game");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
@@ -80,8 +88,12 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
+			string json = request.downloadHandler.text;
 
-			Debug.LogError("Failed to load JSON: " + request.error);
+			Debug.LogError("Failed to get game list: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
 		}
 	}
 
@@ -99,7 +111,7 @@ public class BackendService: MonoBehaviour
 		return myString;
 	}
 
-	public IEnumerator CreateGame(string token, Action<GameDTO> onLoggedIn)
+	public IEnumerator CreateGame(string token, Action<GameDTO> onLoggedIn, Action<StrategoErrorDTO> onError)
 	{
 		var data = JsonUtility.ToJson(new GameInputDTO(GetJoinCode()));
 		using UnityWebRequest request = UnityWebRequest.Put(URL + "/game", data);
@@ -119,11 +131,16 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("Failed to load JSON: " + request.error);
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to create game: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
 		}
 	}
 
-	public IEnumerator JoinGame(int gameId, string token, Action<GameExtendedDTO> onJoinedGame)
+	public IEnumerator JoinGame(int gameId, string token, Action<GameExtendedDTO> onJoinedGame, Action<StrategoErrorDTO> onError)
 	{
 		//var data = JsonUtility.ToJson(new GameInputDTO(GetJoinCode()));
 		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/game/{gameId}/join", "");
@@ -141,11 +158,16 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("Failed to load JSON: " + request.error);
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to join game: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
 		}
 	}
 
-	public IEnumerator LeaveGame(int gameId, string token, Action<GameDTO> onLeftGame)
+	public IEnumerator LeaveGame(int gameId, string token, Action<GameDTO> onLeftGame, Action<StrategoErrorDTO> onError)
 	{
 		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/game/{gameId}/leave", "");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
@@ -162,11 +184,16 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("Failed to load JSON: " + request.error);
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to leave game: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
 		}
 	}
 
-	public IEnumerator AddSetup(int gameId, string token, List<List<Rank>> setup, Action<GameStateDTO> onSetupAdded)
+	public IEnumerator AddSetup(int gameId, string token, List<List<Rank>> setup, Action<GameStateDTO> onSetupAdded, Action<StrategoErrorDTO> onError)
 	{
 		var data = JsonUtility.ToJson(new ArmySetupDTO(setup));
 		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/{gameId}/setup", data);
@@ -186,11 +213,16 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("Failed to load JSON: " + request.error);
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to add setup: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
 		}
 	}
 
-	public IEnumerator AddMovement(int gameId, string token, StrategoMovementDTO movement, Action<GameStateDTO> onMovementAdded)
+	public IEnumerator AddMovement(int gameId, string token, StrategoMovementDTO movement, Action<GameStateDTO> onMovementAdded, Action<StrategoErrorDTO> onError)
 	{
 		var data = JsonUtility.ToJson(movement);
 		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/{gameId}/setup", data);
@@ -210,11 +242,16 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("Failed to load JSON: " + request.error);
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to add movement: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
 		}
 	}
 
-	public IEnumerator GetStatus(int gameId, string token, Action<GameStateDTO> onStatusGot)
+	public IEnumerator GetStatus(int gameId, string token, Action<GameStateDTO> onStatusGot, Action<StrategoErrorDTO> onError)
 	{
 		using UnityWebRequest request = UnityWebRequest.Get(URL + $"/stratego/{gameId}/status");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
@@ -231,7 +268,12 @@ public class BackendService: MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("Failed to load JSON: " + request.error);
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to get status: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
 		}
 	}
 }
