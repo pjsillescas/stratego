@@ -150,7 +150,7 @@ public class StrategoServiceImpl implements StrategoService {
 
 		var setupPhases = List.of(GamePhase.WAITING_FOR_SETUP_1_PLAYER, GamePhase.WAITING_FOR_SETUP_2_PLAYERS);
 
-		if (!setupPhases.contains(game.getPhase())) {
+		if (game.getPhase() != null && !setupPhases.contains(game.getPhase())) {
 			throw new MatchmakingValidationException("Game not in setup state");
 		}
 
@@ -175,7 +175,7 @@ public class StrategoServiceImpl implements StrategoService {
 
 		if (GamePhase.WAITING_FOR_SETUP_1_PLAYER.equals(game.getPhase())) {
 			game.setPhase(GamePhase.PLAYING);
-		} else if (GamePhase.WAITING_FOR_SETUP_2_PLAYERS.equals(game.getPhase())) {
+		} else { // if (GamePhase.WAITING_FOR_SETUP_2_PLAYERS.equals(game.getPhase())) {
 			game.setPhase(GamePhase.WAITING_FOR_SETUP_1_PLAYER);
 		}
 		gameRepository.save(game);
