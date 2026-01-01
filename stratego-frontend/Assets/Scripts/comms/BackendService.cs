@@ -7,8 +7,8 @@ using UnityEngine.Networking;
 
 public class BackendService: MonoBehaviour
 {
-	private const string URL = "http://192.168.1.13:8080/api";
-	//private const string URL = "http://192.168.1.12:8080/api";
+	//private const string URL = "http://192.168.1.13:8080/api";
+	private const string URL = "http://192.168.1.12:8080/api";
 
 	public IEnumerator Login(string username, string password, Action<string> onLoggedIn, Action<StrategoErrorDTO> onError)
 	{
@@ -82,7 +82,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Logged in. Received: " + json);
+			Debug.Log("Game list received: " + json);
 
 			var gameList = JsonUtility.FromJson<GameListDTO>("{\"games\":" + json + "}");
 			onGamesGot?.Invoke(gameList.games);
@@ -112,7 +112,7 @@ public class BackendService: MonoBehaviour
 		return myString;
 	}
 
-	public IEnumerator CreateGame(string token, Action<GameDTO> onLoggedIn, Action<StrategoErrorDTO> onError)
+	public IEnumerator CreateGame(string token, Action<GameDTO> onGameCreated, Action<StrategoErrorDTO> onError)
 	{
 		var data = JsonUtility.ToJson(new GameInputDTO(GetJoinCode()));
 		using UnityWebRequest request = UnityWebRequest.Put(URL + "/game", data);
@@ -128,7 +128,7 @@ public class BackendService: MonoBehaviour
 			Debug.Log("Logged in. Received: " + json);
 
 			var gameDto = JsonUtility.FromJson<GameDTO>(json);
-			onLoggedIn?.Invoke(gameDto);
+			onGameCreated?.Invoke(gameDto);
 		}
 		else
 		{
@@ -152,7 +152,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Logged in. Received: " + json);
+			Debug.Log("Game joined. Received: " + json);
 
 			var gameExtendedDto = JsonUtility.FromJson<GameExtendedDTO>(json);
 			onJoinedGame?.Invoke(gameExtendedDto);
@@ -178,7 +178,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Logged in. Received: " + json);
+			Debug.Log("Game left. Received: " + json);
 
 			var gameDto = JsonUtility.FromJson<GameDTO>(json);
 			onLeftGame?.Invoke(gameDto);
@@ -209,7 +209,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Logged in. Received: " + json);
+			Debug.Log("Setup sent. Received: " + json);
 
 			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
 			var gameStateDto = JsonConvert.DeserializeObject<GameStateDTO>(json);
@@ -239,7 +239,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Logged in. Received: " + json);
+			Debug.Log("Movement sent. Received: " + json);
 
 			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
 			var gameStateDto = JsonConvert.DeserializeObject<GameStateDTO>(json);
@@ -266,7 +266,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Logged in. Received: " + json);
+			Debug.Log("Got game status. Received: " + json);
 
 			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
 			var gameStateDto = JsonConvert.DeserializeObject<GameStateDTO>(json);

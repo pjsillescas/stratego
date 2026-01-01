@@ -28,7 +28,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler
 			
 			previousToolUnitItem = toolUnitItem;
 			rank = unitImage.GetRank();
-			Debug.Log($"ondrop setupposition {rank}");
+			//Debug.Log($"ondrop setupposition {rank}");
 			ShowImage();
 			NameText.text = unitImage.GetName();
 		}

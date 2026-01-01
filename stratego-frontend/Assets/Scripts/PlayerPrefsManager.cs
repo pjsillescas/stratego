@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerPrefsManager
 {
@@ -8,6 +9,7 @@ public class PlayerPrefsManager
 
 	public static void Reset()
 	{
+		Debug.Log($"Reset playerprefs");
 		PlayerPrefs.DeleteAll();
 	}
 
@@ -23,15 +25,18 @@ public class PlayerPrefsManager
 
 	public static void SetGameId(int gameId)
 	{
+		Debug.Log($"set game id {gameId}");
 		PlayerPrefs.SetInt(GAME_ID_KEY, gameId);
 	}
 	public static int GetGameId()
 	{
+		var gid = PlayerPrefs.GetInt(GAME_ID_KEY);
+		Debug.Log($"get gameid {gid}");
 		return PlayerPrefs.GetInt(GAME_ID_KEY);
 	}
 	public static void SetIsHost(bool isHost)
 	{
-		PlayerPrefs.SetInt(GAME_ID_KEY, isHost ? 1 : 0);
+		PlayerPrefs.SetInt(IS_HOST_KEY, isHost ? 1 : 0);
 	}
 	public static bool GetIsHost()
 	{
