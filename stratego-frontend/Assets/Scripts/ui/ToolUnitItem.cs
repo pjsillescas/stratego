@@ -1,8 +1,11 @@
+using System;
 using TMPro;
 using UnityEngine;
 
 public class ToolUnitItem : MonoBehaviour
 {
+	public static event EventHandler OnNumItemsChanged;
+	
 	[SerializeField]
 	private TextMeshProUGUI NumUnitsText;
 
@@ -37,6 +40,7 @@ public class ToolUnitItem : MonoBehaviour
 
 		NumUnits--;
 		NumUnitsText.text = NumUnits.ToString();
+		OnNumItemsChanged?.Invoke(this, EventArgs.Empty);
 		return true;
 	}
 

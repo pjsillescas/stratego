@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,8 +7,8 @@ using UnityEngine.Networking;
 
 public class BackendService: MonoBehaviour
 {
-	//private const string URL = "http://192.168.1.13:8080/api";
-	private const string URL = "http://192.168.1.12:8080/api";
+	private const string URL = "http://192.168.1.13:8080/api";
+	//private const string URL = "http://192.168.1.12:8080/api";
 
 	public IEnumerator Login(string username, string password, Action<string> onLoggedIn, Action<StrategoErrorDTO> onError)
 	{
@@ -195,7 +196,9 @@ public class BackendService: MonoBehaviour
 
 	public IEnumerator AddSetup(int gameId, string token, List<List<Rank>> setup, Action<GameStateDTO> onSetupAdded, Action<StrategoErrorDTO> onError)
 	{
-		var data = JsonUtility.ToJson(new ArmySetupDTO(setup));
+		//var data = JsonUtility.ToJson(new ArmySetupDTO(setup));
+		var data = JsonConvert.SerializeObject(new ArmySetupDTO(setup));
+		Debug.Log(data);
 		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/{gameId}/setup", data);
 		//request.SetRequestHeader("Accept", "application/json");
 		request.SetRequestHeader("Content-Type", "application/json");
@@ -208,7 +211,8 @@ public class BackendService: MonoBehaviour
 
 			Debug.Log("Logged in. Received: " + json);
 
-			var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
+			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
+			var gameStateDto = JsonConvert.DeserializeObject<GameStateDTO>(json);
 			onSetupAdded?.Invoke(gameStateDto);
 		}
 		else
@@ -237,7 +241,8 @@ public class BackendService: MonoBehaviour
 
 			Debug.Log("Logged in. Received: " + json);
 
-			var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
+			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
+			var gameStateDto = JsonConvert.DeserializeObject<GameStateDTO>(json);
 			onMovementAdded?.Invoke(gameStateDto);
 		}
 		else
@@ -263,7 +268,8 @@ public class BackendService: MonoBehaviour
 
 			Debug.Log("Logged in. Received: " + json);
 
-			var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
+			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
+			var gameStateDto = JsonConvert.DeserializeObject<GameStateDTO>(json);
 			onStatusGot?.Invoke(gameStateDto);
 		}
 		else

@@ -6,4 +6,6 @@ public class SetupRow : MonoBehaviour
 {
 	[SerializeField]
 	private List<UnitSetupPosition> positions;
+
+	public List<UnitSetupPosition> GetPositions() => positions;
 }

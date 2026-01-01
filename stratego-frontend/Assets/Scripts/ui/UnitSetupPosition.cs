@@ -13,6 +13,8 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler
 	private ToolUnitItem previousToolUnitItem;
 	private Rank rank;
 
+	public Rank GetRank() => rank;
+
 	public void OnDrop(PointerEventData eventData)
 	{
 		var unitImage = eventData.pointerDrag.GetComponent<UnitImage>();
@@ -21,12 +23,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler
 		{
 			if (previousToolUnitItem != null)
 			{
-				Debug.Log("increment previous");
 				previousToolUnitItem.IncrementNumUnits();
-			}
-			else
-			{
-				Debug.Log("previous null");
 			}
 			
 			previousToolUnitItem = toolUnitItem;
@@ -34,7 +31,6 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler
 			Debug.Log($"ondrop setupposition {rank}");
 			ShowImage();
 			NameText.text = unitImage.GetName();
-			//eventData.pointerDrag.transform.position = transform.position;
 		}
 	}
 
