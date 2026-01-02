@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -11,24 +12,27 @@ public class ArmySetupWidget : MonoBehaviour
 	private List<SetupRow> Setup;
 
 	[SerializeField]
-	private GameObject GameWidget;
-
-	[SerializeField]
 	private List<ToolUnitItem> ToolUnitItems;
 
 	[SerializeField]
 	private Button UseSetupButton;
 
-	BackendService backendService;
+	private BackendService backendService;
+	private Action<GameStateDTO> onGameStart;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		backendService = FindFirstObjectByType<BackendService>();
+	}
+
+	public void Initialize(BackendService backendService, Action<GameStateDTO> onGameStart)
+	{
+		gameObject.SetActive(true);
+		this.backendService = backendService;
 		UseSetupButton.enabled = false;
 		UseSetupButton.onClick.AddListener(UseSetupButtonClick);
-		GameWidget.SetActive(false);
 		ToolUnitItem.OnNumItemsChanged += ToolUnitItem_OnNumItemsChanged;
+		this.onGameStart = onGameStart;
 	}
 
 	private void ToolUnitItem_OnNumItemsChanged(object sender, System.EventArgs e)
@@ -56,8 +60,8 @@ public class ArmySetupWidget : MonoBehaviour
 
 	private void OnSetupAdded(GameStateDTO gameStateDto)
 	{
-		GameWidget.SetActive(true);
-		;
+		onGameStart?.Invoke(gameStateDto);
+		gameObject.SetActive(false);
 	}
 
 	private void OnError(StrategoErrorDTO error)
