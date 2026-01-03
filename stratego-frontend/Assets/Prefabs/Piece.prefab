@@ -127,6 +127,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Piece
   TextName: {fileID: 7458979357091951371}
+  NormalMaterialHost: {fileID: 2100000, guid: 6990828f67cc0494faf36eb9c1e890c7, type: 2}
+  HighlightMaterialHost: {fileID: 2100000, guid: 48fd639d1d50f8247b6e2936adc7a639, type: 2}
+  SelectedMaterialHost: {fileID: 2100000, guid: 7dac857378df9c1459ff4a9a0ce2d2fc, type: 2}
+  NormalMaterialGuest: {fileID: 2100000, guid: 75ea081761ee3ed4c9e035ca8eab7510, type: 2}
+  HighlightMaterialGuest: {fileID: 2100000, guid: 8866ac7b70ea87048aa2a03f4d2d2011, type: 2}
+  SelectedMaterialGuest: {fileID: 2100000, guid: 99cea595a2c523e40800bbc23af5f012, type: 2}
 --- !u!1 &1500352893307771481
 GameObject:
   m_ObjectHideFlags: 0

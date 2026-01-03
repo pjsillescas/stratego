@@ -104,3 +104,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5506d3e805e20fa43b83f796036dc14b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tile
+  NormalMaterial: {fileID: 2100000, guid: 408dbdbcd02d98542bc3026a67ead1fe, type: 2}
+  HighlightMaterial: {fileID: 2100000, guid: fbbb502ceece1de4d811f640242c0d80, type: 2}
+  SelectedMaterial: {fileID: 2100000, guid: 2ce29e3e582b68841bb79a1046fd03cf, type: 2}

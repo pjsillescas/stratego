@@ -40,6 +40,7 @@ public class InputManager : MonoBehaviour
 	{
 		mainCamera = Camera.main;
 		isHost = PlayerPrefsManager.GetIsHost();
+		isHost = true;
 
 		highlightedPiece = null;
 		selectedPiece = null;
@@ -70,29 +71,7 @@ public class InputManager : MonoBehaviour
 
 	private void ProcessSelection(Ray ray)
 	{
-		if (selectedPiece == null)
-		{
-			var result = Physics.Raycast(ray, out RaycastHit hitInfo, MAX_DISTANCE, PieceLayer);
-
-			if (result && hitInfo.collider.gameObject.TryGetComponent(out Piece piece))
-			{
-				if (selectedPiece != null && !piece.Equals(selectedPiece))
-				{
-					selectedPiece.Darken();
-				}
-				selectedPiece = piece;
-				selectedPiece.Select();
-			}
-			else
-			{
-				if (selectedPiece != null)
-				{
-					selectedPiece.Darken();
-					selectedPiece = null;
-				}
-			}
-		}
-		else
+		if (selectedPiece != null)
 		{
 			var result = Physics.Raycast(ray, out RaycastHit hitInfo, MAX_DISTANCE, TileLayer);
 
@@ -109,30 +88,45 @@ public class InputManager : MonoBehaviour
 			{
 				if (selectedTile != null)
 				{
-					selectedTile.Darken();
+					selectedTile.Deselect();
 					selectedTile = null;
 				}
 			}
 		}
+		ProcessSelectedPiece(ray);
+	}
+
+	private void ProcessSelectedPiece(Ray ray)
+	{
+		var resultPiece = Physics.Raycast(ray, out RaycastHit hitInfoPiece, MAX_DISTANCE, PieceLayer);
+
+		if (resultPiece && hitInfoPiece.collider.gameObject.TryGetComponent(out Piece piece))
+		{
+			if (selectedPiece != null && !piece.Equals(selectedPiece))
+			{
+				selectedPiece.Deselect();
+			}
+			selectedPiece = piece;
+			selectedPiece.Select();
+		}
+		else
+		{
+			if (selectedPiece != null)
+			{
+				selectedPiece.Deselect();
+				selectedPiece = null;
+			}
+		}
+	}
+
+	private bool IsValidPiece(Piece piece)
+	{
+		return piece.IsHost() == isHost;
 	}
 
 	private void ProcessHighlight(Ray ray)
 	{
-		if (selectedPiece == null)
-		{
-			var result = Physics.Raycast(ray, out RaycastHit hitInfo, MAX_DISTANCE, PieceLayer);
-
-			if (result && hitInfo.collider.gameObject.TryGetComponent(out Piece piece))
-			{
-				if (highlightedPiece != null && !piece.Equals(highlightedPiece))
-				{
-					highlightedPiece.Darken();
-				}
-				highlightedPiece = piece;
-				highlightedPiece.Highlight();
-			}
-		}
-		else
+		if (selectedPiece != null)
 		{
 			var result = Physics.Raycast(ray, out RaycastHit hitInfo, MAX_DISTANCE, TileLayer);
 
@@ -145,7 +139,24 @@ public class InputManager : MonoBehaviour
 				highlightedTile = tile;
 				highlightedTile.Highlight();
 			}
-			;
 		}
+
+		ProcessHighlightedPiece(ray);
+	}
+
+	private void ProcessHighlightedPiece(Ray ray)
+	{
+		var result = Physics.Raycast(ray, out RaycastHit hitInfo, MAX_DISTANCE, PieceLayer);
+
+		if (result && hitInfo.collider.gameObject.TryGetComponent(out Piece piece) && IsValidPiece(piece))
+		{
+			if (highlightedPiece != null && !piece.Equals(highlightedPiece))
+			{
+				highlightedPiece.Darken();
+			}
+			highlightedPiece = piece;
+			highlightedPiece.Highlight();
+		}
+
 	}
 }
