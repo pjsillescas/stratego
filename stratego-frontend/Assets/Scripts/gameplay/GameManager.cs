@@ -168,8 +168,17 @@ public class GameManager : MonoBehaviour
 
 	private void OnGameStarted(GameStateDTO gameStateDto)
 	{
+		var isHost = PlayerPrefsManager.GetIsHost();
+		//var isHost = true;
+		var board = gameStateDto.board;
+		if (!isHost)
+		{
+			board = new(board);
+			board.Reverse();
+		}
+
 		int irow = -1;
-		foreach(var row in gameStateDto.board)
+		foreach(var row in board)
 		{
 			irow++;
 			int icol = -1;
