@@ -175,6 +175,7 @@ public class GameManager : MonoBehaviour
 		{
 			board = new(board);
 			board.Reverse();
+			board.ForEach(row => row.Reverse());
 		}
 
 		int irow = -1;

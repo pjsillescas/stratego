@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7537390147666511025}
   - component: {fileID: 4043362486402827839}
   - component: {fileID: 400346294798768217}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Piece
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 2032785514479604739}
   - component: {fileID: 4166342828013142987}
   - component: {fileID: 7458979357091951371}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: NameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -317,7 +317,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7364566361132463001}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TextTransform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
