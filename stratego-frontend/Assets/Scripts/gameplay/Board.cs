@@ -24,6 +24,7 @@ public class Board : MonoBehaviour
 				var position = GetWorldPosition(row, col) + new Vector3(0, 0.001f, 0);
 				var rotation = Quaternion.Euler(90, 0, 0);
 				Tiles[row, col] = Instantiate(TilePrefab, position, rotation).GetComponent<Tile>();
+				Tiles[row, col].Initialize(row, col);
 			}
 		}
 	}
@@ -34,6 +35,11 @@ public class Board : MonoBehaviour
 		float x = col * TileHeight - ((NUM_COLUMNS - 1) * TileHeight / 2);
 		return new Vector3(x, 0, z);
 
+	}
+
+	public Tile GetTile(int row, int col)
+	{
+		return Tiles[row, col];
 	}
 
 	// Update is called once per frame

@@ -5,17 +5,12 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer))]
 public class Piece : MonoBehaviour
 {
-	private readonly Color HOSTCOLOR = Color.blue;
-	private readonly Color GUESTCOLOR = Color.red;
-
 	[SerializeField]
 	private TextMeshPro TextName;
 
 	private bool isHost;
 	private Rank rank;
-
-	private int row;
-	private int col;
+	private Tile tile;
 
 	private Dictionary<Rank, string> names;
 
@@ -111,11 +106,16 @@ public class Piece : MonoBehaviour
 		Deselect();
 	}
 
-	public void SetCoordinates(int row, int col)
+	public void SetTile(Tile tile)
 	{
-		this.row = row;
-		this.col = col;
+		this.tile = tile;
 	}
+
+	public Tile GetTile() => tile;
+
+	public Rank GetRank() => rank;
+
+	public bool GetIsHost() => isHost;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()

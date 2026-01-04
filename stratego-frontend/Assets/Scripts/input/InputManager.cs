@@ -1,6 +1,7 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 public class InputManager : MonoBehaviour
 {
 	[SerializeField]
@@ -16,6 +17,7 @@ public class InputManager : MonoBehaviour
 	private Piece highlightedPiece;
 	private Tile selectedTile;
 	private Tile highlightedTile;
+	private GameManager gameManager;
 
 	public Piece GetSelectedPiece() => selectedPiece;
 	public Tile GetSelectedTile() => selectedTile;
@@ -38,9 +40,9 @@ public class InputManager : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
+		gameManager = FindFirstObjectByType<GameManager>();
 		mainCamera = Camera.main;
-		isHost = PlayerPrefsManager.GetIsHost();
-		isHost = true;
+		isHost = gameManager.GetIsHost();
 
 		highlightedPiece = null;
 		selectedPiece = null;
@@ -84,13 +86,6 @@ public class InputManager : MonoBehaviour
 			}
 			selectedTile = tile;
 			selectedTile.Select();
-			/*
-			if(selectedPiece != null)
-			{
-				selectedPiece.Deselect();
-				selectedPiece = null;
-			}
-			*/
 
 			return true;
 		}
@@ -142,9 +137,73 @@ public class InputManager : MonoBehaviour
 	{
 		return selectedPiece != null && IsValidTileForHighlight(tile);
 	}
+
+	private int GetDistance(Tile tile1, Tile tile2)
+	{
+		var d = Mathf.Abs(tile1.GetRow() - tile2.GetRow()) + Mathf.Abs(tile1.GetCol() - tile2.GetCol());
+		Debug.Log($"distance from {tile1} to {tile2} is {d}");
+		return Mathf.Abs(tile1.GetRow() - tile2.GetRow()) + Mathf.Abs(tile1.GetCol() - tile2.GetCol());
+	}
+
+	private bool IsStraightLine(Tile tileOrigin, Tile tileTarget)
+	{
+		if (tileOrigin.GetCol() == tileTarget.GetCol())
+		{
+			var minRow = tileOrigin.GetRow() < tileTarget.GetRow() ? tileOrigin.GetRow() : tileTarget.GetRow();
+			var maxRow = tileOrigin.GetRow() > tileTarget.GetRow() ? tileOrigin.GetRow() : tileTarget.GetRow();
+			var col = tileTarget.GetCol();
+			for (int row = minRow + 1; row < maxRow - 1; row++)
+			{
+				if (gameManager.GetPieceAtCoordinates(row, col) != null)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+		else if(tileOrigin.GetRow() == tileTarget.GetRow())
+		{
+			var minCol = tileOrigin.GetCol() < tileTarget.GetCol() ? tileOrigin.GetCol() : tileTarget.GetCol();
+			var maxCol = tileOrigin.GetCol() > tileTarget.GetCol() ? tileOrigin.GetCol() : tileTarget.GetCol();
+			var row = tileTarget.GetRow();
+			for (int col = minCol + 1; row < maxCol - 1; col++)
+			{
+				if (gameManager.GetPieceAtCoordinates(row, col) != null)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
 	private bool IsValidTileForHighlight(Tile tile)
 	{
-		return true;
+		if (selectedPiece != null)
+		{
+			var immobileRanks = new List<Rank>() { Rank.BOMB, Rank.FLAG };
+			var selectedPieceTile = selectedPiece.GetTile();
+			var rank = selectedPiece.GetRank();
+			if (immobileRanks.Contains(rank))
+			{
+				return false;
+			}
+			var distance = GetDistance(tile, selectedPieceTile);
+			return ((rank == Rank.SCOUT) ? IsStraightLine(selectedPieceTile, tile) : distance == 1) && 
+				IsValidTargetPieceInTile(tile);
+		}
+
+		return false;
+	}
+
+	private bool IsValidTargetPieceInTile(Tile tile)
+	{
+		var piece = gameManager.GetPieceAtCoordinates(tile.GetRow(), tile.GetCol());
+		return piece == null || piece.GetIsHost() != isHost;
 	}
 
 	private void ProcessHighlightTile(Ray ray)

@@ -14,6 +14,9 @@ public class Tile : MonoBehaviour
 
 	private Status status;
 	private SpriteRenderer spriteRenderer;
+	private int row;
+	private int col;
+
 
 	public void Darken()
 	{
@@ -44,6 +47,20 @@ public class Tile : MonoBehaviour
 		status = Status.NORMAL;
 	}
 
+	public void Initialize(int row, int col)
+	{
+		this.row = row;
+		this.col = col;
+	}
+
+	public int GetRow() => row;
+	public int GetCol() => col;
+
+	public bool HasCoordinates(int row, int col)
+	{
+		return row == this.row && col == this.col;
+	}
+
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
@@ -55,5 +72,10 @@ public class Tile : MonoBehaviour
 	void Update()
 	{
 
+	}
+
+	public override string ToString()
+	{
+		return $"({row},{col})";
 	}
 }
