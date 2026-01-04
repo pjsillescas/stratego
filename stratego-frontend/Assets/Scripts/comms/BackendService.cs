@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 public class BackendService: MonoBehaviour
 {
-	//private const string URL = "http://192.168.1.13:8080/api";
+	//private const string URL = "http://192.168.1.14:8080/api";
 	private const string URL = "http://192.168.1.12:8080/api";
 
 	public IEnumerator Login(string username, string password, Action<string> onLoggedIn, Action<StrategoErrorDTO> onError)

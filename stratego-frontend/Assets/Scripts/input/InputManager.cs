@@ -1,8 +1,13 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.Audio.ProcessorInstance;
 public class InputManager : MonoBehaviour
 {
+	public static event EventHandler<Piece> OnPieceSelected;
+	public static event EventHandler<Tile> OnTileSelected;
+
 	[SerializeField]
 	private LayerMask PieceLayer;
 	[SerializeField]
@@ -17,6 +22,7 @@ public class InputManager : MonoBehaviour
 	private Tile selectedTile;
 	private Tile highlightedTile;
 	private GameManager gameManager;
+	private bool isMyTurn;
 
 	public Piece GetSelectedPiece() => selectedPiece;
 	public Tile GetSelectedTile() => selectedTile;
@@ -29,11 +35,18 @@ public class InputManager : MonoBehaviour
 	private void OnEnable()
 	{
 		actions.Enable();
+		GameManager.OnGameStateUpdated += OnGameStateUpdated;
 	}
 
 	private void OnDisable()
 	{
 		actions.Disable();
+		GameManager.OnGameStateUpdated -= OnGameStateUpdated;
+	}
+
+	private void OnGameStateUpdated(object sender, GameStateDTO gameStateDTO)
+	{
+		isMyTurn = gameStateDTO.isMyTurn;
 	}
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -59,7 +72,7 @@ public class InputManager : MonoBehaviour
 
 		var interact = actions.Player.Interact.WasPressedThisFrame();
 
-		if (interact)
+		if (interact && isMyTurn)
 		{
 			if (!ProcessSelectedTile(ray))
 			{
@@ -85,6 +98,7 @@ public class InputManager : MonoBehaviour
 			}
 			selectedTile = tile;
 			selectedTile.Select();
+			OnTileSelected?.Invoke(this, tile);
 
 			return true;
 		}
@@ -111,6 +125,7 @@ public class InputManager : MonoBehaviour
 				}
 				selectedPiece = piece;
 				selectedPiece.Select();
+				OnPieceSelected?.Invoke(this, piece);
 			}
 		}
 		else
@@ -135,8 +150,6 @@ public class InputManager : MonoBehaviour
 
 	private int GetDistance(Tile tile1, Tile tile2)
 	{
-		var d = Mathf.Abs(tile1.GetRow() - tile2.GetRow()) + Mathf.Abs(tile1.GetCol() - tile2.GetCol());
-		Debug.Log($"distance from {tile1} to {tile2} is {d}");
 		return Mathf.Abs(tile1.GetRow() - tile2.GetRow()) + Mathf.Abs(tile1.GetCol() - tile2.GetCol());
 	}
 

@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+	public static event EventHandler<GameStateDTO> OnGameStateUpdated;
+
 	[SerializeField]
 	private ArmySetupWidget SetupWidget;
 	[SerializeField]
@@ -17,6 +20,8 @@ public class GameManager : MonoBehaviour
 	private List<Piece> hostPieces;
 	private List<Piece> guestPieces;
 	private bool isHost;
+	private GameStateDTO currentGameState;
+
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
@@ -29,8 +34,8 @@ public class GameManager : MonoBehaviour
 		//var isHost = PlayerPrefsManager.GetIsHost();
 		isHost = true;
 
-		//SetupWidget.Initialize(backendService, OnGameStarted);
-		OnGameStarted(GetTestGameState());
+		SetupWidget.Initialize(backendService, OnGameStarted);
+		//OnGameStarted(GetTestGameState());
 	}
 
 	public bool GetIsHost() => isHost;
@@ -176,6 +181,7 @@ public class GameManager : MonoBehaviour
 
 	private void OnGameStarted(GameStateDTO gameStateDto)
 	{
+		currentGameState = gameStateDto;
 		var board = gameStateDto.board;
 		if (!isHost)
 		{
@@ -218,6 +224,8 @@ public class GameManager : MonoBehaviour
 				}
 			}
 		}
+
+		OnGameStateUpdated?.Invoke(this, gameStateDto);
 	}
 
 	public Piece GetPieceAtCoordinates(int row, int col)
@@ -235,6 +243,44 @@ public class GameManager : MonoBehaviour
 	private Piece GetPieceAtCoordinates(int row, int col, List<Piece> pieces)
 	{
 		return pieces.Where(piece => piece.GetTile().HasCoordinates(row, col)).FirstOrDefault();
+	}
+
+	public void SendMovement(StrategoMovementDTO movement)
+	{
+		var gameId = PlayerPrefsManager.GetGameId();
+		var token = PlayerPrefsManager.GetToken();
+		StartCoroutine(backendService.AddMovement(gameId, token, movement, OnMovementAdded, OnError));
+		/*
+		var status = new GameStateDTO() {
+			board = null,
+			isMyTurn = !currentGameState.isMyTurn,
+			movement = movement,
+			currentPlayer = currentGameState.currentPlayer,
+			gameId = currentGameState.gameId,
+			phase = currentGameState.phase,
+		};
+		OnMovementAdded(status);
+		*/
+	}
+
+	private void OnMovementAdded(GameStateDTO gameStateDto)
+	{
+		currentGameState = gameStateDto;
+		OnGameStateUpdated?.Invoke(this, gameStateDto);
+
+		//Board.MoveTile(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial, gameStateDto.movement.rowFinal, gameStateDto.movement.colFinal);
+		var piece = GetPieceAtCoordinates(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial);
+		var targetRow = gameStateDto.movement.rowFinal;
+		var targetCol = gameStateDto.movement.colFinal;
+		piece.transform.position = Board.GetWorldPosition(targetRow, targetCol);
+		var tile = Board.GetTile(targetRow, targetCol);
+		piece.SetTile(tile);
+
+	}
+
+	private void OnError(StrategoErrorDTO error)
+	{
+		Debug.Log(error);
 	}
 
 	// Update is called once per frame
