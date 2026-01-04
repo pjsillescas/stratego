@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -113,10 +112,6 @@ public class InputManager : MonoBehaviour
 				selectedPiece = piece;
 				selectedPiece.Select();
 			}
-			else
-			{
-				;
-			}
 		}
 		else
 		{
@@ -152,7 +147,7 @@ public class InputManager : MonoBehaviour
 			var minRow = tileOrigin.GetRow() < tileTarget.GetRow() ? tileOrigin.GetRow() : tileTarget.GetRow();
 			var maxRow = tileOrigin.GetRow() > tileTarget.GetRow() ? tileOrigin.GetRow() : tileTarget.GetRow();
 			var col = tileTarget.GetCol();
-			for (int row = minRow + 1; row < maxRow - 1; row++)
+			for (int row = minRow + 1; row < maxRow; row++)
 			{
 				if (gameManager.GetPieceAtCoordinates(row, col) != null)
 				{
@@ -167,7 +162,7 @@ public class InputManager : MonoBehaviour
 			var minCol = tileOrigin.GetCol() < tileTarget.GetCol() ? tileOrigin.GetCol() : tileTarget.GetCol();
 			var maxCol = tileOrigin.GetCol() > tileTarget.GetCol() ? tileOrigin.GetCol() : tileTarget.GetCol();
 			var row = tileTarget.GetRow();
-			for (int col = minCol + 1; row < maxCol - 1; col++)
+			for (int col = minCol + 1; row < maxCol; col++)
 			{
 				if (gameManager.GetPieceAtCoordinates(row, col) != null)
 				{
