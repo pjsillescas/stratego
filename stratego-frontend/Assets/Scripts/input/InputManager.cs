@@ -60,40 +60,47 @@ public class InputManager : MonoBehaviour
 
 		if (interact)
 		{
-			ProcessSelection(ray);
+			if (!ProcessSelectedTile(ray))
+			{
+				ProcessSelectedPiece(ray);
+			}
 		}
 		else
 		{
-			ProcessHighlight(ray);
+			ProcessHighlightTile(ray);
+			ProcessHighlightedPiece(ray);
 		}
-
 	}
 
-	private void ProcessSelection(Ray ray)
+	private bool ProcessSelectedTile(Ray ray)
 	{
-		if (selectedPiece != null)
-		{
-			var result = Physics.Raycast(ray, out RaycastHit hitInfo, MAX_DISTANCE, TileLayer);
+		var result = Physics.Raycast(ray, out RaycastHit hitInfo, MAX_DISTANCE, TileLayer);
 
-			if (result && hitInfo.collider.gameObject.TryGetComponent(out Tile tile))
+		if (result && hitInfo.collider.gameObject.TryGetComponent(out Tile tile) && IsValidTile(tile))
+		{
+			if (selectedTile != null && !tile.Equals(selectedTile))
 			{
-				if (selectedTile != null && !tile.Equals(selectedTile))
-				{
-					selectedTile.Darken();
-				}
-				selectedTile = tile;
-				selectedTile.Highlight();
+				selectedTile.Deselect();
 			}
-			else
+			selectedTile = tile;
+			selectedTile.Select();
+			/*
+			if(selectedPiece != null)
 			{
-				if (selectedTile != null)
-				{
-					selectedTile.Deselect();
-					selectedTile = null;
-				}
+				selectedPiece.Deselect();
+				selectedPiece = null;
 			}
+			*/
+
+			return true;
 		}
-		ProcessSelectedPiece(ray);
+
+		if (selectedTile != null)
+		{
+			selectedTile.Deselect();
+			selectedTile = null;
+		}
+		return false;
 	}
 
 	private void ProcessSelectedPiece(Ray ray)
@@ -102,12 +109,19 @@ public class InputManager : MonoBehaviour
 
 		if (resultPiece && hitInfoPiece.collider.gameObject.TryGetComponent(out Piece piece))
 		{
-			if (selectedPiece != null && !piece.Equals(selectedPiece))
+			if (IsValidPiece(piece))
 			{
-				selectedPiece.Deselect();
+				if (selectedPiece != null && !piece.Equals(selectedPiece))
+				{
+					selectedPiece.Deselect();
+				}
+				selectedPiece = piece;
+				selectedPiece.Select();
 			}
-			selectedPiece = piece;
-			selectedPiece.Select();
+			else
+			{
+				;
+			}
 		}
 		else
 		{
@@ -124,24 +138,35 @@ public class InputManager : MonoBehaviour
 		return piece.IsHost() == isHost;
 	}
 
-	private void ProcessHighlight(Ray ray)
+	private bool IsValidTile(Tile tile)
 	{
-		if (selectedPiece != null)
+		return selectedPiece != null && IsValidTileForHighlight(tile);
+	}
+	private bool IsValidTileForHighlight(Tile tile)
+	{
+		return true;
+	}
+
+	private void ProcessHighlightTile(Ray ray)
+	{
+		var result = Physics.Raycast(ray, out RaycastHit hitInfo, MAX_DISTANCE, TileLayer);
+
+		if (result && hitInfo.collider.gameObject.TryGetComponent(out Tile tile) && IsValidTileForHighlight(tile))
 		{
-			var result = Physics.Raycast(ray, out RaycastHit hitInfo, MAX_DISTANCE, TileLayer);
-
-			if (result && hitInfo.collider.gameObject.TryGetComponent(out Tile tile))
+			if (highlightedTile != null && !tile.Equals(highlightedTile))
 			{
-				if (highlightedTile != null && !tile.Equals(highlightedTile))
-				{
-					highlightedTile.Darken();
-				}
-				highlightedTile = tile;
-				highlightedTile.Highlight();
+				highlightedTile.Darken();
 			}
-		}
+			highlightedTile = tile;
+			highlightedTile.Highlight();
 
-		ProcessHighlightedPiece(ray);
+			if (highlightedPiece != null)
+			{
+				highlightedPiece.Darken();
+				highlightedPiece = null;
+			}
+
+		}
 	}
 
 	private void ProcessHighlightedPiece(Ray ray)

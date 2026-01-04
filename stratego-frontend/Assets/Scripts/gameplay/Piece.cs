@@ -44,7 +44,6 @@ public class Piece : MonoBehaviour
 
 	public void Darken()
 	{
-		// Debug.Log("darken piece");
 		if (status == Status.HIGHLIGHTED)
 		{
 			Deselect();
@@ -53,7 +52,6 @@ public class Piece : MonoBehaviour
 
 	public void Highlight()
 	{
-		// Debug.Log("highlight piece");
 		if (status != Status.SELECTED)
 		{
 			meshRenderer.material = HighlightMaterial;
@@ -63,14 +61,12 @@ public class Piece : MonoBehaviour
 
 	public void Select()
 	{
-		// Debug.Log("select piece");
 		meshRenderer.material = SelectedMaterial;
 		status = Status.SELECTED;
 	}
 
 	public void Deselect()
 	{
-		// Debug.Log("deselect piece");
 		meshRenderer.material = NormalMaterial;
 		status = Status.NORMAL;
 	}

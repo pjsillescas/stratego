@@ -2559,7 +2559,7 @@ MonoBehaviour:
     m_Bits: 64
   TileLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 4294967295
 --- !u!4 &1219971054
 Transform:
   m_ObjectHideFlags: 0

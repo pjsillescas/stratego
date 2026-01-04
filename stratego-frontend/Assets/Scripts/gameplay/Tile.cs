@@ -4,7 +4,7 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
 	private enum Status { NORMAL, HIGHLIGHTED, SELECTED }
-	
+
 	[SerializeField]
 	private Material NormalMaterial;
 	[SerializeField]
@@ -17,7 +17,6 @@ public class Tile : MonoBehaviour
 
 	public void Darken()
 	{
-		// Debug.Log("darken tile");
 		if (status == Status.HIGHLIGHTED)
 		{
 			Deselect();
@@ -26,7 +25,6 @@ public class Tile : MonoBehaviour
 
 	public void Highlight()
 	{
-		// Debug.Log("highlight tile");
 		if (status != Status.SELECTED)
 		{
 			spriteRenderer.material = HighlightMaterial;
@@ -36,14 +34,12 @@ public class Tile : MonoBehaviour
 
 	public void Select()
 	{
-		// Debug.Log("select tile");
 		spriteRenderer.material = SelectedMaterial;
 		status = Status.SELECTED;
 	}
 
 	public void Deselect()
 	{
-		// Debug.Log("deselect tile");
 		spriteRenderer.material = NormalMaterial;
 		status = Status.NORMAL;
 	}
