@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -13,6 +14,9 @@ public class GameListWidget : MonoBehaviour
 
 	[SerializeField]
 	private Button CreateGameButton;
+	
+	[SerializeField]
+	private WaitForGuestPlayerWidget WaitWidget;
 
 	private BackendService backendService;
 
@@ -22,7 +26,9 @@ public class GameListWidget : MonoBehaviour
 	}
 	private void OnCreatedGame(GameDTO gameDto)
 	{
-		LoadGameplayScene(gameDto.id, true);
+		var token = PlayerPrefsManager.GetToken();
+		WaitWidget.gameObject.SetActive(true);
+		WaitWidget.Initialize(gameDto.id, token, backendService, () => LoadGameplayScene(gameDto.id, true));
 	}
 
 	private void OnError(StrategoErrorDTO error)
@@ -43,6 +49,8 @@ public class GameListWidget : MonoBehaviour
 	void Start()
 	{
 		backendService = FindFirstObjectByType<BackendService>();
+		WaitWidget.gameObject.SetActive(false);
+
 		CreateGameButton.onClick.AddListener(CreateGameButtonClick);
 
 		var token = GetToken();
