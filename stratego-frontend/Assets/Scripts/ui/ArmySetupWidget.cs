@@ -1,8 +1,6 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +14,9 @@ public class ArmySetupWidget : MonoBehaviour
 
 	[SerializeField]
 	private Button UseSetupButton;
+
+	[SerializeField]
+	private WaitForSetupsWidget WaitForSetupWidget;
 
 	private BackendService backendService;
 	private Action<GameStateDTO> onGameStart;
@@ -60,8 +61,13 @@ public class ArmySetupWidget : MonoBehaviour
 
 	private void OnSetupAdded(GameStateDTO gameStateDto)
 	{
-		onGameStart?.Invoke(gameStateDto);
-		gameObject.SetActive(false);
+		var gameId = gameStateDto.gameId;
+		var token = PlayerPrefsManager.GetToken();
+		WaitForSetupWidget.gameObject.SetActive(true);
+		WaitForSetupWidget.Initialize(gameId, token, backendService, () => {
+			onGameStart?.Invoke(gameStateDto);
+			gameObject.SetActive(false);
+		});
 	}
 
 	private void OnError(StrategoErrorDTO error)

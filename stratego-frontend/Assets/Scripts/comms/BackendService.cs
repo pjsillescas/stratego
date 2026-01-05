@@ -7,8 +7,8 @@ using UnityEngine.Networking;
 
 public class BackendService: MonoBehaviour
 {
-	private const string URL = "http://192.168.1.13:8080/api";
-	//private const string URL = "http://localhost:8080/api"; // for builds
+	//private const string URL = "http://192.168.1.14:8080/api";
+	private const string URL = "http://localhost:8080/api"; // for builds
 	//private const string URL = "http://192.168.1.12:8080/api";
 
 	public IEnumerator Login(string username, string password, Action<string> onLoggedIn, Action<StrategoErrorDTO> onError)
@@ -284,7 +284,7 @@ public class BackendService: MonoBehaviour
 		}
 	}
 
-	public IEnumerator GetGame(int gameId, string token, Action<GameDTO> onGameGot, Action<StrategoErrorDTO> onError)
+	public IEnumerator GetGame(int gameId, string token, Action<GameExtendedDTO> onGameGot, Action<StrategoErrorDTO> onError)
 	{
 		using UnityWebRequest request = UnityWebRequest.Get(URL + $"/game/{gameId}");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
@@ -297,17 +297,18 @@ public class BackendService: MonoBehaviour
 			Debug.Log("Got game. Received: " + json);
 
 			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
-			var gameDto = JsonConvert.DeserializeObject<GameDTO>(json);
-			onGameGot?.Invoke(gameDto);
+			var gameStateDto = JsonConvert.DeserializeObject<GameExtendedDTO>(json);
+			onGameGot?.Invoke(gameStateDto);
 		}
 		else
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.LogError("Failed to get game: " + request.error);
+			Debug.LogError("Failed to get status: " + request.error);
 
 			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
 			onError?.Invoke(result);
 		}
 	}
+
 }

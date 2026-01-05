@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class GameStateDTO
 {
 	public PlayerDTO currentPlayer;
+	public int hostPlayerId;
+	public int guestPlayerId;
 	public int gameId;
 
 	public StrategoMovementDTO movement;

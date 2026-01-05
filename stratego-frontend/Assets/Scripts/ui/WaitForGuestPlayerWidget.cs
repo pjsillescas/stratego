@@ -48,9 +48,9 @@ public class WaitForGuestPlayerWidget : MonoBehaviour
 		yield return null;
 	}
 
-	private void OnGameGot(GameDTO gameDto)
+	private void OnGameGot(GameExtendedDTO gameExtendedDto)
 	{
-		if (gameDto.guest != null)
+		if (gameExtendedDto.guest != null)
 		{
 			isGuestArrived = true;
 		}
