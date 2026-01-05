@@ -183,8 +183,8 @@ public class StrategoServiceImpl implements StrategoService {
 		strategoStatusRepository.save(status);
 		return GameStateDTO.builder() //
 				.currentPlayer(toPlayerDTO(player)) //
-				.hostPlayerId(Optional.ofNullable(game.getHost()).map(Player::getId).orElse(null)) //
-				.guestPlayerId(Optional.ofNullable(game.getGuest()).map(Player::getId).orElse(null)) //
+				.hostPlayerId(Optional.ofNullable(game.getHost()).map(Player::getId).orElse(0)) //
+				.guestPlayerId(Optional.ofNullable(game.getGuest()).map(Player::getId).orElse(0)) //
 				.gameId(gameId) //
 				.phase(game.getPhase()) //
 				.movement(null) //
@@ -297,8 +297,8 @@ public class StrategoServiceImpl implements StrategoService {
 
 		return GameStateDTO.builder() //
 				.currentPlayer(toPlayerDTO(player)) //
-				.hostPlayerId(Optional.ofNullable(game.getHost()).map(Player::getId).orElse(null)) //
-				.guestPlayerId(Optional.ofNullable(game.getGuest()).map(Player::getId).orElse(null)) //
+				.hostPlayerId(Optional.ofNullable(game.getHost()).map(Player::getId).orElse(0)) //
+				.guestPlayerId(Optional.ofNullable(game.getGuest()).map(Player::getId).orElse(0)) //
 				.gameId(gameId) //
 				.phase(game.getPhase()) //
 				.movement(movementDto) //
@@ -337,8 +337,8 @@ public class StrategoServiceImpl implements StrategoService {
 
 		return GameStateDTO.builder() //
 				.currentPlayer(toPlayerDTO(player)) //
-				.hostPlayerId(Optional.ofNullable(game.getHost()).map(Player::getId).orElse(null)) //
-				.guestPlayerId(Optional.ofNullable(game.getGuest()).map(Player::getId).orElse(null)) //
+				.hostPlayerId(Optional.ofNullable(game.getHost()).map(Player::getId).orElse(0)) //
+				.guestPlayerId(Optional.ofNullable(game.getGuest()).map(Player::getId).orElse(0)) //
 				.gameId(gameId) //
 				.phase(game.getPhase()) //
 				.movement(movement.map(this::toMovementDTO).orElse(null)) //
