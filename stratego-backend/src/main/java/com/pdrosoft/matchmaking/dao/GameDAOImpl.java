@@ -59,7 +59,7 @@ public class GameDAOImpl implements GameDAO {
 				.name(game.getName()) //
 				.host(toPlayerDTO(game.getHost())) //
 				.guest(toPlayerDTO(game.getGuest())) //
-				.phase(game.getPhase()) //
+				.phase(Optional.ofNullable(game.getPhase()).orElse(GamePhase.WAITING_FOR_SETUP_2_PLAYERS)) //
 				.build()).orElse(null);
 	}
 
@@ -71,7 +71,7 @@ public class GameDAOImpl implements GameDAO {
 				.joinCode(game.getJoinCode()) //
 				.host(toPlayerDTO(game.getHost())) //
 				.guest(toPlayerDTO(game.getGuest())) //
-				.phase(game.getPhase()) //
+				.phase(Optional.ofNullable(game.getPhase()).orElse(GamePhase.WAITING_FOR_SETUP_2_PLAYERS)) //
 				.build()).orElse(null);
 	}
 
@@ -122,6 +122,15 @@ public class GameDAOImpl implements GameDAO {
 
 		return Optional.ofNullable(gameRepository.save(game)).map(this::toGameExtendedDTO) //
 				.orElseThrow(() -> new MatchmakingValidationException("Error saving game"));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GameExtendedDTO getGame(Player guest, Long gameId) {
+		var game = loadGame(gameId)
+				.orElseThrow(() -> new NotFoundException("Game %d does not exist".formatted(gameId)));
+
+		return toGameExtendedDTO(game);
 	}
 
 	@Override

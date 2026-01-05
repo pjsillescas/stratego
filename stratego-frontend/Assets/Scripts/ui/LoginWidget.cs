@@ -42,7 +42,7 @@ public class LoginWidget : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		PlayerPrefsManager.Reset();
+		CommData.GetInstance().ResetData();
 		DisableError();
 		SignupButton.onClick.AddListener(ButtonSignupClick);
 		LoginButton.onClick.AddListener(ButtonLoginClick);
@@ -72,7 +72,7 @@ public class LoginWidget : MonoBehaviour
 	private void OnLoggedIn(string token)
 	{
 		DisableError();
-		PlayerPrefsManager.SetToken(token);
+		CommData.GetInstance().SetToken(token);
 		Debug.Log($"token: {token}");
 		GameListWidget.gameObject.SetActive(true);
 		gameObject.SetActive(false);

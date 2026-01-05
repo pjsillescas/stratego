@@ -4,9 +4,6 @@ using System.Collections;
 
 public class WaitForSetupsWidget : MonoBehaviour
 {
-	private BackendService backendService;
-	private int gameId;
-	private string token;
 	private bool isSetupArrived;
 	private Action OnSetupGot;
 
@@ -16,11 +13,8 @@ public class WaitForSetupsWidget : MonoBehaviour
 		;
 	}
 
-	public void Initialize(int gameId, string token, BackendService backendService, Action OnSetupGot)
+	public void Initialize(Action OnSetupGot)
 	{
-		this.gameId = gameId;
-		this.token = token;
-		this.backendService = backendService;
 		this.OnSetupGot = OnSetupGot;
 
 		StartCoroutine(CheckForSetupCoroutine());
@@ -32,10 +26,13 @@ public class WaitForSetupsWidget : MonoBehaviour
 
 		var waitForSeconds = new WaitForSeconds(10);
 
+		var commData = CommData.GetInstance();
+		var gameId = commData.GetGameId();
+		var token = commData.GetToken();
 		isSetupArrived = false;
 		while (!isSetupArrived)
 		{
-			StartCoroutine(backendService.GetStatus(gameId, token, OnSetupReceived, OnError));
+			StartCoroutine(BackendService.GetInstance().GetStatus(gameId, token, OnSetupReceived, OnError));
 			yield return waitForSeconds;
 		}
 

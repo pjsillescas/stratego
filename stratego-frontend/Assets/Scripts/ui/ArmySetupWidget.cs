@@ -18,7 +18,6 @@ public class ArmySetupWidget : MonoBehaviour
 	[SerializeField]
 	private WaitForSetupsWidget WaitForSetupWidget;
 
-	private BackendService backendService;
 	private Action<GameStateDTO> onGameStart;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,10 +25,9 @@ public class ArmySetupWidget : MonoBehaviour
 	{
 	}
 
-	public void Initialize(BackendService backendService, Action<GameStateDTO> onGameStart)
+	public void Initialize(Action<GameStateDTO> onGameStart)
 	{
 		gameObject.SetActive(true);
-		this.backendService = backendService;
 		UseSetupButton.enabled = false;
 		UseSetupButton.onClick.AddListener(UseSetupButtonClick);
 		ToolUnitItem.OnNumItemsChanged += ToolUnitItem_OnNumItemsChanged;
@@ -53,18 +51,17 @@ public class ArmySetupWidget : MonoBehaviour
 
 	private void UseSetupButtonClick()
 	{
-		var gameId = PlayerPrefsManager.GetGameId();
-		var token = PlayerPrefsManager.GetToken();
+		var commData = CommData.GetInstance();
+		var gameId = commData.GetGameId();
+		var token = commData.GetToken();
 		List<List<Rank>> setup = Setup.Select(row => row.GetPositions().Select(pos => pos.GetRank()).ToList()).ToList();
-		StartCoroutine(backendService.AddSetup(gameId, token, setup, OnSetupAdded, OnError));
+		StartCoroutine(BackendService.GetInstance().AddSetup(gameId, token, setup, OnSetupAdded, OnError));
 	}
 
 	private void OnSetupAdded(GameStateDTO gameStateDto)
 	{
-		var gameId = gameStateDto.gameId;
-		var token = PlayerPrefsManager.GetToken();
 		WaitForSetupWidget.gameObject.SetActive(true);
-		WaitForSetupWidget.Initialize(gameId, token, backendService, () => {
+		WaitForSetupWidget.Initialize(() => {
 			onGameStart?.Invoke(gameStateDto);
 			gameObject.SetActive(false);
 		});

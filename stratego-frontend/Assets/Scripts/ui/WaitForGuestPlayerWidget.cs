@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class WaitForGuestPlayerWidget : MonoBehaviour
 {
-	private BackendService backendService;
-	private int gameId;
-	private string token;
 	private bool isGuestArrived;
 	private Action OnGuestGot;
 
@@ -21,11 +18,8 @@ public class WaitForGuestPlayerWidget : MonoBehaviour
 		*/
 	}
 
-	public void Initialize(int gameId, string token, BackendService backendService, Action OnGuestGot)
+	public void Initialize(Action OnGuestGot)
 	{
-		this.gameId = gameId;
-		this.token = token;
-		this.backendService = backendService;
 		this.OnGuestGot = OnGuestGot;
 		
 		StartCoroutine(CheckForGuestPlayerCoroutine());
@@ -40,7 +34,10 @@ public class WaitForGuestPlayerWidget : MonoBehaviour
 		isGuestArrived = false;
 		while (!isGuestArrived)
 		{
-			StartCoroutine(backendService.GetGame(gameId, token, OnGameGot, OnError));
+			var commData = CommData.GetInstance();
+			var gameId = commData.GetGameId();
+			var token = commData.GetToken();
+			StartCoroutine(BackendService.GetInstance().GetGame(gameId, token, OnGameGot, OnError));
 			yield return waitForSeconds;
 		}
 

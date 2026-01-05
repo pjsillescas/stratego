@@ -86,4 +86,10 @@ public class MatchmakingServiceImpl implements MatchmakingService {
 		return gameDao.leaveGame(player, gameId);
 	}
 
+	@Override
+	public GameExtendedDTO getGame(Player player, Long gameId) {
+		// TODO Auto-generated method stub
+		return gameDao.getGame(player, gameId);
+	}
+
 }

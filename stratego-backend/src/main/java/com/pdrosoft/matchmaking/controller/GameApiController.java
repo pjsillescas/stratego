@@ -48,6 +48,12 @@ public class GameApiController {
 		return matchmakingService.addGame(userDetails.getPlayer(), gameInputDto);
 	}
 
+	@GetMapping(path = "/game/{gameId:[0-9]+}", produces = { "application/json" })
+	public GameExtendedDTO getGame(@AuthenticationPrincipal MatchmakingUserDetails userDetails,
+			@PathVariable("gameId") Long gameId) {
+		return matchmakingService.getGame(userDetails.getPlayer(), gameId);
+	}
+
 	@PutMapping(path = "/game/{gameId:[0-9]+}/join", produces = { "application/json" })
 	//@PostMapping(path = "/game/{gameId:[0-9]+}/join", produces = { "application/json" })
 	public GameExtendedDTO joinGame(@AuthenticationPrincipal MatchmakingUserDetails userDetails,

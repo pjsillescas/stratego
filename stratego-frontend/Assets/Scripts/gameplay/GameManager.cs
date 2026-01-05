@@ -16,7 +16,6 @@ public class GameManager : MonoBehaviour
 	[SerializeField]
 	private GameObject PiecePrefab;
 
-	private BackendService backendService;
 	private List<Piece> hostPieces;
 	private List<Piece> guestPieces;
 	private bool isHost;
@@ -28,13 +27,11 @@ public class GameManager : MonoBehaviour
 	{
 		hostPieces = new();
 		guestPieces = new();
+		
+		var commData = CommData.GetInstance();
+		isHost = commData.GetIsHost();
 
-		backendService = FindFirstObjectByType<BackendService>();
-
-		//var isHost = PlayerPrefsManager.GetIsHost();
-		isHost = true;
-
-		SetupWidget.Initialize(backendService, OnGameStarted);
+		SetupWidget.Initialize(OnGameStarted);
 		//OnGameStarted(GetTestGameState());
 	}
 
@@ -247,9 +244,10 @@ public class GameManager : MonoBehaviour
 
 	public void SendMovement(StrategoMovementDTO movement)
 	{
-		var gameId = PlayerPrefsManager.GetGameId();
-		var token = PlayerPrefsManager.GetToken();
-		StartCoroutine(backendService.AddMovement(gameId, token, movement, OnMovementAdded, OnError));
+		var commData = CommData.GetInstance();
+		var gameId = commData.GetGameId();
+		var token = commData.GetToken();
+		StartCoroutine(BackendService.GetInstance().AddMovement(gameId, token, movement, OnMovementAdded, OnError));
 		/*
 		var status = new GameStateDTO() {
 			board = null,

@@ -322,9 +322,11 @@ public class StrategoServiceImpl implements StrategoService {
 		var game = gameRepository.findById(gameId)
 				.orElseThrow(() -> new MatchmakingValidationException("Game does not exist"));
 
+		/*
 		if (!GamePhase.PLAYING.equals(game.getPhase())) {
 			throw new MatchmakingValidationException("Game not in playing state");
 		}
+		*/
 
 		List<List<BoardTileDTO>> board = null;
 		var status = strategoStatusRepository.findByGameId(gameId)

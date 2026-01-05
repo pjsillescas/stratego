@@ -21,4 +21,6 @@ public interface MatchmakingService {
 
 	GameDTO leaveGame(Player player, Long gameId);
 
+	GameExtendedDTO getGame(Player player, Long gameId);
+
 }

@@ -11,6 +11,21 @@ public class BackendService: MonoBehaviour
 	private const string URL = "http://localhost:8080/api"; // for builds
 	//private const string URL = "http://192.168.1.12:8080/api";
 
+	private static BackendService instance = null;
+	public static BackendService GetInstance() => instance;
+
+	private void Awake()
+	{
+		if (instance != null)
+		{
+			Destroy(gameObject);
+			return;
+		}
+
+		DontDestroyOnLoad(gameObject);
+		instance = this;
+	}
+
 	public IEnumerator Login(string username, string password, Action<string> onLoggedIn, Action<StrategoErrorDTO> onError)
 	{
 		string body = JsonUtility.ToJson(new LoginDTO(username, password));
@@ -304,7 +319,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.LogError("Failed to get status: " + request.error);
+			Debug.LogError("Failed to get game: " + request.error);
 
 			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
 			onError?.Invoke(result);

@@ -18,17 +18,17 @@ public class GameListWidget : MonoBehaviour
 	[SerializeField]
 	private WaitForGuestPlayerWidget WaitWidget;
 
-	private BackendService backendService;
-
 	private void OnJoinedGame(GameExtendedDTO gameExtendedDto)
 	{
-		LoadGameplayScene(gameExtendedDto.id, false);
+		LoadGameplayScene(false);
 	}
 	private void OnCreatedGame(GameDTO gameDto)
 	{
-		var token = PlayerPrefsManager.GetToken();
+		var commData = CommData.GetInstance();
+		commData.SetGameId(gameDto.id);
+		Debug.Log(gameDto.id);
 		WaitWidget.gameObject.SetActive(true);
-		WaitWidget.Initialize(gameDto.id, token, backendService, () => LoadGameplayScene(gameDto.id, true));
+		WaitWidget.Initialize(() => LoadGameplayScene(true));
 	}
 
 	private void OnError(StrategoErrorDTO error)
@@ -36,25 +36,24 @@ public class GameListWidget : MonoBehaviour
 		Debug.Log(error.message);
 	}
 
-	private void LoadGameplayScene(int gameId, bool isHost)
+	private void LoadGameplayScene(bool isHost)
 	{
-		PlayerPrefsManager.SetGameId(gameId);
-		PlayerPrefsManager.SetIsHost(isHost);
+		var commData = CommData.GetInstance();
+		commData.SetIsHost(isHost);
 		SceneManager.LoadScene("Gameplay");
 	}
 
-	private string GetToken() => PlayerPrefsManager.GetToken();
+	private string GetToken() => CommData.GetInstance().GetToken();
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		backendService = FindFirstObjectByType<BackendService>();
 		WaitWidget.gameObject.SetActive(false);
 
 		CreateGameButton.onClick.AddListener(CreateGameButtonClick);
 
 		var token = GetToken();
-		StartCoroutine(backendService.GetGameList(token, OnGamesGot, OnError));
+		StartCoroutine(BackendService.GetInstance().GetGameList(token, OnGamesGot, OnError));
 
 		/*
 		List<GameDTO> testGames = new() {
@@ -102,11 +101,11 @@ public class GameListWidget : MonoBehaviour
 	private void CreateGameButtonClick()
 	{
 		var token = GetToken();
-		StartCoroutine(backendService.CreateGame(token, OnCreatedGame, OnError));
+		StartCoroutine(BackendService.GetInstance().CreateGame(token, OnCreatedGame, OnError));
 	}
 	private void JoinGame(int gameId)
 	{
 		var token = GetToken();
-		StartCoroutine(backendService.JoinGame(gameId, token, OnJoinedGame, OnError));
+		StartCoroutine(BackendService.GetInstance().JoinGame(gameId, token, OnJoinedGame, OnError));
 	}
 }
