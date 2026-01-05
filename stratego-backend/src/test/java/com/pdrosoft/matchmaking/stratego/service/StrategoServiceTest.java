@@ -121,7 +121,8 @@ public class StrategoServiceTest {
 	@ArgumentsSource(value = MovementArgs.class)
 	void testGetStatus(List<StrategoMovement> movements) {
 		var player = getTestPlayer();
-		var game = getTestGame(player, player);
+		var guest = getTestPlayer(GUEST_ID);
+		var game = getTestGame(player, guest);
 
 		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
 
@@ -136,6 +137,8 @@ public class StrategoServiceTest {
 
 		assertThat(statusDto.getCurrentPlayer().getId()).isEqualTo(PLAYER_ID);
 		assertThat(statusDto.getCurrentPlayer().getUsername()).isEqualTo(PLAYER_USERNAME);
+		assertThat(statusDto.getHostPlayerId()).isEqualTo(PLAYER_ID);
+		assertThat(statusDto.getGuestPlayerId()).isEqualTo(GUEST_ID);
 		assertThat(statusDto.getGameId()).isEqualTo(GAME_ID);
 		assertThat(statusDto.getPhase()).isEqualTo(GamePhase.PLAYING);
 		assertThat(statusDto.getBoard()).isEqualTo(board);

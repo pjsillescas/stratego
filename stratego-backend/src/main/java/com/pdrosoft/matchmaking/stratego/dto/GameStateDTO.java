@@ -21,6 +21,8 @@ public class GameStateDTO implements Serializable {
 
 	private PlayerDTO currentPlayer;
 	private Long gameId;
+	private Integer hostPlayerId;
+	private Integer guestPlayerId;
 
 	private StrategoMovementDTO movement;
 	private GamePhase phase;
