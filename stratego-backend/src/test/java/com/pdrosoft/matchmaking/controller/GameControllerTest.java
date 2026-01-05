@@ -194,6 +194,17 @@ public class GameControllerTest {
 		assertThat(gameJoined.getHost().getUsername()).isEqualTo("testuser1");
 		assertThat(gameJoined.getGuest().getUsername()).isEqualTo("testuser2");
 
+		var resultGet = mockMvc.perform(get("/api/game/{gameId}", Integer.toString(newGameId)) //
+				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
+				.andExpect(status().isOk()).andReturn();
+		var gameGet = getObjectMapper().readValue(resultGet.getResponse().getContentAsString(), GameExtendedDTO.class);
+		assertThat(gameGet.getId()).isEqualTo(game.getId());
+		assertThat(gameGet.getCreationDate()).isNotNull();
+		assertThat(gameGet.getName()).isEqualTo(game.getName());
+		assertThat(gameGet.getJoinCode()).isEqualTo(gameInputDto.getJoinCode());
+		assertThat(gameGet.getHost().getUsername()).isEqualTo("testuser1");
+		assertThat(gameGet.getGuest().getUsername()).isEqualTo("testuser2");
+
 		var resultLeaveHost = mockMvc.perform(put("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
 				.header("Authorization", "Bearer %s".formatted(tokenHost)))//
 				.andExpect(status().isOk()).andReturn();
@@ -246,5 +257,4 @@ public class GameControllerTest {
 				.header("Authorization", "Bearer %s".formatted(token)))//
 				.andExpect(status().isNotFound());
 	}
-
 }

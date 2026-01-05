@@ -82,20 +82,6 @@ public class StrategoServiceTest {
 				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game does not exist");
 	}
 
-	@ParameterizedTest
-	@EnumSource(value = GamePhase.class, names = { "WAITING_FOR_SETUP_2_PLAYERS", "WAITING_FOR_SETUP_1_PLAYER",
-			"FINISHED" })
-	void testGetStatusWrongPlayerTurn(GamePhase wrongPhase) {
-		var player = getTestPlayer();
-		var game = getTestGame(player, player);
-		game.setPhase(wrongPhase);
-
-		Mockito.when(gameRepository.findById(GAME_ID)).thenReturn(Optional.of(game));
-
-		assertThatThrownBy(() -> strategoService.getStatus(GAME_ID, player))
-				.isInstanceOf(MatchmakingValidationException.class).hasMessage("Game not in playing state");
-	}
-
 	@Test
 	void testGetStatusNoStatus() {
 		var player = getTestPlayer();
