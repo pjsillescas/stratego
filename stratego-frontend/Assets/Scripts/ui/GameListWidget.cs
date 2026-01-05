@@ -20,6 +20,7 @@ public class GameListWidget : MonoBehaviour
 
 	private void OnJoinedGame(GameExtendedDTO gameExtendedDto)
 	{
+		CommData.GetInstance().SetGameId(gameExtendedDto.id);
 		LoadGameplayScene(false);
 	}
 	private void OnCreatedGame(GameDTO gameDto)
