@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class WaitForGuestPlayerWidget : MonoBehaviour
 {
+	private const float WAIT_TIME_SECONDS = 2f;
+
 	private bool isGuestArrived;
 	private Action OnGuestGot;
 
@@ -29,7 +31,7 @@ public class WaitForGuestPlayerWidget : MonoBehaviour
 	{
 		Debug.Log("check for guest");
 
-		var waitForSeconds = new WaitForSeconds(10);
+		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS);
 
 		isGuestArrived = false;
 		while (!isGuestArrived)

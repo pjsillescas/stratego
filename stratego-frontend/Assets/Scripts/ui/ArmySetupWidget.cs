@@ -61,8 +61,8 @@ public class ArmySetupWidget : MonoBehaviour
 	private void OnSetupAdded(GameStateDTO gameStateDto)
 	{
 		WaitForSetupWidget.gameObject.SetActive(true);
-		WaitForSetupWidget.Initialize(() => {
-			onGameStart?.Invoke(gameStateDto);
+		WaitForSetupWidget.Initialize((gameState) => {
+			onGameStart?.Invoke(gameState);
 			gameObject.SetActive(false);
 		});
 	}

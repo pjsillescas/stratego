@@ -14,6 +14,6 @@ public class GameStateDTO
 
 	public List<List<BoardTileDTO>> board;
 
-	public bool isMyTurn;
+	public bool myTurn;
 
 }

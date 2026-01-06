@@ -4,5 +4,5 @@ using System;
 public class BoardTileDTO
 {
 	public Rank rank;
-	public bool isHostOwner;
+	public bool hostOwner;
 }

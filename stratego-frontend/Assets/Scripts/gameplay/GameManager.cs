@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,7 @@ public class GameManager : MonoBehaviour
 		var commData = CommData.GetInstance();
 		isHost = commData.GetIsHost();
 
+		GameWidget.SetActive(false);
 		SetupWidget.Initialize(OnGameStarted);
 		//OnGameStarted(GetTestGameState());
 	}
@@ -43,133 +45,133 @@ public class GameManager : MonoBehaviour
 		gameState.phase = GamePhase.PLAYING;
 		gameState.currentPlayer = new PlayerDTO() { id = 1, username = "host" };
 		gameState.movement = null;
-		gameState.isMyTurn = true;
+		gameState.myTurn = true;
 		gameState.gameId = 1;
 		gameState.board = new () { 
 			// Blue player (host)
 			new () {
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.FLAG },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL},
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.FLAG },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL},
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
 			},
 			new () {
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL},
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL},
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
 			},
 			new () {
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL},
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL},
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
 			},
 			new () {
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.SCOUT },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.FLAG},
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.BOMB },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.SCOUT },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.FLAG},
+				new BoardTileDTO() { hostOwner = true, rank = Rank.BOMB },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.GENERAL },
 			},
 
 			// Central zone
 			new () {
 				null,
 				null,
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.DISABLED },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.DISABLED },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.DISABLED },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.DISABLED },
 				null,
 				null,
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.DISABLED },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.DISABLED},
+				new BoardTileDTO() { hostOwner = true, rank = Rank.DISABLED },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.DISABLED},
 				null,
 				null,
 			},
 			new () {
 				null,
 				null,
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.DISABLED },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.DISABLED },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.DISABLED },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.DISABLED },
 				null,
 				null,
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.DISABLED },
-				new BoardTileDTO() { isHostOwner = true, rank = Rank.DISABLED},
+				new BoardTileDTO() { hostOwner = true, rank = Rank.DISABLED },
+				new BoardTileDTO() { hostOwner = true, rank = Rank.DISABLED},
 				null,
 				null,
 			},
 
 			// Red player (guest)
 			new () {
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL},
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL},
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
 			},
 			new () {
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL},
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL},
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
 			},
 			new () {
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.MINER },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL},
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.MINER },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL},
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
 			},
 			new () {
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.CAPTAIN },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL },
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.GENERAL},
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.SPY},
-				new BoardTileDTO() { isHostOwner = false, rank = Rank.FLAG },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.CAPTAIN },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL },
+				new BoardTileDTO() { hostOwner = false, rank = Rank.GENERAL},
+				new BoardTileDTO() { hostOwner = false, rank = Rank.SPY},
+				new BoardTileDTO() { hostOwner = false, rank = Rank.FLAG },
 			},
 
 		};
@@ -178,8 +180,13 @@ public class GameManager : MonoBehaviour
 
 	private void OnGameStarted(GameStateDTO gameStateDto)
 	{
+		GameWidget.SetActive(true);
+
 		currentGameState = gameStateDto;
 		var board = gameStateDto.board;
+
+		Debug.Log(JsonConvert.SerializeObject(board));
+		
 		if (!isHost)
 		{
 			board = new(board);
@@ -206,10 +213,10 @@ public class GameManager : MonoBehaviour
 					{
 						var piece = Instantiate(PiecePrefab).GetComponent<Piece>();
 						piece.transform.position = Board.GetWorldPosition(irow, icol);
-						piece.Initialize(tileDto.rank, tileDto.isHostOwner);
+						piece.Initialize(tileDto.rank, tileDto.hostOwner);
 						var tile = Board.GetTile(irow, icol);
 						piece.SetTile(tile);
-						if (tileDto.isHostOwner)
+						if (tileDto.hostOwner)
 						{
 							hostPieces.Add(piece);
 						}

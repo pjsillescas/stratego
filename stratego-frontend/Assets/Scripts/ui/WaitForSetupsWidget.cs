@@ -4,8 +4,10 @@ using System.Collections;
 
 public class WaitForSetupsWidget : MonoBehaviour
 {
-	private bool isSetupArrived;
-	private Action OnSetupGot;
+	private const float WAIT_TIME_SECONDS = 2f;
+
+	private GameStateDTO gameStateDto;
+	private Action<GameStateDTO> OnSetupGot;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
@@ -13,7 +15,7 @@ public class WaitForSetupsWidget : MonoBehaviour
 		;
 	}
 
-	public void Initialize(Action OnSetupGot)
+	public void Initialize(Action<GameStateDTO> OnSetupGot)
 	{
 		this.OnSetupGot = OnSetupGot;
 
@@ -22,21 +24,19 @@ public class WaitForSetupsWidget : MonoBehaviour
 
 	private IEnumerator CheckForSetupCoroutine()
 	{
-		Debug.Log("check for setup");
-
-		var waitForSeconds = new WaitForSeconds(10);
+		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS);
 
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
-		isSetupArrived = false;
-		while (!isSetupArrived)
+		gameStateDto = null;
+		while (gameStateDto == null)
 		{
 			StartCoroutine(BackendService.GetInstance().GetStatus(gameId, token, OnSetupReceived, OnError));
 			yield return waitForSeconds;
 		}
 
-		OnSetupGot?.Invoke();
+		OnSetupGot?.Invoke(gameStateDto);
 		gameObject.SetActive(false);
 		yield return null;
 	}
@@ -45,7 +45,7 @@ public class WaitForSetupsWidget : MonoBehaviour
 	{
 		if (gameStateDto.phase == GamePhase.PLAYING)
 		{
-			isSetupArrived = true;
+			this.gameStateDto = gameStateDto;
 		}
 	}
 

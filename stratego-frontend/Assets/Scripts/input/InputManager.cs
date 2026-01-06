@@ -46,7 +46,7 @@ public class InputManager : MonoBehaviour
 
 	private void OnGameStateUpdated(object sender, GameStateDTO gameStateDTO)
 	{
-		isMyTurn = gameStateDTO.isMyTurn;
+		isMyTurn = gameStateDTO.myTurn;
 	}
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created

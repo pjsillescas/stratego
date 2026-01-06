@@ -21,7 +21,7 @@ public class TurnWidget : MonoBehaviour
 
 	private void OnGameStateUpdated(object sender, GameStateDTO gameStateDTO)
 	{
-		TurnText.text = gameStateDTO.isMyTurn ? YOUR_TURN : OPPONENT_TURN;
+		TurnText.text = gameStateDTO.myTurn ? YOUR_TURN : OPPONENT_TURN;
 	}
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
