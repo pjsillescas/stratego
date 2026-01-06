@@ -331,6 +331,7 @@ public class StrategoServiceImpl implements StrategoService {
 		var allMovements = strategoMovementRepository.findAllByGameId(gameId);
 		var movement = Optional.ofNullable((allMovements.size() == 0) ? null : allMovements.getLast());
 
+		var isHost = player.equals(status.getGame().getHost());
 		return GameStateDTO.builder() //
 				.currentPlayer(toPlayerDTO(player)) //
 				.hostPlayerId(Optional.ofNullable(game.getHost()).map(Player::getId).orElse(0)) //
@@ -339,7 +340,7 @@ public class StrategoServiceImpl implements StrategoService {
 				.phase(game.getPhase()) //
 				.movement(movement.map(this::toMovementDTO).orElse(null)) //
 				.board(board) //
-				.isMyTurn(false) //
+				.isMyTurn(isHost && !status.getIsGuestTurn() || !isHost && status.getIsGuestTurn()) //
 				.build();
 	}
 
