@@ -40,10 +40,10 @@ public class ConfirmMovementWidget : MonoBehaviour
 	{
 		var movement = new StrategoMovementDTO() {
 			rowInitial = selectedPiece.GetTile().GetRow(),
-			rowFinal = selectedPiece.GetTile().GetCol(),
+			colInitial = selectedPiece.GetTile().GetCol(),
 			rank = selectedPiece.GetRank(),
 
-			colInitial = selectedTile.GetRow(),
+			rowFinal = selectedTile.GetRow(),
 			colFinal = selectedTile.GetCol(),
 		};
 

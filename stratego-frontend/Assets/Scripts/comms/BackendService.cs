@@ -245,7 +245,7 @@ public class BackendService: MonoBehaviour
 	public IEnumerator AddMovement(int gameId, string token, StrategoMovementDTO movement, Action<GameStateDTO> onMovementAdded, Action<StrategoErrorDTO> onError)
 	{
 		var data = JsonUtility.ToJson(movement);
-		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/{gameId}/setup", data);
+		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/{gameId}/movement", data);
 		//request.SetRequestHeader("Accept", "application/json");
 		request.SetRequestHeader("Content-Type", "application/json");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
