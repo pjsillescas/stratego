@@ -268,7 +268,7 @@ public class GameManager : MonoBehaviour
 		*/
 	}
 
-	private void OnMovementAdded(GameStateDTO gameStateDto)
+	public void OnMovementAdded(GameStateDTO gameStateDto)
 	{
 		currentGameState = gameStateDto;
 		OnGameStateUpdated?.Invoke(this, gameStateDto);
@@ -285,7 +285,7 @@ public class GameManager : MonoBehaviour
 
 	private void OnError(StrategoErrorDTO error)
 	{
-		Debug.Log(error);
+		Debug.Log(error.message);
 	}
 
 	// Update is called once per frame
