@@ -189,9 +189,14 @@ public class GameManager : MonoBehaviour
 		
 		if (!isHost)
 		{
+			/*
 			board = new(board);
 			board.Reverse();
 			board.ForEach(row => row.Reverse());
+			*/
+			Camera.main.transform.Rotate(Vector3.right, -90f);
+			Camera.main.transform.Rotate(Vector3.up, 180f);
+			Camera.main.transform.Rotate(Vector3.right, 90f);
 		}
 
 		int irow = -1;
@@ -216,6 +221,12 @@ public class GameManager : MonoBehaviour
 						piece.Initialize(tileDto.rank, tileDto.hostOwner);
 						var tile = Board.GetTile(irow, icol);
 						piece.SetTile(tile);
+
+						if (!isHost)
+						{
+							piece.transform.Rotate(Vector3.up, 180f);
+						}
+
 						if (tileDto.hostOwner)
 						{
 							hostPieces.Add(piece);

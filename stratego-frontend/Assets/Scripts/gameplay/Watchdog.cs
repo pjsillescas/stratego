@@ -7,6 +7,7 @@ public class Watchdog : MonoBehaviour
 
 
 	private GameManager gameManager;
+	private bool hasTurnChanged;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
@@ -41,23 +42,30 @@ public class Watchdog : MonoBehaviour
 	{
 		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS);
 
+		Debug.Log("watchdog coroutine ending");
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
 		
-		var isGuestArrived = false;
-		while (!isGuestArrived)
+		hasTurnChanged = false;
+		while (!hasTurnChanged)
 		{
+			Debug.Log("watchdog turn");
 			StartCoroutine(BackendService.GetInstance().GetStatus(gameId, token, OnGameStateGot, OnError));
 			yield return waitForSeconds;
 		}
 
+		Debug.Log("watchdog coroutine ending");
 		yield return null;
 	}
 
 	private void OnGameStateGot(GameStateDTO gameStateDto)
 	{
-		gameManager.OnMovementAdded(gameStateDto);
+		if (gameStateDto.myTurn)
+		{
+			gameManager.OnMovementAdded(gameStateDto);
+			hasTurnChanged = true;
+		}
 	}
 
 	private void OnError(StrategoErrorDTO error)

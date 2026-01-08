@@ -265,7 +265,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.LogError("Failed to add movement: " + request.error);
+			Debug.LogError($"Failed to add movement: {request.error} ({json})");
 
 			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
 			onError?.Invoke(result);
