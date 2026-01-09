@@ -1,12 +1,18 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.LookDev;
 
 public class GameManager : MonoBehaviour
 {
 	public static event EventHandler<GameStateDTO> OnGameStateUpdated;
+	public static event EventHandler<Piece> OnPieceCaptured;
 
 	[SerializeField]
 	private ArmySetupWidget SetupWidget;
@@ -279,6 +285,72 @@ public class GameManager : MonoBehaviour
 		*/
 	}
 
+	private int ClashPieces(Piece attacker, Piece defender)
+	{
+		var rankAttacker = attacker.GetRank();
+		var rankDefender = defender.GetRank();
+
+		var immobileRanks = new List<Rank>() { Rank.BOMB, Rank.FLAG, Rank.DISABLED };
+		if (immobileRanks.Contains(rankAttacker) || Rank.DISABLED == rankDefender)
+		{
+			//throw new MatchmakingValidationException("Invalid ranks compared");
+		}
+
+		if (rankAttacker == rankDefender)
+		{
+			return 0;
+		}
+
+		if (rankDefender == Rank.FLAG)
+		{
+			return 1;
+		}
+
+		List<Rank> upperRanks = new();
+		switch (rankDefender)
+		{
+			case Rank.BOMB:
+				upperRanks = new() { Rank.MINER };
+				break;
+			case Rank.MARSHAL:
+				upperRanks = new() { Rank.SPY };
+				break;
+			case Rank.GENERAL:
+				upperRanks = new() { Rank.MARSHAL };
+				break;
+			case Rank.COLONEL:
+				upperRanks = new() { Rank.MARSHAL, Rank.GENERAL };
+				break;
+			case Rank.MAJOR:
+				upperRanks = new() { Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL };
+				break;
+			case Rank.CAPTAIN:
+				upperRanks = new() { Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR };
+				break;
+			case Rank.LIEUTENANT:
+				upperRanks = new() { Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN };
+				break;
+			case Rank.SERGEANT:
+				upperRanks = new() { Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT };
+				break;
+			case Rank.MINER:
+				upperRanks = new() { Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
+						Rank.SERGEANT };
+				break;
+			case Rank.SCOUT:
+				upperRanks = new() { Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
+						Rank.SERGEANT, Rank.MINER };
+				break;
+			case Rank.SPY:
+			default:
+				upperRanks = new() { Rank.MARSHAL, Rank.GENERAL, Rank.COLONEL, Rank.MAJOR, Rank.CAPTAIN, Rank.LIEUTENANT,
+						Rank.SERGEANT, Rank.MINER, Rank.SCOUT };
+				break;
+		}
+
+		return upperRanks.Contains(rankAttacker) ? 1 : -1;
+	}
+
 	public void OnMovementAdded(GameStateDTO gameStateDto)
 	{
 		currentGameState = gameStateDto;
@@ -286,6 +358,25 @@ public class GameManager : MonoBehaviour
 
 		//Board.MoveTile(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial, gameStateDto.movement.rowFinal, gameStateDto.movement.colFinal);
 		var piece = GetPieceAtCoordinates(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial);
+		var pieceTarget = GetPieceAtCoordinates(gameStateDto.movement.rowFinal, gameStateDto.movement.colFinal);
+
+		if(pieceTarget != null)
+		{
+			var result = ClashPieces(piece, pieceTarget);
+
+			if (result == 1 || result == 0)
+			{
+				OnPieceCaptured?.Invoke(this, pieceTarget);
+				Destroy(pieceTarget.gameObject, 1f);
+			}
+			
+			if (result == -1 || result == 0)
+			{
+				OnPieceCaptured?.Invoke(this, piece);
+				Destroy(piece.gameObject, 1f);
+			}
+		}
+
 		var targetRow = gameStateDto.movement.rowFinal;
 		var targetCol = gameStateDto.movement.colFinal;
 		piece.transform.position = Board.GetWorldPosition(targetRow, targetCol);
