@@ -20,20 +20,20 @@ public class StrategoMovementDTO {
 	private Rank rank;
 
 	@NotNull
-	@Min(1)
-	@Max(10)
+	@Min(0)
+	@Max(9)
 	private int rowInitial;
 	@NotNull
-	@Min(1)
-	@Max(10)
+	@Min(0)
+	@Max(9)
 	private int colInitial;
 
 	@NotNull
-	@Min(1)
-	@Max(10)
+	@Min(0)
+	@Max(9)
 	private int rowFinal;
 	@NotNull
-	@Min(1)
-	@Max(10)
+	@Min(0)
+	@Max(9)
 	private int colFinal;
 }

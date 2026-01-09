@@ -114,6 +114,7 @@ public class StrategoServiceTest {
 
 		var board = (List<List<BoardTileDTO>>) Mockito.mock(List.class);
 		var status = Mockito.mock(StrategoStatus.class);
+		Mockito.when(status.getGame()).thenReturn(game);
 		Mockito.when(strategoStatusRepository.findByGameId(GAME_ID)).thenReturn(Optional.of(status));
 		Mockito.when(status.getBoard()).thenReturn(board);
 
@@ -128,7 +129,7 @@ public class StrategoServiceTest {
 		assertThat(statusDto.getGameId()).isEqualTo(GAME_ID);
 		assertThat(statusDto.getPhase()).isEqualTo(GamePhase.PLAYING);
 		assertThat(statusDto.getBoard()).isEqualTo(board);
-		assertThat(statusDto.isMyTurn()).isFalse();
+		assertThat(statusDto.isMyTurn()).isTrue();
 
 		if (movements.size() == 0) {
 			assertThat(statusDto.getMovement()).isNull();
