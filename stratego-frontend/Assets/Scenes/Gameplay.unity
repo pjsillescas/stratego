@@ -349,6 +349,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Board
   TilePrefab: {fileID: 3934790222929873029, guid: dca49848ba2799246abdd8b0d592b408, type: 3}
+  DisablePrefab: {fileID: 8707429535200529145, guid: 50ab1ab00a7b21f428513dfa484d1898, type: 3}
+  DisabledTiles:
+  - {x: 4, y: 2}
+  - {x: 4, y: 3}
+  - {x: 5, y: 2}
+  - {x: 5, y: 3}
+  - {x: 4, y: 6}
+  - {x: 4, y: 7}
+  - {x: 5, y: 6}
+  - {x: 5, y: 7}
 --- !u!224 &30086271 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1167515347298858571, guid: 44c8319b602065a4e88d85da716e2cab, type: 3}

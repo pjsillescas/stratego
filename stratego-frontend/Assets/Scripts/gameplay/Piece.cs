@@ -47,7 +47,7 @@ public class Piece : MonoBehaviour
 
 	public void Highlight()
 	{
-		if (status != Status.SELECTED)
+		if (status != Status.SELECTED && HighlightMaterial != null)
 		{
 			meshRenderer.material = HighlightMaterial;
 			status = Status.HIGHLIGHTED;
@@ -56,12 +56,22 @@ public class Piece : MonoBehaviour
 
 	public void Select()
 	{
+		if (SelectedMaterial == null)
+		{
+			return;			
+		}
+		
 		meshRenderer.material = SelectedMaterial;
 		status = Status.SELECTED;
 	}
 
 	public void Deselect()
 	{
+		if(NormalMaterial == null)
+		{
+			return;
+		}
+
 		meshRenderer.material = NormalMaterial;
 		status = Status.NORMAL;
 	}
@@ -97,7 +107,10 @@ public class Piece : MonoBehaviour
 		}
 
 		//GetComponent<MeshRenderer>().material.color = (isHost) ? HOSTCOLOR : GUESTCOLOR;
-		TextName.text = names[rank];
+		if (TextName != null)
+		{
+			TextName.text = names[rank];
+		}
 
 		NormalMaterial = isHost ? NormalMaterialHost : NormalMaterialGuest;
 		HighlightMaterial = isHost ? HighlightMaterialHost : HighlightMaterialGuest;

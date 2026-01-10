@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.Audio.ProcessorInstance;
+
 public class InputManager : MonoBehaviour
 {
 	public static event EventHandler<Piece> OnPieceSelected;
@@ -140,7 +140,7 @@ public class InputManager : MonoBehaviour
 
 	private bool IsValidPiece(Piece piece)
 	{
-		return piece.IsHost() == isHost;
+		return piece.IsHost() == isHost && piece.GetRank() != Rank.DISABLED;
 	}
 
 	private bool IsValidTile(Tile tile)
@@ -191,7 +191,7 @@ public class InputManager : MonoBehaviour
 
 	private bool IsValidTileForHighlight(Tile tile)
 	{
-		if (selectedPiece != null)
+		if (selectedPiece != null && selectedPiece.GetRank() != Rank.DISABLED)
 		{
 			var immobileRanks = new List<Rank>() { Rank.BOMB, Rank.FLAG };
 			var selectedPieceTile = selectedPiece.GetTile();
@@ -211,7 +211,7 @@ public class InputManager : MonoBehaviour
 	private bool IsValidTargetPieceInTile(Tile tile)
 	{
 		var piece = gameManager.GetPieceAtCoordinates(tile.GetRow(), tile.GetCol());
-		return piece == null || piece.GetIsHost() != isHost;
+		return piece == null || piece.GetIsHost() != isHost && piece.GetRank() != Rank.DISABLED;
 	}
 
 	private void ProcessHighlightTile(Ray ray)
