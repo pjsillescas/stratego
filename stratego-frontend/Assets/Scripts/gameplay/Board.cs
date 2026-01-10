@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,8 +11,6 @@ public class Board : MonoBehaviour
 
 	[SerializeField]
 	private GameObject TilePrefab;
-	[SerializeField]
-	private GameObject DisablePrefab;
 	[SerializeField]
 	private List<Vector2> DisabledTiles;
 
@@ -32,12 +29,6 @@ public class Board : MonoBehaviour
 				var rotation = Quaternion.Euler(90, 0, 0);
 				Tiles[row, col] = Instantiate(TilePrefab, position, rotation).GetComponent<Tile>();
 				Tiles[row, col].Initialize(row, col);
-
-				if (DisabledTiles.Contains(new Vector2(row, col)))
-				{
-					var disabledPiece = Instantiate(DisablePrefab, position, rotation).GetComponent<Piece>();
-					disabledPiece.SetTile(Tiles[row, col]);
-				}
 			}
 		}
 	}

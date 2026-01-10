@@ -189,9 +189,15 @@ public class InputManager : MonoBehaviour
 		return false;
 	}
 
+	private bool IsDisabledTile(Tile tile)
+	{
+		var piece = gameManager.GetPieceAtCoordinates(tile.GetRow(), tile.GetCol());
+		return piece != null && piece.GetRank() == Rank.DISABLED;
+	}
+
 	private bool IsValidTileForHighlight(Tile tile)
 	{
-		if (selectedPiece != null && selectedPiece.GetRank() != Rank.DISABLED)
+		if (selectedPiece != null && !IsDisabledTile(tile))
 		{
 			var immobileRanks = new List<Rank>() { Rank.BOMB, Rank.FLAG };
 			var selectedPieceTile = selectedPiece.GetTile();

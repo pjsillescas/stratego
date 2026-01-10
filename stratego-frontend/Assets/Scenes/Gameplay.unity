@@ -349,7 +349,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Board
   TilePrefab: {fileID: 3934790222929873029, guid: dca49848ba2799246abdd8b0d592b408, type: 3}
-  DisablePrefab: {fileID: 8707429535200529145, guid: 50ab1ab00a7b21f428513dfa484d1898, type: 3}
   DisabledTiles:
   - {x: 4, y: 2}
   - {x: 4, y: 3}
@@ -2455,6 +2454,7 @@ MonoBehaviour:
   GameWidget: {fileID: 547097788}
   Board: {fileID: 21193544}
   PiecePrefab: {fileID: 367100302779210556, guid: 6dabbb41e134bce4d9c67d89122b37c0, type: 3}
+  DisablePrefab: {fileID: 8707429535200529145, guid: 50ab1ab00a7b21f428513dfa484d1898, type: 3}
 --- !u!1001 &1003935391
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,13 +1,8 @@
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering.LookDev;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,9 +17,12 @@ public class GameManager : MonoBehaviour
 	private Board Board;
 	[SerializeField]
 	private GameObject PiecePrefab;
+	[SerializeField]
+	private GameObject DisablePrefab;
 
 	private List<Piece> hostPieces;
 	private List<Piece> guestPieces;
+	private List<Piece> disabledPieces;
 	private bool isHost;
 	private GameStateDTO currentGameState;
 
@@ -34,6 +32,7 @@ public class GameManager : MonoBehaviour
 	{
 		hostPieces = new();
 		guestPieces = new();
+		disabledPieces = new();
 		
 		var commData = CommData.GetInstance();
 		isHost = commData.GetIsHost();
@@ -216,16 +215,20 @@ public class GameManager : MonoBehaviour
 
 				if (tileDto != null)
 				{
+					var tile = Board.GetTile(irow, icol);
+					
 					if (tileDto.rank == Rank.DISABLED)
 					{
-						;
+						var disabledPiece = Instantiate(DisablePrefab).GetComponent<Piece>();
+						disabledPiece.transform.position = Board.GetWorldPosition(irow, icol);
+						disabledPiece.SetTile(tile);
+						disabledPieces.Add(disabledPiece);
 					}
 					else
 					{
 						var piece = Instantiate(PiecePrefab).GetComponent<Piece>();
 						piece.transform.position = Board.GetWorldPosition(irow, icol);
 						piece.Initialize(tileDto.rank, tileDto.hostOwner);
-						var tile = Board.GetTile(irow, icol);
 						piece.SetTile(tile);
 
 						if (!isHost)
@@ -258,6 +261,11 @@ public class GameManager : MonoBehaviour
 			piece = GetPieceAtCoordinates(row, col, guestPieces);
 		}
 
+		if (piece == null)
+		{
+			piece = GetPieceAtCoordinates(row, col, disabledPieces);
+		}
+		
 		return piece;
 	}
 
