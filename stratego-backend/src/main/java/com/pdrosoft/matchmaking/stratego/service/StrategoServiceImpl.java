@@ -119,7 +119,7 @@ public class StrategoServiceImpl implements StrategoService {
 			var boardRow = board.get(9 - iRow);
 
 			for (int iCol = 0; iCol < 10; iCol++) {
-				var tile = BoardTileDTO.builder().rank(setupRow.get(iCol)).isHostOwner(false).build();
+				var tile = BoardTileDTO.builder().rank(setupRow.get(9 - iCol)).isHostOwner(false).build();
 				boardRow.set(iCol, tile);
 			}
 		}

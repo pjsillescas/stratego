@@ -159,7 +159,7 @@ public class StrategoApiControllerTest {
 		var ranks = setup.getArmy();
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 10; col++) {
-				assertThat(board.get(9 - row).get(col).getRank()).isEqualTo(ranks.get(row).get(col));
+				assertThat(board.get(9 - row).get(9 - col).getRank()).isEqualTo(ranks.get(row).get(col));
 			}
 		}
 	}
@@ -291,7 +291,7 @@ public class StrategoApiControllerTest {
 		assertThat(gameStateGuest.getPhase()).isEqualTo(GamePhase.PLAYING);
 		assertThat(gameStateGuest.getBoard().get(movementDtoGuest.getRowFinal()).get(movementDtoGuest.getColFinal()))
 				.isNotNull().satisfies(tile -> {
-					assertThat(tile.getRank()).isEqualTo(Rank.SCOUT);
+					assertThat(tile.getRank()).isEqualTo(Rank.MINER);
 					assertThat(tile.isHostOwner()).isFalse();
 				});
 		assertThat(
