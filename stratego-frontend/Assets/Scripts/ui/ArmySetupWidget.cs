@@ -29,6 +29,7 @@ public class ArmySetupWidget : MonoBehaviour
 	{
 		gameObject.SetActive(true);
 		UseSetupButton.enabled = false;
+		UseSetupButton.onClick.RemoveAllListeners();
 		UseSetupButton.onClick.AddListener(UseSetupButtonClick);
 		ToolUnitItem.OnNumItemsChanged += ToolUnitItem_OnNumItemsChanged;
 		this.onGameStart = onGameStart;

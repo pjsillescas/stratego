@@ -42,6 +42,12 @@ public class GameManager : MonoBehaviour
 		//OnGameStarted(GetTestGameState());
 	}
 
+	public void DisableGame()
+	{
+		FindFirstObjectByType<Watchdog>().gameObject.SetActive(false);
+		FindFirstObjectByType<InputManager>().gameObject.SetActive(false);
+	}
+
 	public bool GetIsHost() => isHost;
 
 	private GameStateDTO GetTestGameState()

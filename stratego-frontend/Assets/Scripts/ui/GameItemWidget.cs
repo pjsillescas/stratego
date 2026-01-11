@@ -18,6 +18,7 @@ public class GameItemWidget : MonoBehaviour
 
 	private void Awake()
 	{
+		JoinButton.onClick.RemoveAllListeners();
 		JoinButton.onClick.AddListener(JoinButtonClick);
 	}
 

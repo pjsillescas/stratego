@@ -50,6 +50,7 @@ public class GameListWidget : MonoBehaviour
 	{
 		WaitWidget.gameObject.SetActive(false);
 
+		CreateGameButton.onClick.RemoveAllListeners();
 		CreateGameButton.onClick.AddListener(CreateGameButtonClick);
 
 		var token = GetToken();

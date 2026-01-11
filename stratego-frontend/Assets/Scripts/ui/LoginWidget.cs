@@ -42,12 +42,21 @@ public class LoginWidget : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		CommData.GetInstance().ResetData();
-		DisableError();
-		SignupButton.onClick.AddListener(ButtonSignupClick);
-		LoginButton.onClick.AddListener(ButtonLoginClick);
+		if (CommData.GetInstance().GetToken() != null)
+		{
+			ActivateGameListWidget();
+		}
+		else
+		{
+			CommData.GetInstance().ResetData();
+			DisableError();
+			SignupButton.onClick.RemoveAllListeners();
+			SignupButton.onClick.AddListener(ButtonSignupClick);
+			LoginButton.onClick.RemoveAllListeners();
+			LoginButton.onClick.AddListener(ButtonLoginClick);
 
-		backendService = FindFirstObjectByType<BackendService>();
+			backendService = FindFirstObjectByType<BackendService>();
+		}
 	}
 
 	private void ButtonSignupClick()
@@ -74,6 +83,11 @@ public class LoginWidget : MonoBehaviour
 		DisableError();
 		CommData.GetInstance().SetToken(token);
 		Debug.Log($"token: {token}");
+		ActivateGameListWidget();
+	}
+
+	private void ActivateGameListWidget()
+	{
 		GameListWidget.gameObject.SetActive(true);
 		gameObject.SetActive(false);
 	}

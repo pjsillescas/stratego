@@ -15,6 +15,7 @@ public class ConfirmMovementWidget : MonoBehaviour
 	{
 		gameManager = FindFirstObjectByType<GameManager>();
 		ConfirmMovementButton.enabled = false;
+		ConfirmMovementButton.onClick.RemoveAllListeners();
 		ConfirmMovementButton.onClick.AddListener(ConfirmMovementClick);
 	}
 
@@ -22,6 +23,12 @@ public class ConfirmMovementWidget : MonoBehaviour
 	{
 		InputManager.OnPieceSelected += OnPieceSelected;
 		InputManager.OnTileSelected += OnTileSelected;
+	}
+
+	private void OnDisable()
+	{
+		InputManager.OnPieceSelected -= OnPieceSelected;
+		InputManager.OnTileSelected -= OnTileSelected;
 	}
 
 	private void OnPieceSelected(object sender, Piece piece)
