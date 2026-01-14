@@ -40,6 +40,10 @@ public class GameManager : MonoBehaviour
 		GameWidget.SetActive(false);
 		SetupWidget.Initialize(OnGameStarted);
 		//OnGameStarted(GetTestGameState());
+
+		var myusername = commData.GetMyUsername();
+		var opponentusername = commData.GetOpponentUsername();
+		Debug.Log($"{myusername} vs {opponentusername}");
 	}
 
 	public void DisableGame()

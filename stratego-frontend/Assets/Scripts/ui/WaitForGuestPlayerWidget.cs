@@ -51,6 +51,13 @@ public class WaitForGuestPlayerWidget : MonoBehaviour
 	{
 		if (gameExtendedDto.guest != null)
 		{
+			var commData = CommData.GetInstance();
+			var host = gameExtendedDto.host;
+			var guest = gameExtendedDto.guest;
+			//commData.SetOpponentUsername((guest.username == commData.GetMyUsername()) ? host.username : guest.username);
+			commData.SetOpponentUsername(guest.username);
+			Debug.Log("opponent " + commData.GetOpponentUsername());
+
 			isGuestArrived = true;
 		}
 	}

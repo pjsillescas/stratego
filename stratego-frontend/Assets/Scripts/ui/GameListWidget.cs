@@ -19,7 +19,16 @@ public class GameListWidget : MonoBehaviour
 
 	private void OnJoinedGame(GameExtendedDTO gameExtendedDto)
 	{
-		CommData.GetInstance().SetGameId(gameExtendedDto.id);
+		var commData = CommData.GetInstance();
+
+		commData.SetGameId(gameExtendedDto.id);
+
+		var host = gameExtendedDto.host;
+		var guest = gameExtendedDto.guest;
+		//commData.SetOpponentUsername((guest.username == commData.GetMyUsername()) ? host.username : guest.username);
+		commData.SetOpponentUsername(host.username);
+		Debug.Log("opponent " + commData.GetOpponentUsername());
+
 		LoadGameplayScene(false);
 	}
 	private void OnCreatedGame(GameDTO gameDto)
