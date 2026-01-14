@@ -74,6 +74,7 @@ public class LoginWidget : MonoBehaviour
 	private void OnSignedUp(PlayerDTO player)
 	{
 		Debug.Log("onsignedup");
+		CommData.GetInstance().SetMyUsername(player.username);
 		DisableError();
 		ButtonLoginClick();
 	}
@@ -81,6 +82,7 @@ public class LoginWidget : MonoBehaviour
 	private void OnLoggedIn(string token)
 	{
 		DisableError();
+		CommData.GetInstance().SetMyUsername(UsernameInput.text);
 		CommData.GetInstance().SetToken(token);
 		Debug.Log($"token: {token}");
 		ActivateGameListWidget();

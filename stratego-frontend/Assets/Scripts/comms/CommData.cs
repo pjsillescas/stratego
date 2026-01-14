@@ -5,6 +5,8 @@ public class CommData : MonoBehaviour
 	private int gameId;
 	private string token;
 	private bool isHost;
+	private string myUsername;
+	private string opponentUsername;
 
 	public void ResetData()
 	{
@@ -12,6 +14,8 @@ public class CommData : MonoBehaviour
 		gameId = 0;
 		token = "";
 		isHost = false;
+		myUsername = "";
+		opponentUsername = "";
 	}
 
 	public void SetToken(string token)
@@ -40,6 +44,18 @@ public class CommData : MonoBehaviour
 
 	public static CommData GetInstance() => instance;
 
+	public string GetMyUsername() => myUsername;
+	public void SetMyUsername(string username)
+	{
+		myUsername = username;
+	}
+
+	public string GetOpponentUsername() => opponentUsername;
+	public void SetOpponentUsername(string username)
+	{
+		opponentUsername = username;
+	}
+	
 	private void Awake()
 	{
 		if (instance != null)
