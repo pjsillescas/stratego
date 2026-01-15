@@ -13,7 +13,9 @@ public class GameListWidget : MonoBehaviour
 
 	[SerializeField]
 	private Button CreateGameButton;
-	
+	[SerializeField]
+	private Button UpdateGameListButton;
+
 	[SerializeField]
 	private WaitForGuestPlayerWidget WaitWidget;
 
@@ -62,8 +64,10 @@ public class GameListWidget : MonoBehaviour
 		CreateGameButton.onClick.RemoveAllListeners();
 		CreateGameButton.onClick.AddListener(CreateGameButtonClick);
 
-		var token = GetToken();
-		StartCoroutine(BackendService.GetInstance().GetGameList(token, OnGamesGot, OnError));
+		UpdateGameListButton.onClick.RemoveAllListeners();
+		UpdateGameListButton.onClick.AddListener(UpdateGameListButtonClick);
+
+		UpdateGameListButtonClick();
 
 		/*
 		List<GameDTO> testGames = new() {
@@ -106,6 +110,12 @@ public class GameListWidget : MonoBehaviour
 			var gameItem = item.GetComponent<GameItemWidget>();
 			gameItem.SetGameData(game, JoinGame);
 		}
+	}
+
+	private void UpdateGameListButtonClick()
+	{
+		var token = GetToken();
+		StartCoroutine(BackendService.GetInstance().GetGameList(token, OnGamesGot, OnError));
 	}
 
 	private void CreateGameButtonClick()
