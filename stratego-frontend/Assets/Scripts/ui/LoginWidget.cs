@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LoginWidget : MonoBehaviour
@@ -22,9 +23,6 @@ public class LoginWidget : MonoBehaviour
 	[SerializeField]
 	private Button SignupButton;
 
-	[SerializeField]
-	private GameListWidget GameListWidget;
-
 	private BackendService backendService;
 
 	private void OnError(StrategoErrorDTO errorDto)
@@ -44,7 +42,7 @@ public class LoginWidget : MonoBehaviour
 	{
 		if (CommData.GetInstance().GetToken() != null)
 		{
-			ActivateGameListWidget();
+			GoToMainMenu();
 		}
 		else
 		{
@@ -85,13 +83,12 @@ public class LoginWidget : MonoBehaviour
 		CommData.GetInstance().SetMyUsername(UsernameInput.text);
 		CommData.GetInstance().SetToken(token);
 		Debug.Log($"token: {token}");
-		ActivateGameListWidget();
+		GoToMainMenu();
 	}
 
-	private void ActivateGameListWidget()
+	private void GoToMainMenu()
 	{
-		GameListWidget.gameObject.SetActive(true);
-		gameObject.SetActive(false);
+		SceneManager.LoadScene("MainMenu");
 	}
 
 	// Update is called once per frame

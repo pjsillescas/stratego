@@ -43,8 +43,8 @@ public class UsernameWidget : MonoBehaviour
     private void OnLeftGame(GameDTO gameDTO)
     {
         CommData.GetInstance().ResetData();
-        Debug.Log("go to main menu");
-        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+        Debug.Log("go to Login");
+        SceneManager.LoadScene("Login", LoadSceneMode.Single);
     }
 
     private void OnError(StrategoErrorDTO error)

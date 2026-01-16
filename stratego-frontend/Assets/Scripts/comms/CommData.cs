@@ -12,7 +12,7 @@ public class CommData : MonoBehaviour
 	{
 		Debug.Log("resetdata");
 		gameId = 0;
-		token = "";
+		token = null;
 		isHost = false;
 		myUsername = "";
 		opponentUsername = "";
