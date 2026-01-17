@@ -1,5 +1,7 @@
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -24,6 +26,10 @@ public class LoginWidget : MonoBehaviour
 	private Button SignupButton;
 
 	private BackendService backendService;
+	private InputActions inputActions;
+
+	private int selectedUI;
+	private GameObject[] uiElements;
 
 	private void OnError(StrategoErrorDTO errorDto)
 	{
@@ -37,9 +43,32 @@ public class LoginWidget : MonoBehaviour
 		ErrorText.enabled = false;
 	}
 
+	private void Awake()
+	{
+		inputActions = new InputActions();
+		uiElements = new GameObject[4] {
+			UsernameInput.gameObject,
+			PasswordInput.gameObject,
+			LoginButton.gameObject,
+			SignupButton.gameObject,
+		};
+	}
+
+	private void OnEnable()
+	{
+		inputActions.Enable();
+	}
+
+	private void OnDisable()
+	{
+		inputActions.Disable();
+	}
+
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
+		SelectUIElement(0);
+
 		if (CommData.GetInstance().GetToken() != null)
 		{
 			GoToMainMenu();
@@ -94,6 +123,27 @@ public class LoginWidget : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (inputActions.UI.ChangeUI.WasPressedThisFrame())
+		{
+			ChangeUI();
+		}
+	}
 
+	private void ChangeUI()
+	{
+		SelectUIElement((selectedUI + 1) % uiElements.Count());
+	}
+
+	private void SelectUIElement(int newElement)
+	{
+		Debug.Log($"selected {newElement}");
+		selectedUI = newElement;
+		var selectedElement = uiElements[selectedUI];
+		EventSystem.current.SetSelectedGameObject(selectedElement, null);
+
+		if (selectedElement.TryGetComponent(out TMP_InputField input))
+		{
+			input.ActivateInputField();
+		}
 	}
 }
