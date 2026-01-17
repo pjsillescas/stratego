@@ -8,11 +8,14 @@ public class Piece : MonoBehaviour
 	[SerializeField]
 	private TextMeshPro TextName;
 
+	[SerializeField]
+	private SpriteRenderer RankImage;
+
 	private bool isHost;
 	private Rank rank;
 	private Tile tile;
-
-	private Dictionary<Rank, string> names;
+	private string pieceName;
+	private bool isHidden;
 
 	private enum Status { NORMAL, HIGHLIGHTED, SELECTED }
 
@@ -36,6 +39,8 @@ public class Piece : MonoBehaviour
 
 	private Status status;
 	private MeshRenderer meshRenderer;
+
+	public bool GetIsHidden() => isHidden;
 
 	public void Darken()
 	{
@@ -78,28 +83,22 @@ public class Piece : MonoBehaviour
 
 	public bool IsHost() => isHost;
 
-	private void Awake()
+	public void Initialize(PieceData data, bool isHost, bool isHidden)
 	{
-		names = new() {
-			{ Rank.MARSHAL, "Marshal" },
-			{ Rank.GENERAL, "General" },
-			{ Rank.COLONEL, "Colonel" },
-			{ Rank.MAJOR, "Major" },
-			{ Rank.CAPTAIN, "Captain" },
-			{ Rank.LIEUTENANT, "Lieutenant" },
-			{ Rank.SERGEANT, "Sergeant" },
-			{ Rank.MINER, "Miner" },
-			{ Rank.SCOUT, "Scout" },
-			{ Rank.SPY, "Spy" },
-			{ Rank.FLAG, "Flag" },
-			{ Rank.BOMB, "Bomb" },
-		};
+		if (data != null)
+		{
+			rank = data.rank;
+			RankImage.sprite = data.sprite;
+			pieceName = data.rankName;
+		}
+		else
+		{
+			rank = Rank.DISABLED;
+			pieceName = "";
+		}
 
-	}
-	public void Initialize(Rank rank, bool isHost)
-	{
-		this.rank = rank;
 		this.isHost = isHost;
+		this.isHidden = isHidden;
 
 		if (meshRenderer == null)
 		{
@@ -109,7 +108,7 @@ public class Piece : MonoBehaviour
 		//GetComponent<MeshRenderer>().material.color = (isHost) ? HOSTCOLOR : GUESTCOLOR;
 		if (TextName != null)
 		{
-			TextName.text = names[rank];
+			TextName.text = pieceName;
 		}
 
 		NormalMaterial = isHost ? NormalMaterialHost : NormalMaterialGuest;
@@ -117,6 +116,23 @@ public class Piece : MonoBehaviour
 		SelectedMaterial = isHost ? SelectedMaterialHost : SelectedMaterialGuest;
 
 		Deselect();
+
+		if (isHidden)
+		{
+			HideData();
+		}
+	}
+
+	public void HideData()
+	{
+		TextName.gameObject.SetActive(false);
+		RankImage.gameObject.SetActive(false);
+	}
+
+	public void ShowData()
+	{
+		TextName.gameObject.SetActive(true);
+		RankImage.gameObject.SetActive(true);
 	}
 
 	public void SetTile(Tile tile)

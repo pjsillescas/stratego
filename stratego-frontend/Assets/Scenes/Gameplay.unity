@@ -2603,6 +2603,7 @@ MonoBehaviour:
   Board: {fileID: 21193544}
   PiecePrefab: {fileID: 367100302779210556, guid: 6dabbb41e134bce4d9c67d89122b37c0, type: 3}
   DisablePrefab: {fileID: 8707429535200529145, guid: 50ab1ab00a7b21f428513dfa484d1898, type: 3}
+  pieceSet: {fileID: 11400000, guid: d723fcdb047d4134e98cc22939e76a55, type: 2}
 --- !u!1001 &1003935391
 PrefabInstance:
   m_ObjectHideFlags: 0

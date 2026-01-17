@@ -20,6 +20,9 @@ public class GameManager : MonoBehaviour
 	[SerializeField]
 	private GameObject DisablePrefab;
 
+	[SerializeField]
+	private PiecesSet pieceSet;
+
 	private List<Piece> hostPieces;
 	private List<Piece> guestPieces;
 	private List<Piece> disabledPieces;
@@ -238,7 +241,8 @@ public class GameManager : MonoBehaviour
 					{
 						var piece = Instantiate(PiecePrefab).GetComponent<Piece>();
 						piece.transform.position = Board.GetWorldPosition(irow, icol);
-						piece.Initialize(tileDto.rank, tileDto.hostOwner);
+						//piece.Initialize(tileDto.rank, tileDto.hostOwner);
+						piece.Initialize(GetRankData(tileDto.rank), tileDto.hostOwner, tileDto.hostOwner != isHost);
 						piece.SetTile(tile);
 
 						if (!isHost)
@@ -260,6 +264,11 @@ public class GameManager : MonoBehaviour
 		}
 
 		OnGameStateUpdated?.Invoke(this, gameStateDto);
+	}
+
+	private PieceData GetRankData(Rank rank)
+	{
+		return pieceSet.pieces.Where(piece => piece.rank == rank).First();
 	}
 
 	public Piece GetPieceAtCoordinates(int row, int col)

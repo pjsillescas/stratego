@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Piece
   TextName: {fileID: 7458979357091951371}
+  RankImage: {fileID: 5990854871598220137}
   NormalMaterialHost: {fileID: 2100000, guid: 6990828f67cc0494faf36eb9c1e890c7, type: 2}
   HighlightMaterialHost: {fileID: 2100000, guid: 48fd639d1d50f8247b6e2936adc7a639, type: 2}
   SelectedMaterialHost: {fileID: 2100000, guid: 7dac857378df9c1459ff4a9a0ce2d2fc, type: 2}
@@ -341,7 +342,7 @@ Transform:
   m_GameObject: {fileID: 2225003116729384688}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 1, z: -0.138}
+  m_LocalPosition: {x: 0, y: 0.6, z: -0.138}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -396,15 +397,15 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1402289519, guid: b68e7634a40a26342ac5f1f9af5d73f6, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.5, y: 1.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &6888935611731529730
 GameObject:

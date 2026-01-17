@@ -2,6 +2,6 @@ public class DisablePiece : Piece
 {
 	private void Awake()
 	{
-		Initialize(Rank.DISABLED, false);
+		Initialize(null, false, true);
 	}
 }
