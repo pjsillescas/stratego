@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
 	private List<Piece> guestPieces;
 	private List<Piece> disabledPieces;
 	private bool isHost;
-	private GameStateDTO currentGameState;
+	//private GameStateDTO currentGameState;
 
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -200,7 +200,7 @@ public class GameManager : MonoBehaviour
 	{
 		GameWidget.SetActive(true);
 
-		currentGameState = gameStateDto;
+		//currentGameState = gameStateDto;
 		var board = gameStateDto.board;
 
 		Debug.Log(JsonConvert.SerializeObject(board));
@@ -380,7 +380,7 @@ public class GameManager : MonoBehaviour
 
 	public void OnMovementAdded(GameStateDTO gameStateDto)
 	{
-		currentGameState = gameStateDto;
+		//currentGameState = gameStateDto;
 		OnGameStateUpdated?.Invoke(this, gameStateDto);
 
 		//Board.MoveTile(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial, gameStateDto.movement.rowFinal, gameStateDto.movement.colFinal);

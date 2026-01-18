@@ -66,6 +66,7 @@ public class CommData : MonoBehaviour
 
 		DontDestroyOnLoad(gameObject);
 		instance = this;
+		ResetData();
 	}
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created

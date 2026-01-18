@@ -9,11 +9,13 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler
 	private RawImage UnitImage;
 	[SerializeField]
 	private TextMeshProUGUI NameText;
+	[SerializeField]
+	private RawImage RankImage;
 
 	private ToolUnitItem previousToolUnitItem;
-	private Rank rank;
+	private PieceData data;
 
-	public Rank GetRank() => rank;
+	public Rank GetRank() => data.rank;
 
 	public void OnDrop(PointerEventData eventData)
 	{
@@ -27,10 +29,11 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler
 			}
 			
 			previousToolUnitItem = toolUnitItem;
-			rank = unitImage.GetRank();
+			data = unitImage.GetData();
 			//Debug.Log($"ondrop setupposition {rank}");
 			ShowImage();
 			NameText.text = unitImage.GetName();
+			RankImage.texture = data.texture;
 		}
 	}
 

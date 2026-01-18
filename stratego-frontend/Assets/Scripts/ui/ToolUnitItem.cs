@@ -8,46 +8,49 @@ public class ToolUnitItem : MonoBehaviour
 	
 	[SerializeField]
 	private TextMeshProUGUI NumUnitsText;
+	[SerializeField]
+	private TextMeshProUGUI NameText;
 
 	[SerializeField]
 	private Transform PicTransform;
 
 	[SerializeField]
-	private GameObject PicTransformPrefab;
+	private GameObject UnitImagePrefab;
 
 	[SerializeField]
-	private Transform ParentTransform;
+	private PieceData Data;
 
-	[SerializeField]
-	private int NumUnits;
+	private int numUnits;
 
-	public int GetNumUnits() => NumUnits;
+	public int GetNumUnits() => numUnits;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		NumUnitsText.text = NumUnits.ToString();
-		var obj = Instantiate(PicTransformPrefab, PicTransform);
-		obj.GetComponent<UnitImage>().SetToolUnitItem(this);
+		numUnits = Data.numUnits;
+		NumUnitsText.text = numUnits.ToString();
+		NameText.text = Data.rankName;
+		var obj = Instantiate(UnitImagePrefab, PicTransform);
+		obj.GetComponent<UnitImage>().Init(Data, this);
 	}
 
 	public bool DecrementNumUnits()
 	{
-		if (NumUnits <= 0)
+		if (numUnits <= 0)
 		{
 			return false;
 		}
 
-		NumUnits--;
-		NumUnitsText.text = NumUnits.ToString();
+		numUnits--;
+		NumUnitsText.text = numUnits.ToString();
 		OnNumItemsChanged?.Invoke(this, EventArgs.Empty);
 		return true;
 	}
 
 	public bool IncrementNumUnits()
 	{
-		NumUnits++;
-		NumUnitsText.text = NumUnits.ToString();
+		numUnits++;
+		NumUnitsText.text = numUnits.ToString();
 		return true;
 	}
 }

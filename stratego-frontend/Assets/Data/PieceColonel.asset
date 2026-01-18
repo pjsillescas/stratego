@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PieceData
   rank: 2
   sprite: {fileID: -1335625661, guid: b68e7634a40a26342ac5f1f9af5d73f6, type: 3}
+  texture: {fileID: 2800000, guid: c1d3197998e4dd94fbe94c3078a19157, type: 3}
   rankName: Colonel
+  numUnits: 2

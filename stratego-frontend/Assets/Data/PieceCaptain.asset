@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PieceData
   rank: 4
   sprite: {fileID: -2010093690, guid: b68e7634a40a26342ac5f1f9af5d73f6, type: 3}
+  texture: {fileID: 2800000, guid: 31748f9f1594db542842c61eb0f3b90a, type: 3}
   rankName: Captain
+  numUnits: 4

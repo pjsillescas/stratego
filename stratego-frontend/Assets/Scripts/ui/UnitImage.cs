@@ -1,35 +1,26 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandler, IEndDragHandler, IDropHandler /* , IPointerDownHandler */
+public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandler, IEndDragHandler, IDropHandler
 {
-	[SerializeField]
-	private TextMeshProUGUI TextName;
-
-	[SerializeField]
-	private Rank Rank;
-
-	[SerializeField]
-	private string DefaultName;
-
 	private Transform parent;
 	private Vector3 defaultPosition;
 	private RectTransform rectTransform;
 	private Canvas canvas;
 	private CanvasGroup canvasGroup;
 	private ToolUnitItem toolUnitItem;
+	private PieceData data;
 
-	public string GetName() => TextName.text;
+	public string GetName() => data.rankName;
 
-	public void Init(string name, Rank rank)
+	public PieceData GetData() => data;
+
+	public void Init(PieceData data, ToolUnitItem toolUnitItem)
 	{
-		TextName.text = name;
-		Rank = rank;
-	}
-
-	public void SetToolUnitItem(ToolUnitItem toolUnitItem)
-	{
+		this.data = data;
+		GetComponent<RawImage>().texture = data.texture;
 		this.toolUnitItem = toolUnitItem;
 	}
 
@@ -46,7 +37,6 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 
 	private void Awake()
 	{
-		TextName.text = DefaultName;
 		parent = transform.parent;
 		defaultPosition = transform.localPosition;
 		rectTransform = GetComponent<RectTransform>();
@@ -56,14 +46,12 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 
 	public void Show()
 	{
-		TextName.gameObject.SetActive(true);
+		//TextName.gameObject.SetActive(true);
 	}
 	public void Hide()
 	{
-		TextName.gameObject.SetActive(true);
+		//TextName.gameObject.SetActive(true);
 	}
-
-	public Rank GetRank() => Rank;
 
 	public void OnDrag(PointerEventData eventData)
 	{
@@ -72,7 +60,6 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 			return;
 		}
 		
-		//transform.position = eventData.position;
 		rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
 	}
 
@@ -86,22 +73,13 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 		transform.SetParent(canvas.transform, true);
 		canvasGroup.alpha = 0.6f;
 		canvasGroup.blocksRaycasts = false;
-		//transform.parent = null;
 	}
 
 	public void OnEndDrag(PointerEventData eventData)
 	{
-		/*
-		if (toolUnitItem.GetNumUnits() <= 0)
-		{
-			return;
-		}
-		*/
-
 		transform.SetParent(parent, true);
 		canvasGroup.alpha = 1.0f;
 		canvasGroup.blocksRaycasts = true;
-		//transform.position = defaultPosition;
 		transform.localPosition = defaultPosition;
 	}
 
@@ -109,10 +87,4 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 	{
 		Debug.Log("ondrop");
 	}
-	/*
-	public void OnPointerDown(PointerEventData eventData)
-	{
-		Debug.Log("onpointerdown");
-	}
-	*/
 }

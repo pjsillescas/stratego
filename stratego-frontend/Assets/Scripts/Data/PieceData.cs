@@ -6,6 +6,7 @@ public class PieceData : ScriptableObject
 	public Rank rank;
 
 	public Sprite sprite;
-
+	public Texture texture;
 	public string rankName;
+	public int numUnits;
 }
