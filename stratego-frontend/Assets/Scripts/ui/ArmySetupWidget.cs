@@ -38,7 +38,6 @@ public class ArmySetupWidget : MonoBehaviour
 	private void ToolUnitItem_OnNumItemsChanged(object sender, System.EventArgs e)
 	{
 		var numItems = ToolUnitItems.Select(item => item.GetNumUnits()).Sum();
-
 		if (numItems <= 0)
 		{
 			UseSetupButton.enabled = true;
