@@ -42,7 +42,6 @@ public class Watchdog : MonoBehaviour
 	{
 		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS);
 
-		Debug.Log("watchdog coroutine ending");
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
@@ -50,17 +49,22 @@ public class Watchdog : MonoBehaviour
 		hasTurnChanged = false;
 		while (!hasTurnChanged)
 		{
-			Debug.Log("watchdog turn");
 			StartCoroutine(BackendService.GetInstance().GetStatus(gameId, token, OnGameStateGot, OnError));
 			yield return waitForSeconds;
 		}
 
-		Debug.Log("watchdog coroutine ending");
 		yield return null;
 	}
 
 	private void OnGameStateGot(GameStateDTO gameStateDto)
 	{
+		if (gameStateDto.guestPlayerId == 0 || gameStateDto.hostPlayerId == 0 || gameStateDto.phase == GamePhase.ABORTED)
+		{
+			// The other player quit the game
+			hasTurnChanged = true;
+			gameManager.LeaveGame();
+		}
+
 		if (gameStateDto.myTurn)
 		{
 			gameManager.OnMovementAdded(gameStateDto);

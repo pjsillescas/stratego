@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -37,16 +38,19 @@ public class GameManager : MonoBehaviour
 		guestPieces = new();
 		disabledPieces = new();
 		
-		var commData = CommData.GetInstance();
-		isHost = commData.GetIsHost();
+		if (GameWidget != null)
+		{
+			var commData = CommData.GetInstance();
+			isHost = commData.GetIsHost();
 
-		GameWidget.SetActive(false);
-		SetupWidget.Initialize(OnGameStarted);
-		//OnGameStarted(GetTestGameState());
+			GameWidget.SetActive(false);
+			SetupWidget.Initialize(OnGameStarted);
+			//OnGameStarted(GetTestGameState());
 
-		var myusername = commData.GetMyUsername();
-		var opponentusername = commData.GetOpponentUsername();
-		Debug.Log($"{myusername} vs {opponentusername}");
+			var myusername = commData.GetMyUsername();
+			var opponentusername = commData.GetOpponentUsername();
+			Debug.Log($"{myusername} vs {opponentusername}");
+		}
 	}
 
 	public void DisableGame()
@@ -415,6 +419,29 @@ public class GameManager : MonoBehaviour
 	private void OnError(StrategoErrorDTO error)
 	{
 		Debug.Log(error.message);
+	}
+
+	public void LeaveGame()
+	{
+		var commData = CommData.GetInstance();
+
+		if (commData.GetGameId() != 0)
+		{
+			var backendService = FindFirstObjectByType<BackendService>();
+			var gameId = commData.GetGameId();
+			var token = commData.GetToken();
+			StartCoroutine(backendService.LeaveGame(gameId, token, OnLeftGame, OnError));
+		}
+		else
+		{
+			OnLeftGame(null);
+		}
+	}
+	private void OnLeftGame(GameDTO gameDTO)
+	{
+		CommData.GetInstance().ResetData();
+		Debug.Log("go to Login");
+		SceneManager.LoadScene("Login", LoadSceneMode.Single);
 	}
 
 	// Update is called once per frame

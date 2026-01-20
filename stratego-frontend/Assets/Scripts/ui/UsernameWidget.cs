@@ -14,42 +14,22 @@ public class UsernameWidget : MonoBehaviour
 	[SerializeField]
 	private GameObject Widget;
 
+
+    private GameManager gameManager;
+
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
     {
         UsernameText.text = "";
         Widget.SetActive(false);
+        gameManager = FindFirstObjectByType<GameManager>();
         LogoutButton.onClick.RemoveAllListeners();
         LogoutButton.onClick.AddListener(LogoutClick);
     }
 
     private void LogoutClick()
     {
-        var commData = CommData.GetInstance();
-
-        if (commData.GetGameId() != 0)
-        {
-            var backendService = FindFirstObjectByType<BackendService>();
-            var gameId = commData.GetGameId();
-            var token = commData.GetToken();
-            StartCoroutine(backendService.LeaveGame(gameId, token, OnLeftGame, OnError));
-        }
-        else
-        {
-            OnLeftGame(null);
-        }
-    }
-
-    private void OnLeftGame(GameDTO gameDTO)
-    {
-        CommData.GetInstance().ResetData();
-        Debug.Log("go to Login");
-        SceneManager.LoadScene("Login", LoadSceneMode.Single);
-    }
-
-    private void OnError(StrategoErrorDTO error)
-    {
-        Debug.Log(error.message);
+        gameManager.LeaveGame();
     }
 
 	private void OnEnable()
