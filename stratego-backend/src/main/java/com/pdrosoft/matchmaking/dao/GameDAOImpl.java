@@ -145,7 +145,7 @@ public class GameDAOImpl implements GameDAO {
 
 			if (player.equals(game.getGuest())) {
 				game.setGuest(null);
-				game.setPhase(null);
+				game.setPhase(GamePhase.ABORTED);
 				return Optional.ofNullable(gameRepository.save(game)).map(this::toGameDTO) //
 						.orElseThrow(() -> new MatchmakingValidationException("Error saving game"));
 
