@@ -154,7 +154,12 @@ public class GameControllerTest {
 				.header("Authorization", "Bearer %s".formatted(tokenHost)))//
 				.andExpect(status().isOk()).andReturn();
 
-		assertThat(resultLeaveHost.getResponse().getContentAsString()).isNullOrEmpty();
+		var gameLeft2 = getObjectMapper().readValue(resultLeaveHost.getResponse().getContentAsString(), GameDTO.class);
+		assertThat(gameLeft2.getId()).isEqualTo(newGameId);
+		assertThat(gameLeft2.getCreationDate()).isNotNull();
+		assertThat(gameLeft2.getName()).isEqualTo("testuser1's game");
+		assertThat(gameLeft2.getHost()).isNull();
+		assertThat(gameLeft2.getGuest()).isNull();
 
 	}
 
@@ -209,13 +214,22 @@ public class GameControllerTest {
 				.header("Authorization", "Bearer %s".formatted(tokenHost)))//
 				.andExpect(status().isOk()).andReturn();
 
-		assertThat(resultLeaveHost.getResponse().getContentAsString()).isNullOrEmpty();
+		var gameLeft = getObjectMapper().readValue(resultLeaveHost.getResponse().getContentAsString(), GameDTO.class);
+		assertThat(gameLeft.getId()).isEqualTo(game.getId());
+		assertThat(gameLeft.getCreationDate()).isNotNull();
+		assertThat(gameLeft.getName()).isEqualTo(game.getName());
+		assertThat(gameLeft.getHost()).isNull();
+		assertThat(gameLeft.getGuest().getUsername()).isEqualTo("testuser2");
 
 		var resultLeaveGuest = mockMvc.perform(put("/api/game/{gameId}/leave", Integer.toString(newGameId)) //
 				.header("Authorization", "Bearer %s".formatted(tokenGuest)))//
 				.andExpect(status().isOk()).andReturn();
-
-		assertThat(resultLeaveGuest.getResponse().getContentAsString()).isNullOrEmpty();
+		var gameLeft2 = getObjectMapper().readValue(resultLeaveGuest.getResponse().getContentAsString(), GameDTO.class);
+		assertThat(gameLeft2.getId()).isEqualTo(game.getId());
+		assertThat(gameLeft2.getCreationDate()).isNotNull();
+		assertThat(gameLeft2.getName()).isEqualTo(game.getName());
+		assertThat(gameLeft2.getHost()).isNull();
+		assertThat(gameLeft2.getGuest()).isNull();
 	}
 
 	@Test

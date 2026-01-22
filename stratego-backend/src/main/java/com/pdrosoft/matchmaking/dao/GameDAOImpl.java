@@ -139,8 +139,11 @@ public class GameDAOImpl implements GameDAO {
 		return loadGame(gameId).map(game -> {
 
 			if (player.equals(game.getHost())) {
-				gameRepository.delete(game);
-				return null;
+				//gameRepository.delete(game);
+				game.setHost(null);
+				game.setPhase(GamePhase.ABORTED);
+				return Optional.ofNullable(gameRepository.save(game)).map(this::toGameDTO) //
+						.orElseThrow(() -> new MatchmakingValidationException("Error saving game"));
 			}
 
 			if (player.equals(game.getGuest())) {

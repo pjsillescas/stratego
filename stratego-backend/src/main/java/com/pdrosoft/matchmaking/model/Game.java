@@ -38,7 +38,7 @@ public class Game {
 	private Instant creationDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "host", nullable = false)
+	@JoinColumn(name = "host")
 	private Player host;
 
 	@ManyToOne(fetch = FetchType.LAZY)
