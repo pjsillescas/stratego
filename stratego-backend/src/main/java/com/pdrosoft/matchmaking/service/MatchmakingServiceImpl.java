@@ -20,7 +20,9 @@ import com.pdrosoft.matchmaking.model.Player;
 import com.pdrosoft.matchmaking.repository.PlayerRepository;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(onConstructor_ = { @Autowired })
 @Service
 public class MatchmakingServiceImpl implements MatchmakingService {
 
@@ -32,14 +34,6 @@ public class MatchmakingServiceImpl implements MatchmakingService {
 	private final PlayerDAO playerDao;
 	@NonNull
 	private final PasswordEncoder passwordEncoder;
-
-	public MatchmakingServiceImpl(@Autowired GameDAO gameDao, @Autowired PlayerRepository playerRepository,
-			PlayerDAO playerDao, PasswordEncoder passwordEncoder) {
-		this.gameDao = gameDao;
-		this.playerRepository = playerRepository;
-		this.playerDao = playerDao;
-		this.passwordEncoder = passwordEncoder;
-	}
 
 	@Override
 	@Transactional(readOnly = true)

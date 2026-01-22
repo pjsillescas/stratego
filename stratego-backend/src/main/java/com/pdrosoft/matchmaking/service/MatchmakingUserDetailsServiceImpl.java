@@ -14,16 +14,14 @@ import com.pdrosoft.matchmaking.model.Player;
 import com.pdrosoft.matchmaking.security.payload.MatchmakingUserDetails;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(onConstructor_ = { @Autowired })
 @Service
 public class MatchmakingUserDetailsServiceImpl implements MatchmakingUserDetailsService {
 
 	@NonNull
 	private final PlayerDAO playerDao;
-
-	public MatchmakingUserDetailsServiceImpl(@Autowired PlayerDAO playerDao) {
-		this.playerDao = playerDao;
-	}
 
 	private UserDetails toUserDetails(Player player) {
 		return MatchmakingUserDetails.builder().userName(player.getUserName()) //

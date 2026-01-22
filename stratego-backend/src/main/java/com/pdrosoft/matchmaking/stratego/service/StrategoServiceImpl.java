@@ -31,7 +31,9 @@ import com.pdrosoft.matchmaking.stratego.enums.Rank;
 
 import jakarta.validation.Valid;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(onConstructor_ = { @Autowired })
 @Service
 public class StrategoServiceImpl implements StrategoService {
 
@@ -51,20 +53,6 @@ public class StrategoServiceImpl implements StrategoService {
 	private final StrategoMovementRepository strategoMovementRepository;
 	@NonNull
 	private final RankService rankService;
-
-	public StrategoServiceImpl(@Autowired GameDAO gameDao, @Autowired PlayerRepository playerRepository,
-			@Autowired PlayerDAO playerDao, @Autowired PasswordEncoder passwordEncoder,
-			@Autowired StrategoStatusRepository strategoStatusRepository, @Autowired GameRepository gameRepository,
-			@Autowired StrategoMovementRepository strategoMovementRepository, @Autowired RankService rankService) {
-		this.gameDao = gameDao;
-		this.playerRepository = playerRepository;
-		this.playerDao = playerDao;
-		this.passwordEncoder = passwordEncoder;
-		this.strategoStatusRepository = strategoStatusRepository;
-		this.gameRepository = gameRepository;
-		this.strategoMovementRepository = strategoMovementRepository;
-		this.rankService = rankService;
-	}
 
 	private PlayerDTO toPlayerDTO(Player player) {
 		return PlayerDTO.builder().id(player.getId()).username(player.getUserName()).build();

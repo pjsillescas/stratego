@@ -23,7 +23,9 @@ import com.pdrosoft.matchmaking.stratego.enums.GamePhase;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(onConstructor_ = { @Autowired })
 @Service
 public class GameDAOImpl implements GameDAO {
 	@PersistenceContext
@@ -31,10 +33,6 @@ public class GameDAOImpl implements GameDAO {
 
 	@NonNull
 	private final GameRepository gameRepository;
-
-	public GameDAOImpl(@Autowired GameRepository gameRepository) {
-		this.gameRepository = gameRepository;
-	}
 
 	@Override
 	public void createGameWithCreator(Player host, String gameName) {
