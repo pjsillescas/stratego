@@ -3,6 +3,6 @@ using System;
 [Serializable]
 public class StrategoErrorDTO
 {
-	public DateTime timestamp;
+	public string timestamp;
 	public string message;
 }

@@ -7,7 +7,7 @@ public class GameDTO
 
 	public string name;
 
-	public DateTime creationDate;
+	public string creationDate;
 
 	public PlayerDTO host;
 	public PlayerDTO guest;

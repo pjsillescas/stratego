@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -102,8 +104,16 @@ public class GameListWidget : MonoBehaviour
 	}
 	*/
 
+	private void ClearList()
+	{
+		var oldGames = new List<GameItemWidget>(GameListContent.GetComponentsInChildren<GameItemWidget>());
+		oldGames.ForEach(widget => Destroy(widget.gameObject));
+	}
+
 	private void OnGamesGot(List<GameDTO> games)
 	{
+		ClearList();
+
 		foreach(var game in games)
 		{
 			var item = Instantiate(GameItemPrefab, GameListContent.transform);

@@ -30,7 +30,7 @@ public class GameItemWidget : MonoBehaviour
 	public void SetGameData(GameDTO gameDto, Action<int> joinGame)
 	{
 		gameId = gameDto.id;
-		DateText.text = gameDto.creationDate.ToString();
+		DateText.text = DateTime.Parse(gameDto.creationDate).ToString("dd/MM/yyyy HH:mm:ss");
 		DescriptionText.text = gameDto.name;
 		this.joinGame = joinGame;
 	}
