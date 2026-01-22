@@ -8,8 +8,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -33,8 +38,8 @@ import com.pdrosoft.matchmaking.dto.UserAuthDTO;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "classpath:test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
+@Sql(scripts = "classpath:test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class GameControllerTest {
 
@@ -103,6 +108,31 @@ public class GameControllerTest {
 
 		mockMvc.perform(put("/api/game").header("Authorization", "Bearer %s".formatted(token)))//
 				.andExpect(status().isForbidden());
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "custom name", "" })
+	@NullSource
+	void testCreateGameWithCustomName(String name) throws Exception {
+		var defaultName = "testuser1's game";
+
+		var tokenHost = getToken("testuser1", "password1");
+
+		var gameInputDto = GameInputDTO.builder().joinCode("test-code").name(name).build();
+		var json = getObjectMapper().writeValueAsString(gameInputDto);
+		var result = mockMvc.perform(put("/api/game") //
+				.header("Authorization", "Bearer %s".formatted(tokenHost)) //
+				.contentType(MediaType.APPLICATION_JSON)//
+				.content(json))//
+				.andExpect(status().isOk()).andReturn();
+
+		var game = getObjectMapper().readValue(result.getResponse().getContentAsString(), GameDTO.class);
+		assertThat(game.getCreationDate()).isBetween(Instant.now().minus(Duration.ofSeconds(2)),
+				Instant.now().plus(Duration.ofSeconds(2)));
+		assertThat(game.getName())
+				.isEqualTo(Optional.ofNullable(name).map(StringUtils::trimToNull).orElse(defaultName));
+		assertThat(game.getHost().getUsername()).isEqualTo("testuser1");
+		assertThat(game.getGuest()).isNull();
 	}
 
 	@Test

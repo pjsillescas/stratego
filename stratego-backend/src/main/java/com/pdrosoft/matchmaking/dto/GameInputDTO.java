@@ -13,4 +13,5 @@ import lombok.NoArgsConstructor;
 public class GameInputDTO {
 	@NotBlank
 	private String joinCode;
+	private String name;
 }

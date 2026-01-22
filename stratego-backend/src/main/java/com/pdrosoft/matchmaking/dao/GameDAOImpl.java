@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,12 +93,17 @@ public class GameDAOImpl implements GameDAO {
 		return em.createQuery(cq).getResultStream().map(this::toGameDTO).toList();
 	}
 
+	private String getDefaultGameDescription(Player host) {
+		return "%s's game".formatted(host.getUserName());
+	}
+
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public GameDTO addGame(Player host, GameInputDTO gameInputDto) {
 		var game = new Game();
 		game.setCreationDate(Instant.now());
-		game.setName("%s's game".formatted(host.getUserName()));
+		game.setName(Optional.ofNullable(StringUtils.trimToNull(gameInputDto.getName()))
+				.orElse(getDefaultGameDescription(host)));
 		game.setJoinCode(gameInputDto.getJoinCode());
 		game.setHost(host);
 
@@ -139,7 +145,7 @@ public class GameDAOImpl implements GameDAO {
 		return loadGame(gameId).map(game -> {
 
 			if (player.equals(game.getHost())) {
-				//gameRepository.delete(game);
+				// gameRepository.delete(game);
 				game.setHost(null);
 				game.setPhase(GamePhase.ABORTED);
 				return Optional.ofNullable(gameRepository.save(game)).map(this::toGameDTO) //
