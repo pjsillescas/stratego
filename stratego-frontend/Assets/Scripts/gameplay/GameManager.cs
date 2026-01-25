@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -387,33 +388,76 @@ public class GameManager : MonoBehaviour
 		//currentGameState = gameStateDto;
 		OnGameStateUpdated?.Invoke(this, gameStateDto);
 
+		StartCoroutine(AnimateMovement(gameStateDto));
+	}
+
+	private IEnumerator AnimateMovement(GameStateDTO gameStateDto)
+	{
 		//Board.MoveTile(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial, gameStateDto.movement.rowFinal, gameStateDto.movement.colFinal);
 		var piece = GetPieceAtCoordinates(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial);
 		var pieceTarget = GetPieceAtCoordinates(gameStateDto.movement.rowFinal, gameStateDto.movement.colFinal);
 
-		if(pieceTarget != null)
-		{
-			var result = ClashPieces(piece, pieceTarget);
+		int clashResult = 1;
 
-			if (result == 1 || result == 0)
+		if (isHost != piece.IsHost())
+		{
+			piece.ShowData();
+		}
+
+		if (pieceTarget != null)
+		{
+			if (isHost != pieceTarget.IsHost())
 			{
-				OnPieceCaptured?.Invoke(this, pieceTarget);
-				Destroy(pieceTarget.gameObject, 1f);
+				pieceTarget.ShowData();
 			}
-			
-			if (result == -1 || result == 0)
-			{
-				OnPieceCaptured?.Invoke(this, piece);
-				Destroy(piece.gameObject, 1f);
-			}
+
+			clashResult = ClashPieces(piece, pieceTarget);
 		}
 
 		var targetRow = gameStateDto.movement.rowFinal;
 		var targetCol = gameStateDto.movement.colFinal;
-		piece.transform.position = Board.GetWorldPosition(targetRow, targetCol);
+
+		var initialPosition = piece.transform.position;
+		var targetPosition = Board.GetWorldPosition(targetRow, targetCol);
+		var direction = (targetPosition - initialPosition).normalized;
+		var threshold = 0.1f;
+
+		var speed = 1f / 0.5f;
+		while((piece.transform.position - targetPosition).sqrMagnitude > threshold)
+		{
+			piece.transform.position = piece.transform.position + direction * speed * Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
+
+
+		piece.transform.position = targetPosition;
 		var tile = Board.GetTile(targetRow, targetCol);
 		piece.SetTile(tile);
 
+
+		if (pieceTarget != null && isHost != pieceTarget.IsHost())
+		{
+			pieceTarget.HideData();
+		}
+
+		if (isHost != piece.IsHost())
+		{
+			piece.HideData();
+		}
+
+		if (pieceTarget != null && (clashResult == 1 || clashResult == 0))
+		{
+			OnPieceCaptured?.Invoke(this, pieceTarget);
+			Destroy(pieceTarget.gameObject, 1f);
+		}
+
+		if (clashResult == -1 || clashResult == 0)
+		{
+			OnPieceCaptured?.Invoke(this, piece);
+			Destroy(piece.gameObject, 1f);
+		}
+
+		yield return null;
 	}
 
 	private void OnError(StrategoErrorDTO error)
