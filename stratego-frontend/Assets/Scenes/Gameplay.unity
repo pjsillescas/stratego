@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &21193540
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -785,7 +785,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   SetupWidget: {fileID: 1702709118}
   GameWidget: {fileID: 547097788}
-  Board: {fileID: 21193544}
+  Board: {fileID: 1608289869}
   PiecePrefab: {fileID: 367100302779210556, guid: 6dabbb41e134bce4d9c67d89122b37c0, type: 3}
   DisablePrefab: {fileID: 8707429535200529145, guid: 50ab1ab00a7b21f428513dfa484d1898, type: 3}
   pieceSet: {fileID: 11400000, guid: d723fcdb047d4134e98cc22939e76a55, type: 2}
@@ -2222,6 +2222,109 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3398808261673607361, guid: 1896e155a534ec84faec96205bba6a43, type: 3}
   m_PrefabInstance: {fileID: 1605868539}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1608289867
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      propertyPath: m_Name
+      value: Board
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1608289869}
+  m_SourcePrefab: {fileID: 100100000, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+--- !u!1 &1608289868 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4c1d0ddfad7955c48ae505e23c8d6f70, type: 3}
+  m_PrefabInstance: {fileID: 1608289867}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1608289869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1608289868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aac97da2b9e47014cbadacf45128020c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Board
+  TilePrefab: {fileID: 3934790222929873029, guid: dca49848ba2799246abdd8b0d592b408, type: 3}
+  DisabledTiles:
+  - {x: 4, y: 2}
+  - {x: 4, y: 3}
+  - {x: 5, y: 2}
+  - {x: 5, y: 3}
+  - {x: 4, y: 6}
+  - {x: 4, y: 7}
+  - {x: 5, y: 6}
+  - {x: 5, y: 7}
 --- !u!1 &1682393625
 GameObject:
   m_ObjectHideFlags: 0
@@ -6864,3 +6967,4 @@ SceneRoots:
   - {fileID: 1219971054}
   - {fileID: 1417825455}
   - {fileID: 1078616520}
+  - {fileID: 1608289867}
