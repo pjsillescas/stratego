@@ -171,6 +171,7 @@ public class InputManager : MonoBehaviour
 	{
 		if (tileOrigin.GetCol() == tileTarget.GetCol())
 		{
+			/*
 			var minRow = tileOrigin.GetRow() < tileTarget.GetRow() ? tileOrigin.GetRow() : tileTarget.GetRow();
 			var maxRow = tileOrigin.GetRow() > tileTarget.GetRow() ? tileOrigin.GetRow() : tileTarget.GetRow();
 			var col = tileTarget.GetCol();
@@ -183,9 +184,39 @@ public class InputManager : MonoBehaviour
 			}
 
 			return true;
+			*/
+			
+			var col = tileTarget.GetCol();
+			
+			var originRow = tileOrigin.GetRow();
+			var targetRow = tileTarget.GetRow();
+			if (originRow < targetRow)
+			{
+				for (int row = originRow + 1; row <= targetRow; row++)
+				{
+					if (gameManager.GetPieceAtCoordinates(row, col) != null && row < targetRow)
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				for (int row = originRow - 1; row >= targetRow; row--)
+				{
+					if (gameManager.GetPieceAtCoordinates(row, col) != null && row < targetRow)
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
+
 		}
 		else if (tileOrigin.GetRow() == tileTarget.GetRow())
 		{
+			/*
 			var minCol = tileOrigin.GetCol() < tileTarget.GetCol() ? tileOrigin.GetCol() : tileTarget.GetCol();
 			var maxCol = tileOrigin.GetCol() > tileTarget.GetCol() ? tileOrigin.GetCol() : tileTarget.GetCol();
 			var row = tileTarget.GetRow();
@@ -198,6 +229,36 @@ public class InputManager : MonoBehaviour
 			}
 
 			return true;
+			*/
+
+			var row = tileTarget.GetRow();
+			
+			var originCol = tileOrigin.GetCol();
+			var targetCol = tileTarget.GetCol();
+
+			if (originCol < targetCol)
+			{
+				for (int col = originCol + 1; col <= targetCol; col++)
+				{
+					if (gameManager.GetPieceAtCoordinates(row, col) != null && col < targetCol)
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				for (int col = originCol - 1; col >= targetCol; col--)
+				{
+					if (gameManager.GetPieceAtCoordinates(row, col) != null && col > targetCol)
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
+
 		}
 
 		return false;
