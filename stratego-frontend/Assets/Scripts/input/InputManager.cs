@@ -92,13 +92,27 @@ public class InputManager : MonoBehaviour
 
 		if (result && hitInfo.collider.gameObject.TryGetComponent(out Tile tile) && IsValidTile(tile))
 		{
-			if (selectedTile != null && !tile.Equals(selectedTile))
+			if (selectedTile != null)
 			{
-				selectedTile.Deselect();
+				if (!tile.Equals(selectedTile))
+				{
+					selectedTile.Deselect();
+
+					selectedTile = tile;
+					selectedTile.Select();
+					OnTileSelected?.Invoke(this, tile);
+				}
+				else
+				{
+					ConfirmMovement();
+				}
 			}
-			selectedTile = tile;
-			selectedTile.Select();
-			OnTileSelected?.Invoke(this, tile);
+			else
+			{
+				selectedTile = tile;
+				selectedTile.Select();
+				OnTileSelected?.Invoke(this, tile);
+			}
 
 			return true;
 		}
@@ -170,7 +184,7 @@ public class InputManager : MonoBehaviour
 
 			return true;
 		}
-		else if(tileOrigin.GetRow() == tileTarget.GetRow())
+		else if (tileOrigin.GetRow() == tileTarget.GetRow())
 		{
 			var minCol = tileOrigin.GetCol() < tileTarget.GetCol() ? tileOrigin.GetCol() : tileTarget.GetCol();
 			var maxCol = tileOrigin.GetCol() > tileTarget.GetCol() ? tileOrigin.GetCol() : tileTarget.GetCol();
@@ -207,7 +221,7 @@ public class InputManager : MonoBehaviour
 				return false;
 			}
 			var distance = GetDistance(tile, selectedPieceTile);
-			return ((rank == Rank.SCOUT) ? IsStraightLine(selectedPieceTile, tile) : distance == 1) && 
+			return ((rank == Rank.SCOUT) ? IsStraightLine(selectedPieceTile, tile) : distance == 1) &&
 				IsValidTargetPieceInTile(tile);
 		}
 
@@ -255,6 +269,20 @@ public class InputManager : MonoBehaviour
 			highlightedPiece = piece;
 			highlightedPiece.Highlight();
 		}
+	}
 
+	private void ConfirmMovement()
+	{
+		var movement = new StrategoMovementDTO()
+		{
+			rowInitial = selectedPiece.GetTile().GetRow(),
+			colInitial = selectedPiece.GetTile().GetCol(),
+			rank = selectedPiece.GetRank(),
+
+			rowFinal = selectedTile.GetRow(),
+			colFinal = selectedTile.GetCol(),
+		};
+
+		gameManager.SendMovement(movement);
 	}
 }
