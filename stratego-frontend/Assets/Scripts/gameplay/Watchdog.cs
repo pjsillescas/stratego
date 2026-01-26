@@ -30,7 +30,7 @@ public class Watchdog : MonoBehaviour
 	{
 		if (gameStateDto.myTurn)
 		{
-			;
+			StartCoroutine(CheckForEndGame());
 		}
 		else
 		{
@@ -58,17 +58,40 @@ public class Watchdog : MonoBehaviour
 
 	private void OnGameStateGot(GameStateDTO gameStateDto)
 	{
-		if (gameStateDto.guestPlayerId == 0 || gameStateDto.hostPlayerId == 0 || gameStateDto.phase == GamePhase.ABORTED)
-		{
-			// The other player quit the game
-			hasTurnChanged = true;
-			gameManager.LeaveGame();
-		}
+		OnGameStateGotEndGame(gameStateDto);
 
 		if (gameStateDto.myTurn)
 		{
 			gameManager.OnMovementAdded(gameStateDto);
 			hasTurnChanged = true;
+		}
+	}
+
+	private IEnumerator CheckForEndGame()
+	{
+		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS);
+
+		var commData = CommData.GetInstance();
+		var gameId = commData.GetGameId();
+		var token = commData.GetToken();
+
+		hasTurnChanged = false;
+		while (!hasTurnChanged)
+		{
+			StartCoroutine(BackendService.GetInstance().GetStatus(gameId, token, OnGameStateGotEndGame, OnError));
+			yield return waitForSeconds;
+		}
+
+		yield return null;
+	}
+
+	private void OnGameStateGotEndGame(GameStateDTO gameStateDto)
+	{
+		if (gameStateDto.guestPlayerId == 0 || gameStateDto.hostPlayerId == 0 || gameStateDto.phase == GamePhase.ABORTED)
+		{
+			// The other player quit the game
+			hasTurnChanged = true;
+			gameManager.LeaveGame();
 		}
 	}
 
