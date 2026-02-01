@@ -398,8 +398,8 @@ public class GameManager : MonoBehaviour
 		var pieceTarget = GetPieceAtCoordinates(gameStateDto.movement.rowFinal, gameStateDto.movement.colFinal);
 
 		int clashResult = 1;
-
-		if (isHost != piece.IsHost())
+		var showData = pieceTarget != null && (isHost != piece.IsHost());
+		if (showData)
 		{
 			piece.ShowData();
 		}
@@ -440,7 +440,7 @@ public class GameManager : MonoBehaviour
 			pieceTarget.HideData();
 		}
 
-		if (isHost != piece.IsHost())
+		if (showData)
 		{
 			piece.HideData();
 		}
