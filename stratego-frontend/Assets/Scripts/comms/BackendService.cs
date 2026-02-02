@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 public class BackendService: MonoBehaviour
 {
 	//private const string URL = "http://localhost:8080/api"; // for builds
-	private const string URL = "https://stratego-backend-ux6n.onrender.com:8080/api";
+	private const string URL = "https://stratego-backend-ux6n.onrender.com/api";
 	
 	private static BackendService instance = null;
 	public static BackendService GetInstance() => instance;
