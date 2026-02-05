@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,6 +22,14 @@ public class GameManager : MonoBehaviour
 	private GameObject PiecePrefab;
 	[SerializeField]
 	private GameObject DisablePrefab;
+	[SerializeField]
+	private Transform HostPieceShowPosition;
+	[SerializeField]
+	private Transform HostPieceLastPosition;
+	[SerializeField]
+	private Transform GuestPieceShowPosition;
+	[SerializeField]
+	private Transform GuestPieceLastPosition;
 
 	[SerializeField]
 	private PiecesSet pieceSet;
@@ -449,29 +458,60 @@ public class GameManager : MonoBehaviour
 		piece.SetTile(tile);
 
 
-		if (pieceTarget != null && isHost != pieceTarget.IsHost())
+		if (pieceTarget != null)
 		{
-			pieceTarget.HideData();
-		}
-
-		if (showData)
-		{
-			piece.HideData();
-		}
-
-		if (pieceTarget != null && (clashResult == 1 || clashResult == 0))
-		{
-			OnPieceCaptured?.Invoke(this, pieceTarget);
-			Destroy(pieceTarget.gameObject, 1f);
+			if (clashResult == 1 || clashResult == 0)
+			{
+				StartCoroutine(DestroyPiece(pieceTarget));
+				//OnPieceCaptured?.Invoke(this, pieceTarget);
+				//Destroy(pieceTarget.gameObject, 1f);
+			}
+			else if (isHost != pieceTarget.IsHost())
+			{
+				pieceTarget.HideData();
+			}
 		}
 
 		if (clashResult == -1 || clashResult == 0)
 		{
-			OnPieceCaptured?.Invoke(this, piece);
-			Destroy(piece.gameObject, 1f);
+			StartCoroutine(DestroyPiece(piece));
+		}
+		else if (showData)
+		{
+			piece.HideData();
 		}
 
 		movementCoroutine = null;
+		yield return null;
+	}
+
+	private IEnumerator DestroyPiece(Piece piece)
+	{
+		Transform showPiecePosition = piece.GetIsHost() ? HostPieceShowPosition : GuestPieceShowPosition;
+		Transform lastPiecePosition = piece.GetIsHost() ? HostPieceLastPosition : GuestPieceLastPosition;
+
+		var threshold = 0.1f;
+		var speed = 1f / 0.25f;
+		var direction = (showPiecePosition.position - piece.transform.position).normalized; 
+		while ((piece.transform.position - showPiecePosition.position).sqrMagnitude > threshold)
+		{
+			piece.transform.position = piece.transform.position + speed * Time.deltaTime * direction;
+			yield return null;
+		}
+
+		yield return new WaitForSeconds(0.5f);
+
+		speed = 1f / 0.25f;
+		direction = (lastPiecePosition.position - piece.transform.position).normalized;
+		while ((piece.transform.position - lastPiecePosition.position).sqrMagnitude > threshold)
+		{
+			piece.transform.position = piece.transform.position + speed * Time.deltaTime * direction;
+			yield return null;
+		}
+
+		OnPieceCaptured?.Invoke(this, piece);
+		Destroy(piece.gameObject, 1f);
+		
 		yield return null;
 	}
 
