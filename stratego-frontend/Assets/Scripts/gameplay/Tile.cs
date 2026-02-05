@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -17,6 +16,17 @@ public class Tile : MonoBehaviour
 	private int row;
 	private int col;
 
+
+	public void DisableTile()
+	{
+		spriteRenderer.enabled = false;
+	}
+
+	public void EnableTile()
+	{
+		spriteRenderer.enabled = true;
+		Deselect();
+	}
 
 	public void Darken()
 	{

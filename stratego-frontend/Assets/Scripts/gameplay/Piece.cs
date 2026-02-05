@@ -125,17 +125,23 @@ public class Piece : MonoBehaviour
 
 	public void HideData()
 	{
-		TextName.gameObject.SetActive(false);
-		RankImage.gameObject.SetActive(false);
+		if (TextName != null)
+		{
+			TextName.gameObject.SetActive(false);
+			RankImage.gameObject.SetActive(false);
+		}
 	}
 
 	public void ShowData()
 	{
-		TextName.gameObject.SetActive(true);
-		RankImage.gameObject.SetActive(true);
+		if (TextName != null)
+		{
+			TextName.gameObject.SetActive(true);
+			RankImage.gameObject.SetActive(true);
+		}
 	}
 
-	public void SetTile(Tile tile)
+	public virtual void SetTile(Tile tile)
 	{
 		this.tile = tile;
 	}

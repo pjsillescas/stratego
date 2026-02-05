@@ -462,9 +462,7 @@ public class GameManager : MonoBehaviour
 		{
 			if (clashResult == 1 || clashResult == 0)
 			{
-				StartCoroutine(DestroyPiece(pieceTarget));
-				//OnPieceCaptured?.Invoke(this, pieceTarget);
-				//Destroy(pieceTarget.gameObject, 1f);
+				yield return StartCoroutine(DestroyPiece(pieceTarget));
 			}
 			else if (isHost != pieceTarget.IsHost())
 			{
@@ -474,7 +472,7 @@ public class GameManager : MonoBehaviour
 
 		if (clashResult == -1 || clashResult == 0)
 		{
-			StartCoroutine(DestroyPiece(piece));
+			yield return StartCoroutine(DestroyPiece(piece));
 		}
 		else if (showData)
 		{

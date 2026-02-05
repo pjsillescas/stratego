@@ -108,6 +108,7 @@ MonoBehaviour:
   NormalMaterial: {fileID: 2100000, guid: 408dbdbcd02d98542bc3026a67ead1fe, type: 2}
   HighlightMaterial: {fileID: 2100000, guid: fbbb502ceece1de4d811f640242c0d80, type: 2}
   SelectedMaterial: {fileID: 2100000, guid: 2ce29e3e582b68841bb79a1046fd03cf, type: 2}
+  DisabledMaterial: {fileID: 2100000, guid: 8e0dcb2d3828e6d41b199a2f6e7a3b79, type: 2}
 --- !u!65 &300888633392968734
 BoxCollider:
   m_ObjectHideFlags: 0
