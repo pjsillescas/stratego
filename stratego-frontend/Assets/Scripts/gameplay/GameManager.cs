@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour
 	private List<Piece> guestPieces;
 	private List<Piece> disabledPieces;
 	private bool isHost;
+	Coroutine movementCoroutine = null;
+
 	//private GameStateDTO currentGameState;
 
 
@@ -38,7 +40,7 @@ public class GameManager : MonoBehaviour
 		hostPieces = new();
 		guestPieces = new();
 		disabledPieces = new();
-		
+
 		if (GameWidget != null)
 		{
 			var commData = CommData.GetInstance();
@@ -70,7 +72,7 @@ public class GameManager : MonoBehaviour
 		gameState.movement = null;
 		gameState.myTurn = true;
 		gameState.gameId = 1;
-		gameState.board = new () { 
+		gameState.board = new() { 
 			// Blue player (host)
 			new () {
 				new BoardTileDTO() { hostOwner = true, rank = Rank.FLAG },
@@ -209,7 +211,7 @@ public class GameManager : MonoBehaviour
 		var board = gameStateDto.board;
 
 		Debug.Log(JsonConvert.SerializeObject(board));
-		
+
 		if (!isHost)
 		{
 			/*
@@ -223,18 +225,18 @@ public class GameManager : MonoBehaviour
 		}
 
 		int irow = -1;
-		foreach(var row in board)
+		foreach (var row in board)
 		{
 			irow++;
 			int icol = -1;
-			foreach(var tileDto in row)
+			foreach (var tileDto in row)
 			{
 				icol++;
 
 				if (tileDto != null)
 				{
 					var tile = Board.GetTile(irow, icol);
-					
+
 					if (tileDto.rank == Rank.DISABLED)
 					{
 						var disabledPiece = Instantiate(DisablePrefab).GetComponent<Piece>();
@@ -289,7 +291,7 @@ public class GameManager : MonoBehaviour
 		{
 			piece = GetPieceAtCoordinates(row, col, disabledPieces);
 		}
-		
+
 		return piece;
 	}
 
@@ -304,6 +306,7 @@ public class GameManager : MonoBehaviour
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
 		StartCoroutine(BackendService.GetInstance().AddMovement(gameId, token, movement, OnMovementAdded, OnError));
+		
 		/*
 		var status = new GameStateDTO() {
 			board = null,
@@ -315,6 +318,17 @@ public class GameManager : MonoBehaviour
 		};
 		OnMovementAdded(status);
 		*/
+	}
+
+	private IEnumerator WaitForGameState(GameStateDTO gameStateDto)
+	{
+		var waitForNextFrame = new WaitForSeconds(0.1f);
+		while(movementCoroutine != null)
+		{
+			yield return null;
+		}
+
+		movementCoroutine = StartCoroutine(AnimateMovement(gameStateDto));
 	}
 
 	private int ClashPieces(Piece attacker, Piece defender)
@@ -388,7 +402,7 @@ public class GameManager : MonoBehaviour
 		//currentGameState = gameStateDto;
 		OnGameStateUpdated?.Invoke(this, gameStateDto);
 
-		StartCoroutine(AnimateMovement(gameStateDto));
+		StartCoroutine(WaitForGameState(gameStateDto));
 	}
 
 	private IEnumerator AnimateMovement(GameStateDTO gameStateDto)
@@ -423,10 +437,10 @@ public class GameManager : MonoBehaviour
 		var threshold = 0.1f;
 
 		var speed = 1f / 0.5f;
-		while((piece.transform.position - targetPosition).sqrMagnitude > threshold)
+		while ((piece.transform.position - targetPosition).sqrMagnitude > threshold)
 		{
 			piece.transform.position = piece.transform.position + direction * speed * Time.deltaTime;
-			yield return new WaitForEndOfFrame();
+			yield return null;
 		}
 
 
@@ -457,6 +471,7 @@ public class GameManager : MonoBehaviour
 			Destroy(piece.gameObject, 1f);
 		}
 
+		movementCoroutine = null;
 		yield return null;
 	}
 
