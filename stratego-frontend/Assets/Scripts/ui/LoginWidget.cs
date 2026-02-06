@@ -11,6 +11,8 @@ public class LoginWidget : MonoBehaviour
 	private TextMeshProUGUI UsernameText;
 	[SerializeField]
 	private TextMeshProUGUI PasswordText;
+	[SerializeField]
+	private Toggle ShowPasswordToggle;
 
 	[SerializeField]
 	private TMP_InputField UsernameInput;
@@ -81,9 +83,24 @@ public class LoginWidget : MonoBehaviour
 			SignupButton.onClick.AddListener(ButtonSignupClick);
 			LoginButton.onClick.RemoveAllListeners();
 			LoginButton.onClick.AddListener(ButtonLoginClick);
+			ShowPasswordToggle.isOn = false;
+			DoChangePasswordInput(ShowPasswordToggle.isOn);
+			ShowPasswordToggle.onValueChanged.RemoveAllListeners();
+			ShowPasswordToggle.onValueChanged.AddListener(OnShowPasswordToggleChanged);
 
 			backendService = FindFirstObjectByType<BackendService>();
 		}
+	}
+
+	private void DoChangePasswordInput(bool isShowPassword)
+	{
+		PasswordInput.contentType = (isShowPassword) ? TMP_InputField.ContentType.Standard : TMP_InputField.ContentType.Password;
+	}
+
+	private void OnShowPasswordToggleChanged(bool isShowPassword)
+	{
+		DoChangePasswordInput(isShowPassword);
+		PasswordInput.ActivateInputField();
 	}
 
 	private void ButtonSignupClick()

@@ -2941,6 +2941,54 @@ PrefabInstance:
       propertyPath: WaitForSetupWidget
       value: 
       objectReference: {fileID: 342070828}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1702709119}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1702709130}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1702709129}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1702709128}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[4]'
+      value: 
+      objectReference: {fileID: 1702709127}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[5]'
+      value: 
+      objectReference: {fileID: 1702709126}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[6]'
+      value: 
+      objectReference: {fileID: 1702709125}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[7]'
+      value: 
+      objectReference: {fileID: 1702709124}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[8]'
+      value: 
+      objectReference: {fileID: 1702709123}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[9]'
+      value: 
+      objectReference: {fileID: 1702709122}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[10]'
+      value: 
+      objectReference: {fileID: 1702709121}
+    - target: {fileID: 1166787758900164882, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+      propertyPath: 'ToolUnitItems.Array.data[11]'
+      value: 
+      objectReference: {fileID: 1702709120}
     - target: {fileID: 1252121479452083889, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -4371,7 +4419,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5743681627907324895, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -671.2414
+      value: -663.2608
       objectReference: {fileID: 0}
     - target: {fileID: 5765329667216723156, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -5482,6 +5530,138 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c585457209cc3474a9277af2634a2427, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArmySetupWidget
+--- !u!114 &1702709119 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5383131301338431397, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709120 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5706828503323018447, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709121 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4502156999887317952, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709122 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1124538818449437132, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709123 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6152159617589148067, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709124 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3829227573623721652, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709125 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 405218833351109530, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709126 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2934786787426823851, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709127 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9081906054502144535, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709128 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3817865991106432109, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709129 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1841564115687679310, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
+--- !u!114 &1702709130 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6760454737416972809, guid: 7a8995f8361b5d643b1540295451ca3f, type: 3}
+  m_PrefabInstance: {fileID: 1702709116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffeba6c5c58024698a2442ebf81de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToolUnitItem
 --- !u!1 &1790602115
 GameObject:
   m_ObjectHideFlags: 0
