@@ -36,12 +36,14 @@ public class InputManager : MonoBehaviour
 	{
 		actions.Enable();
 		GameManager.OnGameStateUpdated += OnGameStateUpdated;
+		GameManager.OnEndMovementAnimation += ResetSelections;
 	}
 
 	private void OnDisable()
 	{
 		actions.Disable();
 		GameManager.OnGameStateUpdated -= OnGameStateUpdated;
+		GameManager.OnEndMovementAnimation -= ResetSelections;
 	}
 
 	private void OnGameStateUpdated(object sender, GameStateDTO gameStateDTO)
@@ -56,8 +58,7 @@ public class InputManager : MonoBehaviour
 		mainCamera = Camera.main;
 		isHost = gameManager.GetIsHost();
 
-		highlightedPiece = null;
-		selectedPiece = null;
+		ResetSelections(this, EventArgs.Empty);
 	}
 
 	private const float MAX_DISTANCE = 20f;
@@ -345,5 +346,32 @@ public class InputManager : MonoBehaviour
 		};
 
 		gameManager.SendMovement(movement);
+	}
+
+	private void ResetSelections(object sender, EventArgs args)
+	{
+		if (selectedPiece != null)
+		{
+			selectedPiece.Deselect();
+		}
+		selectedPiece = null;
+
+		if (highlightedPiece != null)
+		{
+			highlightedPiece.Deselect();
+		}
+		highlightedPiece = null;
+
+		if (selectedTile != null)
+		{
+			selectedTile.Deselect();
+		}
+		selectedTile = null;
+
+		if (highlightedTile != null)
+		{
+			highlightedTile.Deselect();
+		}
+		highlightedTile = null;
 	}
 }

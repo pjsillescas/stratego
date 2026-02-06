@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +10,7 @@ public class GameManager : MonoBehaviour
 {
 	public static event EventHandler<GameStateDTO> OnGameStateUpdated;
 	public static event EventHandler<Piece> OnPieceCaptured;
+	public static event EventHandler OnEndMovementAnimation;
 
 	[SerializeField]
 	private ArmySetupWidget SetupWidget;
@@ -361,7 +361,7 @@ public class GameManager : MonoBehaviour
 			return 1;
 		}
 
-		List<Rank> upperRanks = new();
+		List<Rank> upperRanks;
 		switch (rankDefender)
 		{
 			case Rank.BOMB:
@@ -478,6 +478,8 @@ public class GameManager : MonoBehaviour
 		{
 			piece.HideData();
 		}
+
+		OnEndMovementAnimation?.Invoke(this, EventArgs.Empty);
 
 		movementCoroutine = null;
 		yield return null;
