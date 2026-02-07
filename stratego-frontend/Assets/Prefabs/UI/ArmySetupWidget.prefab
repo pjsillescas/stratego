@@ -244,6 +244,7 @@ MonoBehaviour:
   - {fileID: 7938494950644282357}
   - {fileID: 1529184783779858017}
   ToolUnitItems:
+  - {fileID: 5383131301338431397}
   - {fileID: 6760454737416972809}
   - {fileID: 1841564115687679310}
   - {fileID: 3817865991106432109}
@@ -255,7 +256,6 @@ MonoBehaviour:
   - {fileID: 1124538818449437132}
   - {fileID: 4502156999887317952}
   - {fileID: 5706828503323018447}
-  - {fileID: 5383131301338431397}
   UseSetupButton: {fileID: 784494893409492866}
   WaitForSetupWidget: {fileID: 0}
 --- !u!1 &3156923614766029959
@@ -527,6 +527,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8971480929623990737}
   - {fileID: 7774434486261232765}
   - {fileID: 3439395469713111866}
   - {fileID: 202217636838003225}
@@ -538,7 +539,6 @@ RectTransform:
   - {fileID: 4156410287197335480}
   - {fileID: 598834484664579508}
   - {fileID: 8720967186117122747}
-  - {fileID: 8971480929623990737}
   m_Father: {fileID: 8335729414184033616}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

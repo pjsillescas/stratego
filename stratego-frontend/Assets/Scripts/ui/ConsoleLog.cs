@@ -13,6 +13,8 @@ public class ConsoleLog : MonoBehaviour
 	private Transform ContentTransform;
 
 	private List<ConsoleLogItem> messages;
+	private bool isHost;
+
 	public void AddMessage(string message)
 	{
 		var item = Instantiate(LogItemPrefab, ContentTransform).GetComponent<ConsoleLogItem>();
@@ -36,13 +38,17 @@ public class ConsoleLog : MonoBehaviour
 
 	private void Start()
 	{
+		isHost = CommData.GetInstance().GetIsHost();
+
 		InputManager.OnDebugConsoleToggle += ToggleConsole;
+		GameManager.OnGameStateUpdated += OnGameStateUpdated;
+		GameManager.OnPieceCaptured += OnPieceCaptured;
+		
 		gameObject.SetActive(false);
 	}
 
 	private void ToggleConsole(object sender, EventArgs args)
 	{
-		Debug.Log("toggle console");
 		gameObject.SetActive(!gameObject.activeInHierarchy);
 	}
 
@@ -50,16 +56,35 @@ public class ConsoleLog : MonoBehaviour
 	{
 		Application.logMessageReceived -= LogHandler;
 		InputManager.OnDebugConsoleToggle -= ToggleConsole;
+		GameManager.OnGameStateUpdated -= OnGameStateUpdated;
+		GameManager.OnPieceCaptured -= OnPieceCaptured;
 	}
 
-	private void OnEnable()
+	private void OnPieceCaptured(object sender, Piece piece)
 	{
-		//Application.logMessageReceived += LogHandler;
+		var player = (piece.GetIsHost() == isHost) ? "You" : "Opponent";
+		var rank = piece.GetRank();
+		var captureMessage = $"{player} captured {rank}";
+		AddMessage(captureMessage);
 	}
 
-	private void OnDisable()
+	private string GetMovementMessage(GameStateDTO gameState)
 	{
-		//Application.logMessageReceived -= LogHandler;
+		var player = (!gameState.myTurn) ? "You" : "Opponent";
+		var rank = gameState.movement.rank;
+		var rowInit = gameState.movement.rowInitial;
+		var colInit = gameState.movement.colInitial;
+		var rowEnd = gameState.movement.rowFinal;
+		var colEnd = gameState.movement.colFinal;
+		return $"{player} moved {rank} from ({rowInit},{colInit}) to ({rowEnd},{colEnd})";
+	}
+	
+	private void OnGameStateUpdated(object sender, GameStateDTO gameState)
+	{
+		if (gameState != null && gameState.movement != null)
+		{
+			AddMessage(GetMovementMessage(gameState));
+		}
 	}
 
 	private void LogHandler(string condition, string stackTrace, LogType type)

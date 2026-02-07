@@ -12,12 +12,7 @@ public class WaitForGuestPlayerWidget : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		/*
-		gameId = PlayerPrefsManager.GetGameId();
-		token = PlayerPrefsManager.GetToken();
-		backendService = FindFirstObjectByType<BackendService>();
-		StartCoroutine(CheckForGuestPlayerCoroutine());
-		*/
+		;
 	}
 
 	public void Initialize(Action OnGuestGot)
@@ -29,8 +24,6 @@ public class WaitForGuestPlayerWidget : MonoBehaviour
 
 	private IEnumerator CheckForGuestPlayerCoroutine()
 	{
-		Debug.Log("check for guest");
-
 		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS);
 
 		isGuestArrived = false;
@@ -52,11 +45,9 @@ public class WaitForGuestPlayerWidget : MonoBehaviour
 		if (gameExtendedDto.guest != null)
 		{
 			var commData = CommData.GetInstance();
-			var host = gameExtendedDto.host;
+			//var host = gameExtendedDto.host;
 			var guest = gameExtendedDto.guest;
-			//commData.SetOpponentUsername((guest.username == commData.GetMyUsername()) ? host.username : guest.username);
 			commData.SetOpponentUsername(guest.username);
-			Debug.Log("opponent " + commData.GetOpponentUsername());
 
 			isGuestArrived = true;
 		}
@@ -66,5 +57,4 @@ public class WaitForGuestPlayerWidget : MonoBehaviour
 	{
 		Debug.Log(error.message);
 	}
-
 }

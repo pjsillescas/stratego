@@ -10,7 +10,6 @@ public class CommData : MonoBehaviour
 
 	public void ResetData()
 	{
-		Debug.Log("resetdata");
 		gameId = 0;
 		token = null;
 		isHost = false;
@@ -27,7 +26,6 @@ public class CommData : MonoBehaviour
 
 	public void SetGameId(int gameId)
 	{
-		Debug.Log($"set gameid {gameId}");
 		this.gameId = gameId;
 	}
 

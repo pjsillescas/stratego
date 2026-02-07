@@ -90,7 +90,6 @@ public class InputManager : MonoBehaviour
 
 		if (actions.Player.ToggleConsole.WasPressedThisFrame())
 		{
-			Debug.Log("toggle console input");
 			OnDebugConsoleToggle?.Invoke(this, EventArgs.Empty);
 		}
 	}

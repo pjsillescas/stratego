@@ -39,11 +39,8 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 
 	public void Init(ToolUnitItem toolUnitItem, PieceData data, string nameText)
 	{
-		//var toolUnitItem = unitSetupPosition.GetPreviousToolUnitItem();
-		//data = unitSetupPosition.GetData();
 		this.data = data;
 		previousToolUnitItem = toolUnitItem;
-		//Debug.Log($"ondrop setupposition {rank}");
 		ShowImage();
 		NameText.text = nameText;
 		RankImage.texture = data.texture;
@@ -63,14 +60,6 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 				{
 					previousToolUnitItem.IncrementNumUnits();
 				}
-				/*
-				previousToolUnitItem = toolUnitItem;
-				data = unitImage.GetData();
-				//Debug.Log($"ondrop setupposition {rank}");
-				ShowImage();
-				NameText.text = unitImage.GetName();
-				RankImage.texture = data.texture;
-				*/
 
 				Init(toolUnitItem, unitImage.GetData(), unitImage.GetName());
 			}
@@ -80,18 +69,8 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		{
 			if (previousToolUnitItem == null)
 			{
-				/*
-				var toolUnitItem = unitSetupPosition.GetPreviousToolUnitItem();
-				var data = unitSetupPosition.GetData();
-				previousToolUnitItem = toolUnitItem;
-				//Debug.Log($"ondrop setupposition {rank}");
-				ShowImage();
-				NameText.text = unitImage.GetName();
-				RankImage.texture = data.texture;
-				*/
 				Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
 				unitSetupPosition.ResetData();
-
 			}
 			else
 			{
@@ -103,26 +82,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 				Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
 				// Transfer previous data from this position to the dragged one
 				unitSetupPosition.Init(thisToolUnitItem, thisData, thisName);
-				;
 			}
-				/*
-				var toolUnitItem = unitImage.GetToolUnitItem();
-				if (toolUnitItem.DecrementNumUnits())
-				{
-					if (previousToolUnitItem != null)
-					{
-						previousToolUnitItem.IncrementNumUnits();
-					}
-
-					previousToolUnitItem = toolUnitItem;
-					data = unitImage.GetData();
-					//Debug.Log($"ondrop setupposition {rank}");
-					ShowImage();
-					NameText.text = unitImage.GetName();
-					RankImage.texture = data.texture;
-				}
-				*/
-				Debug.Log("unitsetupposition");
 		}
 
 	}
@@ -155,7 +115,6 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	{
 		yield return new WaitForSeconds(1.0f);
 		defaultPosition = transform.localPosition;
-		Debug.Log($"position {name} in position {defaultPosition}");
 
 		yield return null;
 	}

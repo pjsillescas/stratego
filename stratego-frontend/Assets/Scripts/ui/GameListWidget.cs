@@ -31,7 +31,6 @@ public class GameListWidget : MonoBehaviour
 		var guest = gameExtendedDto.guest;
 		//commData.SetOpponentUsername((guest.username == commData.GetMyUsername()) ? host.username : guest.username);
 		commData.SetOpponentUsername(host.username);
-		Debug.Log("opponent " + commData.GetOpponentUsername());
 
 		LoadGameplayScene(false);
 	}
@@ -39,7 +38,6 @@ public class GameListWidget : MonoBehaviour
 	{
 		var commData = CommData.GetInstance();
 		commData.SetGameId(gameDto.id);
-		Debug.Log(gameDto.id);
 		WaitWidget.gameObject.SetActive(true);
 		WaitWidget.Initialize(() => LoadGameplayScene(true));
 	}

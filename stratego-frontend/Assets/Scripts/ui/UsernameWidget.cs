@@ -49,7 +49,6 @@ public class UsernameWidget : MonoBehaviour
 		}
         while (username == "");
         
-        Debug.Log($"username {username}");
 		Widget.SetActive(true);
 		UsernameText.text = username;
         yield return null;

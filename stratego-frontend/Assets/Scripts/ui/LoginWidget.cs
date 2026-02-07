@@ -105,19 +105,16 @@ public class LoginWidget : MonoBehaviour
 
 	private void ButtonSignupClick()
 	{
-		Debug.Log("signup click");
 		StartCoroutine(backendService.Signup(UsernameInput.text, PasswordInput.text, OnSignedUp, OnError));
 	}
 
 	private void ButtonLoginClick()
 	{
-		Debug.Log("login click");
 		StartCoroutine(backendService.Login(UsernameInput.text, PasswordInput.text, OnLoggedIn, OnError));
 	}
 
 	private void OnSignedUp(PlayerDTO player)
 	{
-		Debug.Log("onsignedup");
 		CommData.GetInstance().SetMyUsername(player.username);
 		DisableError();
 		ButtonLoginClick();
@@ -128,7 +125,6 @@ public class LoginWidget : MonoBehaviour
 		DisableError();
 		CommData.GetInstance().SetMyUsername(UsernameInput.text);
 		CommData.GetInstance().SetToken(token);
-		Debug.Log($"token: {token}");
 		GoToMainMenu();
 	}
 
@@ -153,7 +149,6 @@ public class LoginWidget : MonoBehaviour
 
 	private void SelectUIElement(int newElement)
 	{
-		Debug.Log($"selected {newElement}");
 		selectedUI = newElement;
 		var selectedElement = uiElements[selectedUI];
 		EventSystem.current.SetSelectedGameObject(selectedElement, null);

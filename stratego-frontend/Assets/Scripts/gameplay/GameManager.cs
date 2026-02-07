@@ -219,8 +219,6 @@ public class GameManager : MonoBehaviour
 		//currentGameState = gameStateDto;
 		var board = gameStateDto.board;
 
-		Debug.Log(JsonConvert.SerializeObject(board));
-
 		if (!isHost)
 		{
 			/*
@@ -539,7 +537,6 @@ public class GameManager : MonoBehaviour
 	private void OnLeftGame(GameDTO gameDTO)
 	{
 		CommData.GetInstance().ResetData();
-		Debug.Log("go to Login");
 		SceneManager.LoadScene("Login", LoadSceneMode.Single);
 	}
 

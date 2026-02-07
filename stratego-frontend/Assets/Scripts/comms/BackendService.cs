@@ -7,8 +7,8 @@ using UnityEngine.Networking;
 
 public class BackendService: MonoBehaviour
 {
-	//private const string URL = "http://localhost:8080/api"; // for builds
-	private const string URL = "https://stratego-backend-ux6n.onrender.com/api";
+	private const string URL = "http://localhost:8080/api"; // for builds
+	//private const string URL = "https://stratego-backend-ux6n.onrender.com/api";
 	
 	private static BackendService instance = null;
 	public static BackendService GetInstance() => instance;
@@ -38,7 +38,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Logged in. Received: " + json);
+			//Debug.Log("Logged in. Received: " + json);
 
 			var result = JsonUtility.FromJson<LoginResultDTO>(json);
 			onLoggedIn?.Invoke(result.token);
@@ -58,10 +58,6 @@ public class BackendService: MonoBehaviour
 	{
 		string body = JsonUtility.ToJson(new LoginDTO(username, password));
 
-		Debug.Log($"body {body}");
-		var url = URL + "/auth/signup";
-		Debug.Log($"url: {url}");
-
 		using UnityWebRequest request = UnityWebRequest.Put(URL + "/auth/signup", body);
 		//request.SetRequestHeader("Accept", "application/json");
 		request.SetRequestHeader("Content-Type", "application/json");
@@ -71,7 +67,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Signed up. Received: " + json);
+			//Debug.Log("Signed up. Received: " + json);
 
 			var result = JsonUtility.FromJson<PlayerDTO>(json);
 			onSignedUp?.Invoke(result);
@@ -97,7 +93,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Game list received: " + json);
+			//Debug.Log("Game list received: " + json);
 
 			var gameList = JsonUtility.FromJson<GameListDTO>("{\"games\":" + json + "}");
 			onGamesGot?.Invoke(gameList.games);
@@ -140,7 +136,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Logged in. Received: " + json);
+			//Debug.Log("Logged in. Received: " + json);
 
 			var gameDto = JsonUtility.FromJson<GameDTO>(json);
 			onGameCreated?.Invoke(gameDto);
@@ -167,7 +163,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Game joined. Received: " + json);
+			//Debug.Log("Game joined. Received: " + json);
 
 			var gameExtendedDto = JsonUtility.FromJson<GameExtendedDTO>(json);
 			onJoinedGame?.Invoke(gameExtendedDto);
@@ -193,7 +189,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Game left. Received: " + json);
+			//Debug.Log("Game left. Received: " + json);
 
 			var gameDto = JsonUtility.FromJson<GameDTO>(json);
 			onLeftGame?.Invoke(gameDto);
@@ -224,7 +220,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Setup sent. Received: " + json);
+			//Debug.Log("Setup sent. Received: " + json);
 
 			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
 			var gameStateDto = JsonConvert.DeserializeObject<GameStateDTO>(json);
@@ -254,7 +250,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Movement sent. Received: " + json);
+			//Debug.Log("Movement sent. Received: " + json);
 
 			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
 			var gameStateDto = JsonConvert.DeserializeObject<GameStateDTO>(json);
@@ -281,7 +277,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Got game status. Received: " + json);
+			//Debug.Log("Got game status. Received: " + json);
 
 			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
 			var gameStateDto = JsonConvert.DeserializeObject<GameStateDTO>(json);
@@ -308,7 +304,7 @@ public class BackendService: MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.Log("Got game. Received: " + json);
+			//Debug.Log("Got game. Received: " + json);
 
 			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
 			var gameStateDto = JsonConvert.DeserializeObject<GameExtendedDTO>(json);
