@@ -8,6 +8,8 @@ public class InputManager : MonoBehaviour
 	public static event EventHandler<Piece> OnPieceSelected;
 	public static event EventHandler<Tile> OnTileSelected;
 
+	public static event EventHandler OnDebugConsoleToggle;
+	
 	[SerializeField]
 	private LayerMask PieceLayer;
 	[SerializeField]
@@ -84,6 +86,12 @@ public class InputManager : MonoBehaviour
 		{
 			ProcessHighlightTile(ray);
 			ProcessHighlightedPiece(ray);
+		}
+
+		if (actions.Player.ToggleConsole.WasPressedThisFrame())
+		{
+			Debug.Log("toggle console input");
+			OnDebugConsoleToggle?.Invoke(this, EventArgs.Empty);
 		}
 	}
 
