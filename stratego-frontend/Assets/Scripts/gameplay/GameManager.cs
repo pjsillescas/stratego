@@ -38,8 +38,8 @@ public class GameManager : MonoBehaviour
 	private List<Piece> guestPieces;
 	private List<Piece> disabledPieces;
 	private bool isHost;
-	Coroutine movementCoroutine = null;
-
+	private Coroutine movementCoroutine = null;
+	private AudioManager audioManager;
 	//private GameStateDTO currentGameState;
 
 
@@ -49,6 +49,8 @@ public class GameManager : MonoBehaviour
 		hostPieces = new();
 		guestPieces = new();
 		disabledPieces = new();
+
+		audioManager = FindFirstObjectByType<AudioManager>();
 
 		if (GameWidget != null)
 		{
@@ -443,6 +445,8 @@ public class GameManager : MonoBehaviour
 		var direction = (targetPosition - initialPosition).normalized;
 		var threshold = 0.1f;
 
+		audioManager.StartWalk();
+
 		var speed = 1f / 0.5f;
 		while ((piece.transform.position - targetPosition).sqrMagnitude > threshold)
 		{
@@ -455,6 +459,12 @@ public class GameManager : MonoBehaviour
 		var tile = Board.GetTile(targetRow, targetCol);
 		piece.SetTile(tile);
 
+		audioManager.StopWalk();
+
+		var attackerRank = piece.GetRank();
+		var defenderRank = (pieceTarget != null) ? pieceTarget.GetRank() : 0;
+
+		PlayAttackAudio(attackerRank, defenderRank);
 
 		if (pieceTarget != null)
 		{
@@ -481,6 +491,30 @@ public class GameManager : MonoBehaviour
 
 		movementCoroutine = null;
 		yield return null;
+	}
+
+	private void PlayAttackAudio(Rank attackerRank, Rank defenderRank)
+	{
+		if (defenderRank == 0)
+		{
+			return;
+		}
+		
+		if (defenderRank == Rank.BOMB)
+		{
+			if (attackerRank == Rank.MINER)
+			{
+				audioManager.PlayAudio(AudioManager.AudioType.BOMBDEACTIVATION);
+			}
+			else
+			{
+				audioManager.PlayAudio(AudioManager.AudioType.EXPLOSION);
+			}
+		}
+		else
+		{
+			audioManager.PlayAudio(AudioManager.AudioType.ATTACK);
+		}
 	}
 
 	private IEnumerator DestroyPiece(Piece piece)
