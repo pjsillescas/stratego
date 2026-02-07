@@ -314,6 +314,7 @@ public class GameManager : MonoBehaviour
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
+		Debug.Log(JsonConvert.SerializeObject(movement));
 		StartCoroutine(BackendService.GetInstance().AddMovement(gameId, token, movement, OnMovementAdded, OnError));
 		
 		/*
