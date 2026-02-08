@@ -10,7 +10,8 @@ public class GameManager : MonoBehaviour
 {
 	public static event EventHandler<GameStateDTO> OnGameStateUpdated;
 	public static event EventHandler<Piece> OnPieceCaptured;
-	public static event EventHandler OnEndMovementAnimation;
+	public static event EventHandler<Piece> OnPieceAnimationBegin;
+	public static event EventHandler<Piece> OnPieceAnimationEnd;
 
 	[SerializeField]
 	private ArmySetupWidget SetupWidget;
@@ -410,8 +411,6 @@ public class GameManager : MonoBehaviour
 	public void OnMovementAdded(GameStateDTO gameStateDto)
 	{
 		//currentGameState = gameStateDto;
-		OnGameStateUpdated?.Invoke(this, gameStateDto);
-
 		StartCoroutine(WaitForGameState(gameStateDto));
 	}
 
@@ -447,6 +446,7 @@ public class GameManager : MonoBehaviour
 		var threshold = 0.1f;
 
 		audioManager.StartWalk();
+		OnPieceAnimationBegin?.Invoke(this, piece);
 
 		var speed = 1f / 0.5f;
 		while ((piece.transform.position - targetPosition).sqrMagnitude > threshold)
@@ -488,7 +488,8 @@ public class GameManager : MonoBehaviour
 			piece.HideData();
 		}
 
-		OnEndMovementAnimation?.Invoke(this, EventArgs.Empty);
+		OnPieceAnimationEnd?.Invoke(this, piece);
+		OnGameStateUpdated?.Invoke(this, gameStateDto);
 
 		movementCoroutine = null;
 		yield return null;

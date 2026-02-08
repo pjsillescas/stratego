@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.Audio.ProcessorInstance;
 
 public class InputManager : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class InputManager : MonoBehaviour
 	public static event EventHandler<Tile> OnTileSelected;
 
 	public static event EventHandler OnDebugConsoleToggle;
-	
+
 	[SerializeField]
 	private LayerMask PieceLayer;
 	[SerializeField]
@@ -25,12 +26,14 @@ public class InputManager : MonoBehaviour
 	private Tile highlightedTile;
 	private GameManager gameManager;
 	private bool isMyTurn;
+	private bool inputsEnabled;
 
 	public Piece GetSelectedPiece() => selectedPiece;
 	public Tile GetSelectedTile() => selectedTile;
 
 	private void Awake()
 	{
+		inputsEnabled = true;
 		actions = new InputActions();
 	}
 
@@ -38,14 +41,17 @@ public class InputManager : MonoBehaviour
 	{
 		actions.Enable();
 		GameManager.OnGameStateUpdated += OnGameStateUpdated;
-		GameManager.OnEndMovementAnimation += ResetSelections;
+		GameManager.OnPieceAnimationBegin += OnPieceAnimationBegin;
+		GameManager.OnPieceAnimationEnd += OnPieceAnimationEnd;
+
 	}
 
 	private void OnDisable()
 	{
 		actions.Disable();
 		GameManager.OnGameStateUpdated -= OnGameStateUpdated;
-		GameManager.OnEndMovementAnimation -= ResetSelections;
+		GameManager.OnPieceAnimationBegin -= OnPieceAnimationBegin;
+		GameManager.OnPieceAnimationEnd -= OnPieceAnimationEnd;
 	}
 
 	private void OnGameStateUpdated(object sender, GameStateDTO gameStateDTO)
@@ -60,7 +66,7 @@ public class InputManager : MonoBehaviour
 		mainCamera = Camera.main;
 		isHost = gameManager.GetIsHost();
 
-		ResetSelections(this, EventArgs.Empty);
+		ResetSelections();
 	}
 
 	private const float MAX_DISTANCE = 20f;
@@ -68,6 +74,11 @@ public class InputManager : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (!inputsEnabled)
+		{
+			return;
+		}
+
 		var mousePosition = Mouse.current.position.ReadValue();
 		var mouseWorldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
 
@@ -193,9 +204,9 @@ public class InputManager : MonoBehaviour
 
 			return true;
 			*/
-			
+
 			var col = tileTarget.GetCol();
-			
+
 			var originRow = tileOrigin.GetRow();
 			var targetRow = tileTarget.GetRow();
 			if (originRow < targetRow)
@@ -240,7 +251,7 @@ public class InputManager : MonoBehaviour
 			*/
 
 			var row = tileTarget.GetRow();
-			
+
 			var originCol = tileOrigin.GetCol();
 			var targetCol = tileTarget.GetCol();
 
@@ -354,8 +365,18 @@ public class InputManager : MonoBehaviour
 
 		gameManager.SendMovement(movement);
 	}
+	private void OnPieceAnimationBegin(object sender, Piece piece)
+	{
+		inputsEnabled = false;
+	}
 
-	private void ResetSelections(object sender, EventArgs args)
+	private void OnPieceAnimationEnd(object sender, Piece piece)
+	{
+		inputsEnabled = true;
+		ResetSelections();
+	}
+
+	private void ResetSelections()
 	{
 		if (selectedPiece != null)
 		{
