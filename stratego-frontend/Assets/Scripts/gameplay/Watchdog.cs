@@ -8,10 +8,12 @@ public class Watchdog : MonoBehaviour
 
 	private GameManager gameManager;
 	private bool hasTurnChanged;
+	private GameStateDTO lastGameStateDto;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
+		lastGameStateDto = null;
 		gameManager = FindFirstObjectByType<GameManager>();
 	}
 
@@ -45,7 +47,7 @@ public class Watchdog : MonoBehaviour
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
-		
+
 		hasTurnChanged = false;
 		while (!hasTurnChanged)
 		{
@@ -56,14 +58,26 @@ public class Watchdog : MonoBehaviour
 		yield return null;
 	}
 
+	private bool IsTheLastMovement(GameStateDTO gameStateDto)
+	{
+		var newMovement = gameStateDto?.movement;
+		var lastMovement = lastGameStateDto?.movement;
+		return newMovement != null && lastMovement != null //
+			&& (newMovement.rowInitial == lastMovement.rowInitial && newMovement.colInitial == lastMovement.colInitial
+			&& newMovement.rowFinal == lastMovement.rowFinal && newMovement.colFinal == lastMovement.colFinal
+			&& gameStateDto.currentPlayer.id == lastGameStateDto.currentPlayer.id);
+	}
+
 	private void OnGameStateGot(GameStateDTO gameStateDto)
 	{
 		OnGameStateGotEndGame(gameStateDto);
 
-		if (gameStateDto.myTurn)
+		// Check that it is our turn and the samee gameState does not come for a second time
+		if (gameStateDto.myTurn && !IsTheLastMovement(gameStateDto))
 		{
-			gameManager.OnMovementAdded(gameStateDto);
+			lastGameStateDto = gameStateDto;
 			hasTurnChanged = true;
+			gameManager.OnMovementAdded(gameStateDto);
 		}
 	}
 
