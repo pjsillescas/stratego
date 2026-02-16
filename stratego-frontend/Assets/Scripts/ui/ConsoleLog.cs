@@ -76,7 +76,10 @@ public class ConsoleLog : MonoBehaviour
 		var colInit = gameState.movement.colInitial;
 		var rowEnd = gameState.movement.rowFinal;
 		var colEnd = gameState.movement.colFinal;
-		return $"{player} moved {rank} from ({rowInit},{colInit}) to ({rowEnd},{colEnd})";
+		var dead = gameState.movement.result == null ? "" : 
+			gameState.movement.result.Select(res => $"{res.rank} ({res.host})").Aggregate("", (acc, val) => $"{val},{acc}");
+		
+		return $"{player} moved {rank} from ({rowInit},{colInit}) to ({rowEnd},{colEnd}) [{dead}]";
 	}
 	
 	private void OnGameStateUpdated(object sender, GameStateDTO gameState)

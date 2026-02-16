@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 [Serializable]
 public class StrategoMovementDTO
@@ -10,4 +11,6 @@ public class StrategoMovementDTO
 
 	public int rowFinal;
 	public int colFinal;
+
+	public List<StrategoMovementResultDTO> result;
 }
