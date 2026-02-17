@@ -52,6 +52,7 @@ public class RandomSetupGenerator : MonoBehaviour
 			int i = Random.Range(0, toolUnitItemsList.Count);
 
 			var toolUnitItem = toolUnitItemsList[i];
+			Debug.Log($"Selected toolItem {toolUnitItem.GetUnitImage().GetData().rank}");
 
 			var row = Random.Range(0, nRows);
 			var col = Random.Range(0, nCols);
@@ -60,7 +61,15 @@ public class RandomSetupGenerator : MonoBehaviour
 			if (position != null)
 			{
 				position.SetUnitImage(toolUnitItem.GetUnitImage());
+
+				if(toolUnitItem.GetNumUnits() == 0)
+				{
+					toolUnitItemsList.Remove(toolUnitItem);
+					Debug.Log($"Removing toolItem {toolUnitItem.GetUnitImage().GetData().rank}");
+				}
 			}
 		}
+
+		Debug.Log("Random setup finished");
 	}
 }
