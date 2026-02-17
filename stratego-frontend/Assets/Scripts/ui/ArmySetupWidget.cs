@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(RandomSetupGenerator))]
 public class ArmySetupWidget : MonoBehaviour
 {
 	[SerializeField]
@@ -14,11 +15,16 @@ public class ArmySetupWidget : MonoBehaviour
 
 	[SerializeField]
 	private Button UseSetupButton;
+	[SerializeField]
+	private Button UseRandomSetupButton;
+	[SerializeField]
+	private Button FavouriteSetupsButton;
 
 	[SerializeField]
 	private WaitForSetupsWidget WaitForSetupWidget;
 
 	private Action<GameStateDTO> onGameStart;
+	private RandomSetupGenerator randomSetupGenerator;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
@@ -28,11 +34,33 @@ public class ArmySetupWidget : MonoBehaviour
 	public void Initialize(Action<GameStateDTO> onGameStart)
 	{
 		gameObject.SetActive(true);
+
+		randomSetupGenerator = GetComponent<RandomSetupGenerator>();
+
 		UseSetupButton.enabled = false;
 		UseSetupButton.onClick.RemoveAllListeners();
 		UseSetupButton.onClick.AddListener(UseSetupButtonClick);
+
+		UseRandomSetupButton.enabled = true;
+		UseRandomSetupButton.onClick.RemoveAllListeners();
+		UseRandomSetupButton.onClick.AddListener(UseRandomSetupButtonClick);
+
+		FavouriteSetupsButton.enabled = false;
+		FavouriteSetupsButton.onClick.RemoveAllListeners();
+		FavouriteSetupsButton.onClick.AddListener(FavouriteSetupsButtonClick);
+
 		ToolUnitItem.OnNumItemsChanged += ToolUnitItem_OnNumItemsChanged;
 		this.onGameStart = onGameStart;
+	}
+
+	private void UseRandomSetupButtonClick()
+	{
+		randomSetupGenerator.UseRandomSetup(Setup, ToolUnitItems);
+	}
+
+	private void FavouriteSetupsButtonClick()
+	{
+		;
 	}
 
 	private void ToolUnitItem_OnNumItemsChanged(object sender, System.EventArgs e)
@@ -61,7 +89,8 @@ public class ArmySetupWidget : MonoBehaviour
 	private void OnSetupAdded(GameStateDTO gameStateDto)
 	{
 		WaitForSetupWidget.gameObject.SetActive(true);
-		WaitForSetupWidget.Initialize((gameState) => {
+		WaitForSetupWidget.Initialize((gameState) =>
+		{
 			onGameStart?.Invoke(gameState);
 			gameObject.SetActive(false);
 		});

@@ -5,7 +5,7 @@ using UnityEngine;
 public class ToolUnitItem : MonoBehaviour
 {
 	public static event EventHandler OnNumItemsChanged;
-	
+
 	[SerializeField]
 	private TextMeshProUGUI NumUnitsText;
 	[SerializeField]
@@ -21,6 +21,7 @@ public class ToolUnitItem : MonoBehaviour
 	private PieceData Data;
 
 	private int numUnits;
+	private UnitImage unitImage;
 
 	public int GetNumUnits() => numUnits;
 
@@ -31,8 +32,11 @@ public class ToolUnitItem : MonoBehaviour
 		NumUnitsText.text = numUnits.ToString();
 		NameText.text = Data.rankName;
 		var obj = Instantiate(UnitImagePrefab, PicTransform);
-		obj.GetComponent<UnitImage>().Init(Data, this);
+		unitImage = obj.GetComponent<UnitImage>();
+		unitImage.Init(Data, this);
 	}
+
+	public UnitImage GetUnitImage() => unitImage;
 
 	public bool DecrementNumUnits()
 	{

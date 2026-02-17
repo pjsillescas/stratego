@@ -1,6 +1,5 @@
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -49,40 +48,50 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 
 	public string GetName() => NameText.text;
 
+	public void SetUnitImage(UnitImage unitImage)
+	{
+		var toolUnitItem = unitImage.GetToolUnitItem();
+		if (toolUnitItem.DecrementNumUnits())
+		{
+			if (previousToolUnitItem != null)
+			{
+				previousToolUnitItem.IncrementNumUnits();
+			}
+
+			Init(toolUnitItem, unitImage.GetData(), unitImage.GetName());
+		}
+	}
+
+	public void SetUnitSetupPosition(UnitSetupPosition unitSetupPosition)
+	{
+		if (previousToolUnitItem == null)
+		{
+			Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
+			unitSetupPosition.ResetData();
+		}
+		else
+		{
+			var thisToolUnitItem = previousToolUnitItem;
+			var thisData = data;
+			var thisName = NameText.text;
+
+			// copy dragged data to this
+			Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
+			// Transfer previous data from this position to the dragged one
+			unitSetupPosition.Init(thisToolUnitItem, thisData, thisName);
+		}
+	}
+
 	public void OnDrop(PointerEventData eventData)
 	{
 		if (eventData.pointerDrag.TryGetComponent(out UnitImage unitImage))
 		{
-			var toolUnitItem = unitImage.GetToolUnitItem();
-			if (toolUnitItem.DecrementNumUnits())
-			{
-				if (previousToolUnitItem != null)
-				{
-					previousToolUnitItem.IncrementNumUnits();
-				}
-
-				Init(toolUnitItem, unitImage.GetData(), unitImage.GetName());
-			}
+			SetUnitImage(unitImage);
 		}
 
 		if (eventData.pointerDrag.TryGetComponent(out UnitSetupPosition unitSetupPosition))
 		{
-			if (previousToolUnitItem == null)
-			{
-				Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
-				unitSetupPosition.ResetData();
-			}
-			else
-			{
-				var thisToolUnitItem = previousToolUnitItem;
-				var thisData = data;
-				var thisName = NameText.text;
-
-				// copy dragged data to this
-				Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
-				// Transfer previous data from this position to the dragged one
-				unitSetupPosition.Init(thisToolUnitItem, thisData, thisName);
-			}
+			SetUnitSetupPosition(unitSetupPosition);
 		}
 
 	}
