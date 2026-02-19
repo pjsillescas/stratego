@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class BackendService: MonoBehaviour
+public class BackendService : MonoBehaviour
 {
 	private const string URL = "http://localhost:8080/api"; // for builds
 	//private const string URL = "https://stratego-backend-ux6n.onrender.com/api";
@@ -28,7 +28,7 @@ public class BackendService: MonoBehaviour
 	public IEnumerator Login(string username, string password, Action<string> onLoggedIn, Action<StrategoErrorDTO> onError)
 	{
 		string body = JsonUtility.ToJson(new LoginDTO(username, password));
-		
+
 		using UnityWebRequest request = UnityWebRequest.Put(URL + "/auth/login", body);
 		//request.SetRequestHeader("Accept", "application/json");
 		request.SetRequestHeader("Content-Type", "application/json");
@@ -48,7 +48,7 @@ public class BackendService: MonoBehaviour
 			string json = request.downloadHandler.text;
 
 			Debug.LogError("Failed to login: " + request.error);
-			
+
 			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
 			onError?.Invoke(result);
 		}
@@ -315,6 +315,130 @@ public class BackendService: MonoBehaviour
 			string json = request.downloadHandler.text;
 
 			Debug.LogError("Failed to get game: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
+		}
+	}
+
+	public IEnumerator GetFavouriteSetupList(string token, Action<List<FavouriteSetupDTO>> onFavouriteSetupListGot, Action<StrategoErrorDTO> onError)
+	{
+		using UnityWebRequest request = UnityWebRequest.Get(URL + $"/stratego/favourite/setup");
+		request.SetRequestHeader("Authorization", $"Bearer {token}");
+		yield return request.SendWebRequest();
+
+		if (request.result == UnityWebRequest.Result.Success)
+		{
+			string json = request.downloadHandler.text;
+
+			var favouriteSetupList = JsonConvert.DeserializeObject<List<FavouriteSetupDTO>>(json);
+			onFavouriteSetupListGot?.Invoke(favouriteSetupList);
+		}
+		else
+		{
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to get favourite setup list: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
+		}
+	}
+
+	public IEnumerator GetFavouriteSetup(int setupId, string token, Action<FavouriteSetupDTO> onFavouriteSetupGot, Action<StrategoErrorDTO> onError)
+	{
+		using UnityWebRequest request = UnityWebRequest.Get(URL + $"/stratego/favourite/setup/{setupId}");
+		request.SetRequestHeader("Authorization", $"Bearer {token}");
+		yield return request.SendWebRequest();
+
+		if (request.result == UnityWebRequest.Result.Success)
+		{
+			string json = request.downloadHandler.text;
+
+			var favouriteSetup = JsonConvert.DeserializeObject<FavouriteSetupDTO>(json);
+			onFavouriteSetupGot?.Invoke(favouriteSetup);
+		}
+		else
+		{
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to get favourite setup: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
+		}
+	}
+
+	public IEnumerator DeleteFavouriteSetup(int setupId, string token, Action<FavouriteSetupDTO> onFavouriteSetupGot, Action<StrategoErrorDTO> onError)
+	{
+		using UnityWebRequest request = UnityWebRequest.Delete(URL + $"/stratego/favourite/setup/{setupId}");
+		request.SetRequestHeader("Authorization", $"Bearer {token}");
+		yield return request.SendWebRequest();
+
+		if (request.result == UnityWebRequest.Result.Success)
+		{
+			string json = request.downloadHandler.text;
+
+			var favouriteSetup = JsonConvert.DeserializeObject<FavouriteSetupDTO>(json);
+			onFavouriteSetupGot?.Invoke(favouriteSetup);
+		}
+		else
+		{
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to delete favourite setup: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
+		}
+	}
+
+	public IEnumerator AddFavouriteSetup(FavouriteSetupDTO setup, string token, Action<FavouriteSetupDTO> onFavouriteSetupGot, Action<StrategoErrorDTO> onError)
+	{
+		var data = JsonUtility.ToJson(setup);
+		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/favourite/setup", data);
+		request.SetRequestHeader("Content-Type", "application/json");
+		request.SetRequestHeader("Authorization", $"Bearer {token}");
+		yield return request.SendWebRequest();
+
+		if (request.result == UnityWebRequest.Result.Success)
+		{
+			string json = request.downloadHandler.text;
+
+			var favouriteSetup = JsonConvert.DeserializeObject<FavouriteSetupDTO>(json);
+			onFavouriteSetupGot?.Invoke(favouriteSetup);
+		}
+		else
+		{
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to delete favourite setup: " + request.error);
+
+			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
+			onError?.Invoke(result);
+		}
+	}
+
+	public IEnumerator UpdateFavouriteSetup(int setupId, FavouriteSetupDTO setup, string token, Action<FavouriteSetupDTO> onFavouriteSetupGot, Action<StrategoErrorDTO> onError)
+	{
+		var data = JsonUtility.ToJson(setup);
+		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/favourite/setup/{setupId}", data);
+		request.SetRequestHeader("Content-Type", "application/json");
+		request.SetRequestHeader("Authorization", $"Bearer {token}");
+		yield return request.SendWebRequest();
+
+		if (request.result == UnityWebRequest.Result.Success)
+		{
+			string json = request.downloadHandler.text;
+
+			var favouriteSetup = JsonConvert.DeserializeObject<FavouriteSetupDTO>(json);
+			onFavouriteSetupGot?.Invoke(favouriteSetup);
+		}
+		else
+		{
+			string json = request.downloadHandler.text;
+
+			Debug.LogError("Failed to delete favourite setup: " + request.error);
 
 			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
 			onError?.Invoke(result);

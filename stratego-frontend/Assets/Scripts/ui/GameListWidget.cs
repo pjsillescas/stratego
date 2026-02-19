@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static ArmySetupWidget;
 
 public class GameListWidget : MonoBehaviour
 {
@@ -17,9 +16,14 @@ public class GameListWidget : MonoBehaviour
 	private Button CreateGameButton;
 	[SerializeField]
 	private Button UpdateGameListButton;
+	[SerializeField]
+	private Button ManageFavouriteSetupsButton;
 
 	[SerializeField]
 	private WaitForGuestPlayerWidget WaitWidget;
+
+	[SerializeField]
+	private ArmySetupWidget ArmySetupWidget;
 
 	private void OnJoinedGame(GameExtendedDTO gameExtendedDto)
 	{
@@ -66,6 +70,11 @@ public class GameListWidget : MonoBehaviour
 
 		UpdateGameListButton.onClick.RemoveAllListeners();
 		UpdateGameListButton.onClick.AddListener(UpdateGameListButtonClick);
+
+		ManageFavouriteSetupsButton.onClick.RemoveAllListeners();
+		ManageFavouriteSetupsButton.onClick.AddListener(ManageFavouriteSetupsButtonClick);
+
+		ArmySetupWidget.gameObject.SetActive(false);
 
 		UpdateGameListButtonClick();
 
@@ -118,6 +127,14 @@ public class GameListWidget : MonoBehaviour
 			var gameItem = item.GetComponent<GameItemWidget>();
 			gameItem.SetGameData(game, JoinGame);
 		}
+	}
+
+	private void ManageFavouriteSetupsButtonClick()
+	{
+		ArmySetupWidget.gameObject.SetActive(true);
+		ArmySetupWidget.SetMode(TSetupWidgetMode.EDITOR_SETUP);
+		ArmySetupWidget.Initialize(null);
+
 	}
 
 	private void UpdateGameListButtonClick()

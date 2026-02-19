@@ -7,6 +7,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(RandomSetupGenerator))]
 public class ArmySetupWidget : MonoBehaviour
 {
+	public enum TSetupWidgetMode { GAME_SETUP, EDITOR_SETUP }
+
 	[SerializeField]
 	private List<SetupRow> Setup;
 
@@ -19,12 +21,26 @@ public class ArmySetupWidget : MonoBehaviour
 	private Button UseRandomSetupButton;
 	[SerializeField]
 	private Button FavouriteSetupsButton;
+	[SerializeField]
+	private Button CloseButton;
 
 	[SerializeField]
 	private WaitForSetupsWidget WaitForSetupWidget;
 
 	private Action<GameStateDTO> onGameStart;
 	private RandomSetupGenerator randomSetupGenerator;
+
+	public void SetMode(TSetupWidgetMode mode)
+	{
+		Debug.Log($"set mode {mode}");
+		CloseButton.gameObject.SetActive(mode == TSetupWidgetMode.EDITOR_SETUP);
+		UseSetupButton.gameObject.SetActive(mode == TSetupWidgetMode.GAME_SETUP);
+	}
+
+	private void Awake()
+	{
+		SetMode(TSetupWidgetMode.GAME_SETUP);
+	}
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
@@ -49,6 +65,10 @@ public class ArmySetupWidget : MonoBehaviour
 		FavouriteSetupsButton.onClick.RemoveAllListeners();
 		FavouriteSetupsButton.onClick.AddListener(FavouriteSetupsButtonClick);
 
+		CloseButton.enabled = true;
+		CloseButton.onClick.RemoveAllListeners();
+		CloseButton.onClick.AddListener(CloseButtonClick);
+
 		ToolUnitItem.OnNumItemsChanged += ToolUnitItem_OnNumItemsChanged;
 		this.onGameStart = onGameStart;
 	}
@@ -56,6 +76,12 @@ public class ArmySetupWidget : MonoBehaviour
 	private void UseRandomSetupButtonClick()
 	{
 		randomSetupGenerator.UseRandomSetup(Setup, ToolUnitItems);
+	}
+
+	private void CloseButtonClick()
+	{
+		Debug.Log("close click");
+		gameObject.SetActive(false);
 	}
 
 	private void FavouriteSetupsButtonClick()
