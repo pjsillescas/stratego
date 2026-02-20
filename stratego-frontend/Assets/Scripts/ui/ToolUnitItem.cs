@@ -28,12 +28,17 @@ public class ToolUnitItem : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		numUnits = Data.numUnits;
-		NumUnitsText.text = numUnits.ToString();
+		ResetItem();
 		NameText.text = Data.rankName;
 		var obj = Instantiate(UnitImagePrefab, PicTransform);
 		unitImage = obj.GetComponent<UnitImage>();
 		unitImage.Init(Data, this);
+	}
+
+	public void ResetItem()
+	{
+		numUnits = Data.numUnits;
+		NumUnitsText.text = numUnits.ToString();
 	}
 
 	public UnitImage GetUnitImage() => unitImage;

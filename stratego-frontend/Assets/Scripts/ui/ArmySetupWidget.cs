@@ -23,6 +23,8 @@ public class ArmySetupWidget : MonoBehaviour
 	private Button FavouriteSetupsButton;
 	[SerializeField]
 	private Button CloseButton;
+	[SerializeField]
+	private Button ResetButton;
 
 	[SerializeField]
 	private WaitForSetupsWidget WaitForSetupWidget;
@@ -47,6 +49,12 @@ public class ArmySetupWidget : MonoBehaviour
 	{
 	}
 
+	public void ResetWidget()
+	{
+		ToolUnitItems.ForEach(item => item.ResetItem());
+		Setup.ForEach(row => row.GetPositions().ForEach(position => position.ResetData()));
+	}
+
 	public void Initialize(Action<GameStateDTO> onGameStart)
 	{
 		gameObject.SetActive(true);
@@ -68,6 +76,10 @@ public class ArmySetupWidget : MonoBehaviour
 		CloseButton.enabled = true;
 		CloseButton.onClick.RemoveAllListeners();
 		CloseButton.onClick.AddListener(CloseButtonClick);
+		
+		ResetButton.enabled = true;
+		ResetButton.onClick.RemoveAllListeners();
+		ResetButton.onClick.AddListener(ResetWidget);
 
 		ToolUnitItem.OnNumItemsChanged += ToolUnitItem_OnNumItemsChanged;
 		this.onGameStart = onGameStart;
