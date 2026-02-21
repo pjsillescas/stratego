@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FavouriteSetupListWidget : MonoBehaviour
@@ -25,10 +26,16 @@ public class FavouriteSetupListWidget : MonoBehaviour
 		Debug.Log(error.message);
 	}
 
+	private FavouriteSetupItem GetFreeSetupItem()
+	{
+		return SetupItems.FirstOrDefault(setup => setup.GetSetup() == null);
+	}
+
 	private void OnFavouriteSetupListGot(List<FavouriteSetupDTO> favouriteSetupDtoList)
 	{
 		SetupItems.ForEach(item => item.ResetItem());
-		;
+
+		favouriteSetupDtoList.ForEach(setup => GetFreeSetupItem().InitializeSetup(setup));
 	}
 
 	// Update is called once per frame

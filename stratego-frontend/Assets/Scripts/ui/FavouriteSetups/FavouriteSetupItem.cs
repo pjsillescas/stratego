@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,8 @@ public class FavouriteSetupItem : MonoBehaviour
 	private TextMeshProUGUI DescriptionText;
 
 	private Button button;
+	private FavouriteSetupDTO setup;
+	private FavouriteSetupPreviewWidget previewWidget;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
@@ -17,21 +20,27 @@ public class FavouriteSetupItem : MonoBehaviour
 		button.onClick.RemoveAllListeners();
 		button.onClick.AddListener(ButtonClick);
 
+		previewWidget = FindFirstObjectByType<FavouriteSetupPreviewWidget>();
+
 		ResetItem();
 	}
 
 	private void ButtonClick()
 	{
-		;
+		previewWidget.LoadSetup(setup);
 	}
 
-	public void InitializeSetup()
+	public void InitializeSetup(FavouriteSetupDTO setup)
 	{
-		;
+		this.setup = setup;
+		DescriptionText.text = setup.description;
 	}
+
+	public FavouriteSetupDTO GetSetup() => setup;
 
 	public void ResetItem()
 	{
 		DescriptionText.text = "---";
+		setup = null;
 	}
 }
