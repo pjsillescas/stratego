@@ -5,7 +5,7 @@ using UnityEngine;
 public class FavouriteSetupPreviewWidget : MonoBehaviour
 {
 	[SerializeField]
-	private List<SetupRow> SetupItems;
+	private List<SetupPreviewRow> SetupItems;
 	[SerializeField]
 	private List<PieceData> Data;
 
@@ -19,11 +19,11 @@ public class FavouriteSetupPreviewWidget : MonoBehaviour
 	{
 		for (int iRow = 0; iRow < SetupItems.Count; iRow++)
 		{
-			var row = SetupItems[iRow];
+			var row = SetupItems[iRow].GetPositions();
 			var setupRow = setup.armySetupDTO.army[iRow];
-			for (int iCol = 0; iCol < SetupItems.Count; iCol++)
+			for (int iCol = 0; iCol < row.Count; iCol++)
 			{
-				var position = row.GetPositions()[iCol];
+				var position = row[iCol];
 				var rank = setupRow[iCol];
 				var pieceData = GetData(rank);
 				position.Init(null, pieceData, "");
