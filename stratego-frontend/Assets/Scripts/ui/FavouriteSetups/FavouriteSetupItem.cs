@@ -6,12 +6,13 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class FavouriteSetupItem : MonoBehaviour
 {
+	public static event EventHandler<FavouriteSetupDTO> OnSetupSelected;
 	[SerializeField]
 	private TextMeshProUGUI DescriptionText;
 
 	private Button button;
 	private FavouriteSetupDTO setup;
-	private FavouriteSetupPreviewWidget previewWidget;
+	//private FavouriteSetupPreviewWidget previewWidget;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
@@ -20,14 +21,15 @@ public class FavouriteSetupItem : MonoBehaviour
 		button.onClick.RemoveAllListeners();
 		button.onClick.AddListener(ButtonClick);
 
-		previewWidget = FindFirstObjectByType<FavouriteSetupPreviewWidget>();
+		//previewWidget = FindFirstObjectByType<FavouriteSetupPreviewWidget>();
 
 		ResetItem();
 	}
 
 	private void ButtonClick()
 	{
-		previewWidget.LoadSetup(setup);
+		OnSetupSelected?.Invoke(this, setup);
+		//previewWidget.LoadSetup(setup);
 	}
 
 	public void InitializeSetup(FavouriteSetupDTO setup)

@@ -26,7 +26,7 @@ public class FavouriteSetupPreviewWidget : MonoBehaviour
 				var position = row[iCol];
 				var rank = setupRow[iCol];
 				var pieceData = GetData(rank);
-				position.Init(null, pieceData, "");
+				position.Init(null, pieceData);
 			}
 		}
 	}

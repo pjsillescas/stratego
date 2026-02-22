@@ -22,48 +22,47 @@ public class UnitSetupPreviewPosition : MonoBehaviour
 
 	public string GetName() => NameText.text;
 
-	public void Init(ToolUnitItem toolUnitItem, PieceData data, string nameText)
+	private string GetName(Rank rank)
+	{
+		switch(rank)
+		{
+			case Rank.BOMB:
+				return "BB";
+			case Rank.FLAG:
+				return "FG";
+			case Rank.MARSHAL:
+				return "MS";
+			case Rank.GENERAL:
+				return "GN";
+			case Rank.COLONEL:
+				return "CL";
+			case Rank.MAJOR:
+				return "MJ";
+			case Rank.CAPTAIN:
+				return "CP";
+			case Rank.LIEUTENANT:
+				return "LT";
+			case Rank.SERGEANT:
+				return "SG";
+			case Rank.MINER:
+				return "MN";
+			case Rank.SCOUT:
+				return "SC";
+			case Rank.SPY:
+				return "SY";
+			default:
+				return "";
+		};
+	}
+
+	public void Init(ToolUnitItem toolUnitItem, PieceData data)
 	{
 		this.data = data;
 		previousToolUnitItem = toolUnitItem;
 		ShowImage();
-		NameText.text = nameText;
+		NameText.text = GetName(data.rank);
 		RankImage.texture = data.texture;
 
-	}
-
-	public void SetUnitImage(UnitImage unitImage)
-	{
-		var toolUnitItem = unitImage.GetToolUnitItem();
-		if (toolUnitItem.DecrementNumUnits())
-		{
-			if (previousToolUnitItem != null)
-			{
-				previousToolUnitItem.IncrementNumUnits();
-			}
-
-			Init(toolUnitItem, unitImage.GetData(), unitImage.GetName());
-		}
-	}
-
-	public void SetUnitSetupPosition(UnitSetupPosition unitSetupPosition)
-	{
-		if (previousToolUnitItem == null)
-		{
-			Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
-			unitSetupPosition.ResetData();
-		}
-		else
-		{
-			var thisToolUnitItem = previousToolUnitItem;
-			var thisData = data;
-			var thisName = NameText.text;
-
-			// copy dragged data to this
-			Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
-			// Transfer previous data from this position to the dragged one
-			unitSetupPosition.Init(thisToolUnitItem, thisData, thisName);
-		}
 	}
 
 	private void ShowImage()

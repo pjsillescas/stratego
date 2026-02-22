@@ -102,7 +102,40 @@ public class ArmySetupWidget : MonoBehaviour
 
 	private void FavouriteSetupsButtonClick()
 	{
-		FavouriteSetupListWidget.Activate(GetSetup());
+		FavouriteSetupListWidget.Activate(GetSetup(), LoadSetup);
+	}
+
+	private void LoadSetup(FavouriteSetupDTO setupDto)
+	{
+		ResetWidget();
+		LoadSetup(Setup, ToolUnitItems, setupDto);
+	}
+
+	private void LoadSetup(List<SetupRow> setup, List<ToolUnitItem> toolUnitItems, FavouriteSetupDTO setupDto)
+	{
+		Debug.Log("setting setup");
+
+		var toolUnitItemsList = new List<ToolUnitItem>(toolUnitItems);
+
+		int nRows = setup.Count;
+		int nCols = setup[0].GetPositions().Count;
+
+		for(int row = 0; row < nRows; row++)
+		{
+			for(int col = 0; col < nCols; col++)
+			{
+				var position = setup[row].GetPositions()[col];
+				var rank = setupDto.armySetupDTO.army[row][col];
+				var toolItem = toolUnitItems.Find(item => item.GetUnitImage().GetData().rank == rank);
+
+				if(toolItem != null)
+				{
+					position.SetUnitImage(toolItem.GetUnitImage());
+				}
+			}
+		}
+
+		Debug.Log("setting setup finished");
 	}
 
 	private void ToolUnitItem_OnNumItemsChanged(object sender, EventArgs e)

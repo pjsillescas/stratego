@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -16,12 +17,27 @@ public class FavouriteSetupListWidget : MonoBehaviour
 	private Button UpdateSetupButton;
 	[SerializeField]
 	private Button DeleteSetupButton;
+	[SerializeField]
+	private Button AcceptSetupButton;
+	[SerializeField]
+	private Button ExitButton;
 
 	private FavouriteSetupPreviewWidget previewWidget;
 	private BackendService backendService;
 	private string token;
 	private List<List<Rank>> currentSetup;
 	private FavouriteSetupDTO currentSetupDto;
+	private Action<FavouriteSetupDTO> OnSetupAccepted;
+
+	private void OnEnable()
+	{
+		FavouriteSetupItem.OnSetupSelected += OnSetupSelected;
+	}
+
+	private void OnDisable()
+	{
+		FavouriteSetupItem.OnSetupSelected -= OnSetupSelected;
+	}
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
@@ -38,8 +54,30 @@ public class FavouriteSetupListWidget : MonoBehaviour
 		DeleteSetupButton.onClick.RemoveAllListeners();
 		DeleteSetupButton.onClick.AddListener(DeleteSetupButtonClick);
 
+		AcceptSetupButton.onClick.RemoveAllListeners();
+		AcceptSetupButton.onClick.AddListener(AcceptSetupButtonClick);
+		
+		ExitButton.onClick.RemoveAllListeners();
+		ExitButton.onClick.AddListener(ExitButtonClick);
+
 		token = CommData.GetInstance().GetToken();
 		RefreshSetups();
+	}
+
+	private void OnSetupSelected(object sender, FavouriteSetupDTO setupDto)
+	{
+		currentSetupDto = setupDto;
+		previewWidget.LoadSetup(currentSetupDto);
+	}
+
+	private void AcceptSetupButtonClick()
+	{
+		OnSetupAccepted?.Invoke(currentSetupDto);
+	}
+
+	private void ExitButtonClick()
+	{
+		Deactivate();
 	}
 
 	private void RefreshSetups()
@@ -91,15 +129,16 @@ public class FavouriteSetupListWidget : MonoBehaviour
 		RefreshSetups();
 	}
 
-	public void Activate(List<List<Rank>> setup)
+	public void Activate(List<List<Rank>> setup, Action<FavouriteSetupDTO> OnSetupAccepted)
 	{
-		gameObject.transform.parent.gameObject.SetActive(true);
+		gameObject.SetActive(true);
 		currentSetup = setup;
+		this.OnSetupAccepted = OnSetupAccepted;
 	}
 
 	public void Deactivate()
 	{
-		gameObject.transform.parent.gameObject.SetActive(false);
+		gameObject.SetActive(false);
 		currentSetup = null;
 	}
 
