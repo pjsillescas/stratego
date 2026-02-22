@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static ArmySetupWidget;
 
 public class GameListWidget : MonoBehaviour
 {
@@ -132,7 +131,7 @@ public class GameListWidget : MonoBehaviour
 	private void ManageFavouriteSetupsButtonClick()
 	{
 		ArmySetupWidget.gameObject.SetActive(true);
-		ArmySetupWidget.SetMode(TSetupWidgetMode.EDITOR_SETUP);
+		ArmySetupWidget.SetMode(ArmySetupWidget.TSetupWidgetMode.EDITOR_SETUP);
 		ArmySetupWidget.Initialize(null);
 
 	}

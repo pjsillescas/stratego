@@ -395,7 +395,7 @@ public class BackendService : MonoBehaviour
 
 	public IEnumerator AddFavouriteSetup(FavouriteSetupDTO setup, string token, Action<FavouriteSetupDTO> onFavouriteSetupGot, Action<StrategoErrorDTO> onError)
 	{
-		var data = JsonUtility.ToJson(setup);
+		var data = JsonConvert.SerializeObject(setup);
 		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/favourite/setup", data);
 		request.SetRequestHeader("Content-Type", "application/json");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
@@ -412,7 +412,7 @@ public class BackendService : MonoBehaviour
 		{
 			string json = request.downloadHandler.text;
 
-			Debug.LogError("Failed to delete favourite setup: " + request.error);
+			Debug.LogError("Failed to add favourite setup: " + request.error);
 
 			var result = JsonUtility.FromJson<StrategoErrorDTO>(json);
 			onError?.Invoke(result);
@@ -421,7 +421,7 @@ public class BackendService : MonoBehaviour
 
 	public IEnumerator UpdateFavouriteSetup(int setupId, FavouriteSetupDTO setup, string token, Action<FavouriteSetupDTO> onFavouriteSetupGot, Action<StrategoErrorDTO> onError)
 	{
-		var data = JsonUtility.ToJson(setup);
+		var data = JsonConvert.SerializeObject(setup);
 		using UnityWebRequest request = UnityWebRequest.Put(URL + $"/stratego/favourite/setup/{setupId}", data);
 		request.SetRequestHeader("Content-Type", "application/json");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");

@@ -28,6 +28,8 @@ public class ArmySetupWidget : MonoBehaviour
 
 	[SerializeField]
 	private WaitForSetupsWidget WaitForSetupWidget;
+	[SerializeField]
+	private FavouriteSetupListWidget FavouriteSetupListWidget;
 
 	private Action<GameStateDTO> onGameStart;
 	private RandomSetupGenerator randomSetupGenerator;
@@ -61,7 +63,7 @@ public class ArmySetupWidget : MonoBehaviour
 
 		randomSetupGenerator = GetComponent<RandomSetupGenerator>();
 
-		UseSetupButton.enabled = false;
+		UseSetupButton.enabled = true;
 		UseSetupButton.onClick.RemoveAllListeners();
 		UseSetupButton.onClick.AddListener(UseSetupButtonClick);
 
@@ -69,7 +71,7 @@ public class ArmySetupWidget : MonoBehaviour
 		UseRandomSetupButton.onClick.RemoveAllListeners();
 		UseRandomSetupButton.onClick.AddListener(UseRandomSetupButtonClick);
 
-		FavouriteSetupsButton.enabled = false;
+		FavouriteSetupsButton.enabled = true;
 		FavouriteSetupsButton.onClick.RemoveAllListeners();
 		FavouriteSetupsButton.onClick.AddListener(FavouriteSetupsButtonClick);
 
@@ -80,6 +82,8 @@ public class ArmySetupWidget : MonoBehaviour
 		ResetButton.enabled = true;
 		ResetButton.onClick.RemoveAllListeners();
 		ResetButton.onClick.AddListener(ResetWidget);
+
+		FavouriteSetupListWidget.Deactivate();
 
 		ToolUnitItem.OnNumItemsChanged += ToolUnitItem_OnNumItemsChanged;
 		this.onGameStart = onGameStart;
@@ -98,12 +102,12 @@ public class ArmySetupWidget : MonoBehaviour
 
 	private void FavouriteSetupsButtonClick()
 	{
-		;
+		FavouriteSetupListWidget.Activate(GetSetup());
 	}
 
-	private void ToolUnitItem_OnNumItemsChanged(object sender, System.EventArgs e)
+	private void ToolUnitItem_OnNumItemsChanged(object sender, EventArgs e)
 	{
-		var numItems = ToolUnitItems.Select(item => item.GetNumUnits()).Sum();
+		var numItems = ToolUnitItems.Sum(item => item.GetNumUnits());
 		if (numItems <= 0)
 		{
 			UseSetupButton.enabled = true;
@@ -115,12 +119,17 @@ public class ArmySetupWidget : MonoBehaviour
 		ToolUnitItem.OnNumItemsChanged -= ToolUnitItem_OnNumItemsChanged;
 	}
 
+	private List<List<Rank>> GetSetup()
+	{
+		return Setup.Select(row => row.GetPositions().Select(pos => pos.GetRank()).ToList()).ToList();
+	}
+
 	private void UseSetupButtonClick()
 	{
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
-		List<List<Rank>> setup = Setup.Select(row => row.GetPositions().Select(pos => pos.GetRank()).ToList()).ToList();
+		List<List<Rank>> setup = GetSetup();
 		StartCoroutine(BackendService.GetInstance().AddSetup(gameId, token, setup, OnSetupAdded, OnError));
 	}
 
