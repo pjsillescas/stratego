@@ -124,7 +124,7 @@ public class FavouriteSetupListWidget : MonoBehaviour
 		}
 	}
 
-	private void OnFavouriteSetupDeleted(FavouriteSetupDTO setup)
+	private void OnFavouriteSetupDeleted()
 	{
 		RefreshSetups();
 	}

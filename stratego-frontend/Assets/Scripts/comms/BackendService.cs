@@ -369,7 +369,7 @@ public class BackendService : MonoBehaviour
 		}
 	}
 
-	public IEnumerator DeleteFavouriteSetup(int setupId, string token, Action<FavouriteSetupDTO> onFavouriteSetupGot, Action<StrategoErrorDTO> onError)
+	public IEnumerator DeleteFavouriteSetup(int setupId, string token, Action onFavouriteSetupGot, Action<StrategoErrorDTO> onError)
 	{
 		using UnityWebRequest request = UnityWebRequest.Delete(URL + $"/stratego/favourite/setup/{setupId}");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
@@ -377,10 +377,10 @@ public class BackendService : MonoBehaviour
 
 		if (request.result == UnityWebRequest.Result.Success)
 		{
-			string json = request.downloadHandler.text;
+			//string json = request.downloadHandler.text;
 
-			var favouriteSetup = JsonConvert.DeserializeObject<FavouriteSetupDTO>(json);
-			onFavouriteSetupGot?.Invoke(favouriteSetup);
+			//var favouriteSetup = JsonConvert.DeserializeObject<FavouriteSetupDTO>(json);
+			onFavouriteSetupGot?.Invoke();
 		}
 		else
 		{
