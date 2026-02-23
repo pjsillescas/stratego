@@ -25,7 +25,8 @@ public class FavouriteSetupListWidget : MonoBehaviour
 	private FavouriteSetupPreviewWidget previewWidget;
 	private BackendService backendService;
 	private string token;
-	private List<List<Rank>> currentSetup;
+	//private List<List<Rank>> currentSetup;
+	private Func<List<List<Rank>>> getSetup;
 	private FavouriteSetupDTO currentSetupDto;
 	private Action<FavouriteSetupDTO> OnSetupAccepted;
 
@@ -67,7 +68,15 @@ public class FavouriteSetupListWidget : MonoBehaviour
 	private void OnSetupSelected(object sender, FavouriteSetupDTO setupDto)
 	{
 		currentSetupDto = setupDto;
-		previewWidget.LoadSetup(currentSetupDto);
+		if (setupDto != null)
+		{
+			DescriptionInput.text = setupDto.description;
+			previewWidget.LoadSetup(currentSetupDto);
+		}
+		else
+		{
+			previewWidget.ResetWidget();
+		}
 	}
 
 	private void AcceptSetupButtonClick()
@@ -87,7 +96,8 @@ public class FavouriteSetupListWidget : MonoBehaviour
 
 	private FavouriteSetupDTO GetSetupDTO()
 	{
-		return new FavouriteSetupDTO(0, DescriptionInput.text, new ArmySetupDTO(currentSetup));
+		var setup = getSetup?.Invoke();
+		return (setup != null) ? new FavouriteSetupDTO(0, DescriptionInput.text, new ArmySetupDTO(setup)) : null;
 	}
 
 	private void AddSetupButtonClick()
@@ -129,17 +139,17 @@ public class FavouriteSetupListWidget : MonoBehaviour
 		RefreshSetups();
 	}
 
-	public void Activate(List<List<Rank>> setup, Action<FavouriteSetupDTO> OnSetupAccepted)
+	public void Activate(Func<List<List<Rank>>> getSetup, Action<FavouriteSetupDTO> OnSetupAccepted)
 	{
 		gameObject.SetActive(true);
-		currentSetup = setup;
+		this.getSetup = getSetup;
 		this.OnSetupAccepted = OnSetupAccepted;
 	}
 
 	public void Deactivate()
 	{
 		gameObject.SetActive(false);
-		currentSetup = null;
+		getSetup = null;
 	}
 
 	private void OnError(StrategoErrorDTO error)

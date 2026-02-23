@@ -102,7 +102,7 @@ public class ArmySetupWidget : MonoBehaviour
 
 	private void FavouriteSetupsButtonClick()
 	{
-		FavouriteSetupListWidget.Activate(GetSetup(), LoadSetup);
+		FavouriteSetupListWidget.Activate(GetSetup, LoadSetup);
 	}
 
 	private void LoadSetup(FavouriteSetupDTO setupDto)
