@@ -63,7 +63,7 @@ public class ArmySetupWidget : MonoBehaviour
 
 		randomSetupGenerator = GetComponent<RandomSetupGenerator>();
 
-		UseSetupButton.enabled = true;
+		UseSetupButton.interactable = false;
 		UseSetupButton.onClick.RemoveAllListeners();
 		UseSetupButton.onClick.AddListener(UseSetupButtonClick);
 
@@ -143,7 +143,7 @@ public class ArmySetupWidget : MonoBehaviour
 		var numItems = ToolUnitItems.Sum(item => item.GetNumUnits());
 		if (numItems <= 0)
 		{
-			UseSetupButton.enabled = true;
+			UseSetupButton.interactable = true;
 		}
 	}
 
