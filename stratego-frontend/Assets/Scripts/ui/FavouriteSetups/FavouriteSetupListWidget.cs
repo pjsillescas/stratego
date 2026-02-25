@@ -57,7 +57,7 @@ public class FavouriteSetupListWidget : MonoBehaviour
 
 		AcceptSetupButton.onClick.RemoveAllListeners();
 		AcceptSetupButton.onClick.AddListener(AcceptSetupButtonClick);
-		
+
 		ExitButton.onClick.RemoveAllListeners();
 		ExitButton.onClick.AddListener(ExitButtonClick);
 
@@ -100,10 +100,19 @@ public class FavouriteSetupListWidget : MonoBehaviour
 		return (setup != null) ? new FavouriteSetupDTO(0, DescriptionInput.text, new ArmySetupDTO(setup)) : null;
 	}
 
+	private bool IsThereFreeSpace()
+	{
+		//return SetupItems.Select(item => item.GetSetup() == null).Aggregate(false, (acc, value) => acc || value);
+		return GetFreeSetupItem() != null;
+	}
+
 	private void AddSetupButtonClick()
 	{
-		var setupDto = GetSetupDTO();
-		StartCoroutine(backendService.AddFavouriteSetup(setupDto, token, OnFavouriteSetupAdded, OnError));
+		if (IsThereFreeSpace())
+		{
+			var setupDto = GetSetupDTO();
+			StartCoroutine(backendService.AddFavouriteSetup(setupDto, token, OnFavouriteSetupAdded, OnError));
+		}
 	}
 
 	private void OnFavouriteSetupAdded(FavouriteSetupDTO setup)
@@ -166,7 +175,16 @@ public class FavouriteSetupListWidget : MonoBehaviour
 	{
 		SetupItems.ForEach(item => item.ResetItem());
 
-		favouriteSetupDtoList.ForEach(setup => GetFreeSetupItem().InitializeSetup(setup));
+		favouriteSetupDtoList.ForEach(setup =>
+		{
+			var item = GetFreeSetupItem();
+			if (item != null)
+			{
+				item.InitializeSetup(setup);
+			}
+		});
+
+		AddSetupButton.interactable = IsThereFreeSpace();
 	}
 
 	// Update is called once per frame
