@@ -363,6 +363,11 @@ public class InputManager : MonoBehaviour
 			colFinal = selectedTile.GetCol(),
 		};
 
+		selectedPiece.Deselect();
+		selectedPiece = null;
+		selectedTile.Deselect();
+		selectedTile = null;
+
 		gameManager.SendMovement(movement);
 	}
 	private void OnPieceAnimationBegin(object sender, Piece piece)

@@ -39,10 +39,9 @@ public class GameManager : MonoBehaviour
 	private List<Piece> guestPieces;
 	private List<Piece> disabledPieces;
 	private bool isHost;
-	private Coroutine movementCoroutine = null;
 	private AudioManager audioManager;
-	//private GameStateDTO currentGameState;
-
+	private bool isAnimationGoing;
+	private Queue<GameStateDTO> gameQueue;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
@@ -50,6 +49,9 @@ public class GameManager : MonoBehaviour
 		hostPieces = new();
 		guestPieces = new();
 		disabledPieces = new();
+
+		isAnimationGoing = false;
+		gameQueue = new();
 
 		audioManager = FindFirstObjectByType<AudioManager>();
 
@@ -331,16 +333,6 @@ public class GameManager : MonoBehaviour
 		*/
 	}
 
-	private IEnumerator WaitForGameState(GameStateDTO gameStateDto)
-	{
-		var waitForNextFrame = new WaitForSeconds(0.1f);
-		while(movementCoroutine != null)
-		{
-			yield return null;
-		}
-
-		movementCoroutine = StartCoroutine(AnimateMovement(gameStateDto));
-	}
 
 	private int ClashPieces(Piece attacker, Piece defender)
 	{
@@ -411,10 +403,29 @@ public class GameManager : MonoBehaviour
 	public void OnMovementAdded(GameStateDTO gameStateDto)
 	{
 		//currentGameState = gameStateDto;
-		StartCoroutine(WaitForGameState(gameStateDto));
+		gameQueue.Enqueue(gameStateDto);
+		if (!isAnimationGoing)
+		{
+			StartCoroutine(AnimateMovements());
+		}
 	}
 
-	private IEnumerator AnimateMovement(GameStateDTO gameStateDto)
+	private IEnumerator AnimateMovements()
+	{
+		if (!isAnimationGoing)
+		{
+			isAnimationGoing = true;
+
+			while (gameQueue.Count > 0)
+			{
+				yield return DoAnimateMovement(gameQueue.Dequeue());
+			}
+
+			isAnimationGoing = false;
+		}
+	}
+
+	private IEnumerator DoAnimateMovement(GameStateDTO gameStateDto)
 	{
 		//Board.MoveTile(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial, gameStateDto.movement.rowFinal, gameStateDto.movement.colFinal);
 		var piece = GetPieceAtCoordinates(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial);
@@ -491,7 +502,6 @@ public class GameManager : MonoBehaviour
 		OnPieceAnimationEnd?.Invoke(this, piece);
 		OnGameStateUpdated?.Invoke(this, gameStateDto);
 
-		movementCoroutine = null;
 		yield return null;
 	}
 
