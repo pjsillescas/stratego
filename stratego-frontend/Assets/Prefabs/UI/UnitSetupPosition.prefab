@@ -93,6 +93,8 @@ MonoBehaviour:
   UnitImage: {fileID: 3167046013682147585}
   NameText: {fileID: 8570440223413698729}
   RankImage: {fileID: 324602457408371418}
+  DefaultColor: {r: 0, g: 0, b: 0, a: 1}
+  DragColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!225 &6059440437224453183
 CanvasGroup:
   m_ObjectHideFlags: 0

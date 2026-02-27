@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(CanvasGroup))]
+[RequireComponent(typeof(Image))]
 public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
 	[SerializeField]
@@ -14,7 +15,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	private TextMeshProUGUI NameText;
 	[SerializeField]
 	private RawImage RankImage;
-
+	
 	private ToolUnitItem previousToolUnitItem;
 	private PieceData data;
 	
@@ -43,7 +44,6 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		ShowImage();
 		NameText.text = nameText;
 		RankImage.texture = data.texture;
-
 	}
 
 	public string GetName() => NameText.text;

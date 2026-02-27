@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.Audio.ProcessorInstance;
 
 public class InputManager : MonoBehaviour
 {

@@ -3,8 +3,16 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(RawImage))]
+[RequireComponent(typeof(CanvasGroup))]
+[RequireComponent(typeof(RectTransform))]
 public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandler, IEndDragHandler, IDropHandler
 {
+	[SerializeField]
+	private Color DefaultColor;
+	[SerializeField]
+	private Color DragColor;
+
 	private Transform parent;
 	private Vector3 defaultPosition;
 	private RectTransform rectTransform;
@@ -12,6 +20,7 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 	private CanvasGroup canvasGroup;
 	private ToolUnitItem toolUnitItem;
 	private PieceData data;
+	private RawImage rawImage;
 
 	public string GetName() => data.rankName;
 
@@ -42,8 +51,21 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 		rectTransform = GetComponent<RectTransform>();
 		canvas = FindFirstObjectByType<Canvas>();
 		canvasGroup = GetComponent<CanvasGroup>();
+		rawImage = GetComponent<RawImage>();
+
+		SetDefaultColor();
 	}
 
+	private void SetDefaultColor()
+	{
+		rawImage.color = DefaultColor;
+	}
+
+	private void SetDragColor()
+	{
+		rawImage.color = DragColor;
+	}
+	
 	public void Show()
 	{
 		//TextName.gameObject.SetActive(true);
@@ -73,6 +95,7 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 		transform.SetParent(canvas.transform, true);
 		canvasGroup.alpha = 0.6f;
 		canvasGroup.blocksRaycasts = false;
+		SetDragColor();
 	}
 
 	public void OnEndDrag(PointerEventData eventData)
@@ -81,6 +104,7 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 		canvasGroup.alpha = 1.0f;
 		canvasGroup.blocksRaycasts = true;
 		transform.localPosition = defaultPosition;
+		SetDefaultColor();
 	}
 
 	public void OnDrop(PointerEventData eventData)

@@ -262,6 +262,7 @@ MonoBehaviour:
   FavouriteSetupsButton: {fileID: 8145482560742717188}
   CloseButton: {fileID: 9010072069233165415}
   ResetButton: {fileID: 3519721642422451007}
+  DragTransform: {fileID: 3844143151060091413}
   WaitForSetupWidget: {fileID: 0}
   FavouriteSetupListWidget: {fileID: 0}
 --- !u!114 &4433918076856053003
@@ -276,6 +277,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 126abbcae2dfc95469e6075c71e57e3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RandomSetupGenerator
+--- !u!1 &1704447439623957631
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3844143151060091413}
+  m_Layer: 5
+  m_Name: DragParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3844143151060091413
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1704447439623957631}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 816668570094591185}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1800967747499879273
 GameObject:
   m_ObjectHideFlags: 0
@@ -2134,6 +2170,7 @@ RectTransform:
   - {fileID: 761175184775469816}
   - {fileID: 913413316271553865}
   - {fileID: 419222337667198539}
+  - {fileID: 3844143151060091413}
   m_Father: {fileID: 5743681627907324895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

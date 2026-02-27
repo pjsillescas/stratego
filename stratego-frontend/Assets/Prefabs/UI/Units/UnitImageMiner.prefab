@@ -224,9 +224,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1634bfa02b87a6b41965efb8af71f90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitImage
-  TextName: {fileID: 6238889286788633673}
-  Rank: 7
-  DefaultName: Miner
+  DefaultColor: {r: 0, g: 0, b: 0, a: 1}
+  DragColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!225 &3471143646422378230
 CanvasGroup:
   m_ObjectHideFlags: 0
