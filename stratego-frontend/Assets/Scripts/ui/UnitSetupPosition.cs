@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -23,6 +24,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	private Canvas canvas;
 	private Vector3 defaultPosition;
 	private CanvasGroup canvasGroup;
+	private UnitSetupDragPosition unitSetupDragPosition;
 
 	private void Awake()
 	{
@@ -30,6 +32,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		canvas = FindFirstObjectByType<Canvas>();
 		canvasGroup = GetComponent<CanvasGroup>();
 	}
+
 
 	public Rank GetRank() => data.rank;
 
@@ -88,10 +91,17 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		{
 			SetUnitImage(unitImage);
 		}
-
+		/*
 		if (eventData.pointerDrag.TryGetComponent(out UnitSetupPosition unitSetupPosition))
 		{
 			SetUnitSetupPosition(unitSetupPosition);
+		}
+		*/
+		if (eventData.pointerDrag.TryGetComponent(out UnitSetupDragPosition unitSetupDragPosition))
+		{
+			unitSetupDragPosition.SetNewSetupPosition(this);
+			SetUnitSetupPosition(unitSetupDragPosition.GetUnitSetupPosition());
+			unitSetupDragPosition.OverrideOriginalSetupPosition();
 		}
 
 	}
@@ -111,6 +121,12 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	{
 		StartCoroutine(GetPositionCoroutine());
 		ResetData();
+
+		unitSetupDragPosition = FindFirstObjectByType<UnitSetupDragPosition>();
+		if (unitSetupDragPosition == null)
+		{
+			throw new System.Exception("There is no UnitSetupDragPosition element in the scene");
+		}
 	}
 
 	public void ResetData()
@@ -136,19 +152,19 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 
 	public void OnDrag(PointerEventData eventData)
 	{
-		rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+		//rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
 	{
-		canvasGroup.alpha = 0.6f;
-		canvasGroup.blocksRaycasts = false;
+		//canvasGroup.alpha = 0.6f;
+		//canvasGroup.blocksRaycasts = false;
 	}
 
 	public void OnEndDrag(PointerEventData eventData)
 	{
-		canvasGroup.alpha = 1.0f;
-		canvasGroup.blocksRaycasts = true;
-		transform.localPosition = defaultPosition;
+		//canvasGroup.alpha = 1.0f;
+		//canvasGroup.blocksRaycasts = true;
+		//transform.localPosition = defaultPosition;
 	}
 }
