@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class Watchdog : MonoBehaviour
 {
-	private const float WAIT_TIME_SECONDS = 2f;
+	private const float WAIT_TIME_SECONDS_TURN_CHANGE = 0.6f;
+	private const float WAIT_TIME_SECONDS_END_GAME = 5f;
 
 
 	private GameManager gameManager;
@@ -42,7 +43,7 @@ public class Watchdog : MonoBehaviour
 
 	private IEnumerator WaitForMyTurn()
 	{
-		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS);
+		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS_TURN_CHANGE);
 
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
@@ -83,7 +84,7 @@ public class Watchdog : MonoBehaviour
 
 	private IEnumerator CheckForEndGame()
 	{
-		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS);
+		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS_END_GAME);
 
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
