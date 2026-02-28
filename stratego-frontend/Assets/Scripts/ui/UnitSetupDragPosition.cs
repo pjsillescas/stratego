@@ -20,6 +20,9 @@ public class UnitSetupDragPosition : MonoBehaviour, IDragHandler, IEndDragHandle
 	private Canvas canvas;
 	private CanvasGroup canvasGroup;
 	private UnitSetupPosition originalUnitSetupPosition;
+	
+	private ToolUnitItem unitItem;
+	private PieceData data;
 
 	private void Awake()
 	{
@@ -35,31 +38,47 @@ public class UnitSetupDragPosition : MonoBehaviour, IDragHandler, IEndDragHandle
 
 	public void Init(UnitSetupPosition unitSetupPosition)
 	{
+		gameObject.SetActive(true);
 		originalUnitSetupPosition = unitSetupPosition;
 		ShowImage();
 		NameText.text = unitSetupPosition.GetName();
 		RankImage.texture = unitSetupPosition.GetData().texture;
+		data = unitSetupPosition.GetData();
+		unitItem = unitSetupPosition.GetPreviousToolUnitItem();
+	}
+
+	public void AddAnchoredPosition(Vector2 offset)
+	{
+		rectTransform.anchoredPosition += offset;
+	}
+
+	public void SetPosition(Vector3 position)
+	{
+		Debug.Log($"setposition {position}");
+		transform.localPosition = position;
+		transform.position = position;
 	}
 
 	public string GetName() => NameText.text;
 
 	public void SetUnitSetupPosition(UnitSetupPosition unitSetupPosition)
 	{
+		Init(unitSetupPosition);
+		
 		if (previousToolUnitItem == null)
 		{
-			Init(unitSetupPosition);
 			unitSetupPosition.ResetData();
 		}
 		else
 		{
-			// copy dragged data to this
-			Init(unitSetupPosition);
 			// Transfer previous data from this position to the dragged one
-			unitSetupPosition.Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), NameText.text);
+			unitSetupPosition.Init(unitItem, data, NameText.text);
 		}
 	}
 
 	private UnitSetupPosition newSetupPosition;
+
+	/*
 	public void SetNewSetupPosition(UnitSetupPosition unitSetupPosition)
 	{
 		newSetupPosition = unitSetupPosition;
@@ -73,6 +92,24 @@ public class UnitSetupDragPosition : MonoBehaviour, IDragHandler, IEndDragHandle
 	public void SetOriginalSetupPosition(UnitSetupPosition newUnitSetupPosition)
 	{
 		originalUnitSetupPosition.SetUnitSetupPosition(newUnitSetupPosition);
+	}
+	*/
+	public void SwapData(UnitSetupPosition newUnitSetupPosition)
+	{
+		Debug.Log("swapdata");
+
+		originalUnitSetupPosition.SetUnitSetupPosition(newUnitSetupPosition);
+		/*
+		if(data == null)
+		{
+			newUnitSetupPosition.ResetData();
+		}
+		else
+		{
+			newUnitSetupPosition.Init(unitItem, data, NameText.text);
+		}
+		*/
+		gameObject.SetActive(false);
 	}
 
 	private void ShowImage()

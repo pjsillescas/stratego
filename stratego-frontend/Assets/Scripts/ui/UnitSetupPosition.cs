@@ -16,10 +16,10 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	private TextMeshProUGUI NameText;
 	[SerializeField]
 	private RawImage RankImage;
-	
+
 	private ToolUnitItem previousToolUnitItem;
 	private PieceData data;
-	
+
 	private RectTransform rectTransform;
 	private Canvas canvas;
 	private Vector3 defaultPosition;
@@ -69,8 +69,15 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	{
 		if (previousToolUnitItem == null)
 		{
-			Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
-			unitSetupPosition.ResetData();
+			if (unitSetupPosition.GetData() == null)
+			{
+				ResetData();
+			}
+			else
+			{
+				Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
+				unitSetupPosition.ResetData();
+			}
 		}
 		else
 		{
@@ -78,8 +85,16 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 			var thisData = data;
 			var thisName = NameText.text;
 
-			// copy dragged data to this
-			Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
+			if (unitSetupPosition.GetData() == null)
+			{
+				ResetData();
+			}
+			else
+			{
+				// copy dragged data to this
+				Init(unitSetupPosition.GetPreviousToolUnitItem(), unitSetupPosition.GetData(), unitSetupPosition.GetName());
+			}
+
 			// Transfer previous data from this position to the dragged one
 			unitSetupPosition.Init(thisToolUnitItem, thisData, thisName);
 		}
@@ -87,6 +102,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 
 	public void OnDrop(PointerEventData eventData)
 	{
+		Debug.Log("ondrop");
 		if (eventData.pointerDrag.TryGetComponent(out UnitImage unitImage))
 		{
 			SetUnitImage(unitImage);
@@ -97,11 +113,21 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 			SetUnitSetupPosition(unitSetupPosition);
 		}
 		*/
+		else
+		/*
 		if (eventData.pointerDrag.TryGetComponent(out UnitSetupDragPosition unitSetupDragPosition))
 		{
-			unitSetupDragPosition.SetNewSetupPosition(this);
-			SetUnitSetupPosition(unitSetupDragPosition.GetUnitSetupPosition());
-			unitSetupDragPosition.OverrideOriginalSetupPosition();
+			Debug.Log("swap if");
+			//unitSetupDragPosition.SetNewSetupPosition(this);
+			//SetUnitSetupPosition(unitSetupDragPosition.GetUnitSetupPosition());
+			//unitSetupDragPosition.OverrideOriginalSetupPosition();
+			unitSetupDragPosition.SwapData(this);
+		}
+		else
+		*/
+		{
+			Debug.Log("swap else");
+			this.unitSetupDragPosition.SwapData(this);
 		}
 
 	}
@@ -139,8 +165,8 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	private IEnumerator GetPositionCoroutine()
 	{
 		yield return new WaitForSeconds(1.0f);
-		defaultPosition = transform.localPosition;
-
+		//defaultPosition = transform.localPosition;
+		defaultPosition = transform.position;
 		yield return null;
 	}
 
@@ -152,19 +178,38 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 
 	public void OnDrag(PointerEventData eventData)
 	{
+		if (data == null)
+		{
+			return;
+		}
 		//rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+		unitSetupDragPosition.AddAnchoredPosition(eventData.delta / canvas.scaleFactor);
+
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
 	{
 		//canvasGroup.alpha = 0.6f;
 		//canvasGroup.blocksRaycasts = false;
+		if (data == null)
+		{
+			return;
+		}
+
+		unitSetupDragPosition.SetPosition(defaultPosition);
+		unitSetupDragPosition.Init(this);
 	}
 
 	public void OnEndDrag(PointerEventData eventData)
 	{
+		if (data == null)
+		{
+			return;
+		}
+		unitSetupDragPosition.gameObject.SetActive(false);
 		//canvasGroup.alpha = 1.0f;
 		//canvasGroup.blocksRaycasts = true;
 		//transform.localPosition = defaultPosition;
+		//unitSetupDragPosition.SetPosition(defaultPosition);
 	}
 }
