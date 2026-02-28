@@ -1,11 +1,10 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(CanvasGroup))]
-public class UnitSetupDragPosition : MonoBehaviour, IDragHandler, IEndDragHandler
+public class UnitSetupDragPosition : MonoBehaviour
 {
 	[SerializeField]
 	private RawImage UnitImage;
@@ -14,27 +13,21 @@ public class UnitSetupDragPosition : MonoBehaviour, IDragHandler, IEndDragHandle
 	[SerializeField]
 	private RawImage RankImage;
 
-	private ToolUnitItem previousToolUnitItem;
-
 	private RectTransform rectTransform;
-	private Canvas canvas;
 	private CanvasGroup canvasGroup;
 	private UnitSetupPosition originalUnitSetupPosition;
-	
+
 	private ToolUnitItem unitItem;
 	private PieceData data;
 
 	private void Awake()
 	{
 		rectTransform = GetComponent<RectTransform>();
-		canvas = FindFirstObjectByType<Canvas>();
 		canvasGroup = GetComponent<CanvasGroup>();
 
 		canvasGroup.alpha = 0.6f;
 		canvasGroup.blocksRaycasts = false;
 	}
-
-	public UnitSetupPosition GetUnitSetupPosition() => originalUnitSetupPosition;
 
 	public void Init(UnitSetupPosition unitSetupPosition)
 	{
@@ -54,7 +47,6 @@ public class UnitSetupDragPosition : MonoBehaviour, IDragHandler, IEndDragHandle
 
 	public void SetPosition(Vector3 position)
 	{
-		Debug.Log($"setposition {position}");
 		transform.localPosition = position;
 		transform.position = position;
 	}
@@ -64,8 +56,8 @@ public class UnitSetupDragPosition : MonoBehaviour, IDragHandler, IEndDragHandle
 	public void SetUnitSetupPosition(UnitSetupPosition unitSetupPosition)
 	{
 		Init(unitSetupPosition);
-		
-		if (previousToolUnitItem == null)
+
+		if (data == null)
 		{
 			unitSetupPosition.ResetData();
 		}
@@ -76,40 +68,14 @@ public class UnitSetupDragPosition : MonoBehaviour, IDragHandler, IEndDragHandle
 		}
 	}
 
-	private UnitSetupPosition newSetupPosition;
-
-	/*
-	public void SetNewSetupPosition(UnitSetupPosition unitSetupPosition)
-	{
-		newSetupPosition = unitSetupPosition;
-	}
-
-	public void OverrideOriginalSetupPosition()
-	{
-		originalUnitSetupPosition.SetUnitSetupPosition(newSetupPosition);
-	}
-
-	public void SetOriginalSetupPosition(UnitSetupPosition newUnitSetupPosition)
-	{
-		originalUnitSetupPosition.SetUnitSetupPosition(newUnitSetupPosition);
-	}
-	*/
 	public void SwapData(UnitSetupPosition newUnitSetupPosition)
 	{
-		Debug.Log("swapdata");
-
-		originalUnitSetupPosition.SetUnitSetupPosition(newUnitSetupPosition);
-		/*
-		if(data == null)
+		if (originalUnitSetupPosition != null)
 		{
-			newUnitSetupPosition.ResetData();
+			originalUnitSetupPosition.SetUnitSetupPosition(newUnitSetupPosition);
 		}
-		else
-		{
-			newUnitSetupPosition.Init(unitItem, data, NameText.text);
-		}
-		*/
-		gameObject.SetActive(false);
+		
+		Deactivate();
 	}
 
 	private void ShowImage()
@@ -126,27 +92,22 @@ public class UnitSetupDragPosition : MonoBehaviour, IDragHandler, IEndDragHandle
 	void Start()
 	{
 		ResetData();
-		gameObject.SetActive(false);
+		Deactivate();
 	}
 
 	public void ResetData()
 	{
-		previousToolUnitItem = null;
+		data = null;
 		HideImage();
 	}
 
-	public void OnDrag(PointerEventData eventData)
+	public void Activate()
 	{
-		rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+		gameObject.SetActive(true);
 	}
 
-	public void OnEndDrag(PointerEventData eventData)
+	public void Deactivate()
 	{
-		canvasGroup.alpha = 1.0f;
-		canvasGroup.blocksRaycasts = true;
-		transform.localPosition = Vector3.zero;
-		ResetData();
-
 		gameObject.SetActive(false);
 	}
 }

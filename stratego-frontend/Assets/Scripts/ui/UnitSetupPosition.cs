@@ -1,13 +1,9 @@
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(RectTransform))]
-[RequireComponent(typeof(CanvasGroup))]
-[RequireComponent(typeof(Image))]
 public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
 	[SerializeField]
@@ -20,17 +16,13 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	private ToolUnitItem previousToolUnitItem;
 	private PieceData data;
 
-	private RectTransform rectTransform;
 	private Canvas canvas;
 	private Vector3 defaultPosition;
-	private CanvasGroup canvasGroup;
 	private UnitSetupDragPosition unitSetupDragPosition;
 
 	private void Awake()
 	{
-		rectTransform = GetComponent<RectTransform>();
 		canvas = FindFirstObjectByType<Canvas>();
-		canvasGroup = GetComponent<CanvasGroup>();
 	}
 
 
@@ -67,6 +59,11 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 
 	public void SetUnitSetupPosition(UnitSetupPosition unitSetupPosition)
 	{
+		if (unitSetupPosition == null)
+		{
+			return;
+		}
+
 		if (previousToolUnitItem == null)
 		{
 			if (unitSetupPosition.GetData() == null)
@@ -102,32 +99,13 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 
 	public void OnDrop(PointerEventData eventData)
 	{
-		Debug.Log("ondrop");
 		if (eventData.pointerDrag.TryGetComponent(out UnitImage unitImage))
 		{
 			SetUnitImage(unitImage);
 		}
-		/*
-		if (eventData.pointerDrag.TryGetComponent(out UnitSetupPosition unitSetupPosition))
-		{
-			SetUnitSetupPosition(unitSetupPosition);
-		}
-		*/
 		else
-		/*
-		if (eventData.pointerDrag.TryGetComponent(out UnitSetupDragPosition unitSetupDragPosition))
 		{
-			Debug.Log("swap if");
-			//unitSetupDragPosition.SetNewSetupPosition(this);
-			//SetUnitSetupPosition(unitSetupDragPosition.GetUnitSetupPosition());
-			//unitSetupDragPosition.OverrideOriginalSetupPosition();
 			unitSetupDragPosition.SwapData(this);
-		}
-		else
-		*/
-		{
-			Debug.Log("swap else");
-			this.unitSetupDragPosition.SwapData(this);
 		}
 
 	}
@@ -165,7 +143,6 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	private IEnumerator GetPositionCoroutine()
 	{
 		yield return new WaitForSeconds(1.0f);
-		//defaultPosition = transform.localPosition;
 		defaultPosition = transform.position;
 		yield return null;
 	}
@@ -182,15 +159,12 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		{
 			return;
 		}
-		//rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
 		unitSetupDragPosition.AddAnchoredPosition(eventData.delta / canvas.scaleFactor);
 
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
 	{
-		//canvasGroup.alpha = 0.6f;
-		//canvasGroup.blocksRaycasts = false;
 		if (data == null)
 		{
 			return;
@@ -206,10 +180,6 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		{
 			return;
 		}
-		unitSetupDragPosition.gameObject.SetActive(false);
-		//canvasGroup.alpha = 1.0f;
-		//canvasGroup.blocksRaycasts = true;
-		//transform.localPosition = defaultPosition;
-		//unitSetupDragPosition.SetPosition(defaultPosition);
+		unitSetupDragPosition.Deactivate();
 	}
 }
