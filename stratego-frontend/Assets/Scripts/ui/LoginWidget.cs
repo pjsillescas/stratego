@@ -32,12 +32,30 @@ public class LoginWidget : MonoBehaviour
 
 	private int selectedUI;
 	private GameObject[] uiElements;
+	private WaitWidget waitWidget;
+
+	private void ActivateButtons()
+	{
+		waitWidget.Deactivate();
+
+		LoginButton.interactable = true;
+		SignupButton.interactable = true;
+	}
+
+	private void DeactivateButtons()
+	{
+		waitWidget.Activate("Server waking up, wait...");
+
+		LoginButton.interactable = false;
+		SignupButton.interactable = false;
+	}
 
 	private void OnError(StrategoErrorDTO errorDto)
 	{
 		ErrorText.enabled = true;
 
-		ErrorText.text = errorDto.message;
+		ErrorText.text = errorDto?.message ?? "Connection error";
+		ActivateButtons();
 	}
 
 	private void DisableError()
@@ -69,6 +87,9 @@ public class LoginWidget : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
+		waitWidget = FindFirstObjectByType<WaitWidget>();
+		waitWidget.Deactivate();
+
 		SelectUIElement(0);
 
 		if (CommData.GetInstance().GetToken() != null)
@@ -105,11 +126,15 @@ public class LoginWidget : MonoBehaviour
 
 	private void ButtonSignupClick()
 	{
+		DeactivateButtons();
+		//waitWidget.Activate("Server waking up, wait...");
 		StartCoroutine(backendService.Signup(UsernameInput.text, PasswordInput.text, OnSignedUp, OnError));
 	}
 
 	private void ButtonLoginClick()
 	{
+		DeactivateButtons();
+		//waitWidget.Activate("Server waking up, wait...");
 		StartCoroutine(backendService.Login(UsernameInput.text, PasswordInput.text, OnLoggedIn, OnError));
 	}
 
@@ -125,6 +150,10 @@ public class LoginWidget : MonoBehaviour
 		DisableError();
 		CommData.GetInstance().SetMyUsername(UsernameInput.text);
 		CommData.GetInstance().SetToken(token);
+
+		ActivateButtons();
+		//waitWidget.Deactivate();
+
 		GoToMainMenu();
 	}
 

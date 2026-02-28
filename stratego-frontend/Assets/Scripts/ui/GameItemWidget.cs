@@ -22,6 +22,16 @@ public class GameItemWidget : MonoBehaviour
 		JoinButton.onClick.AddListener(JoinButtonClick);
 	}
 
+	public void Activate()
+	{
+		JoinButton.interactable = true;
+	}
+
+	public void Deactivate()
+	{
+		JoinButton.interactable = false;
+	}
+
 	private void JoinButtonClick()
 	{
 		joinGame(gameId);

@@ -14,6 +14,8 @@ public class GameListWidget : MonoBehaviour
 	[SerializeField]
 	private Button CreateGameButton;
 	[SerializeField]
+	private Button StopButton;
+	[SerializeField]
 	private Button UpdateGameListButton;
 	[SerializeField]
 	private Button ManageFavouriteSetupsButton;
@@ -34,7 +36,9 @@ public class GameListWidget : MonoBehaviour
 		var guest = gameExtendedDto.guest;
 		//commData.SetOpponentUsername((guest.username == commData.GetMyUsername()) ? host.username : guest.username);
 		commData.SetOpponentUsername(host.username);
-
+		
+		ActivateButtons();
+		
 		LoadGameplayScene(false);
 	}
 	private void OnCreatedGame(GameDTO gameDto)
@@ -54,6 +58,9 @@ public class GameListWidget : MonoBehaviour
 	{
 		var commData = CommData.GetInstance();
 		commData.SetIsHost(isHost);
+
+		ActivateButtons();
+
 		SceneManager.LoadScene("Gameplay");
 	}
 
@@ -73,42 +80,15 @@ public class GameListWidget : MonoBehaviour
 		ManageFavouriteSetupsButton.onClick.RemoveAllListeners();
 		ManageFavouriteSetupsButton.onClick.AddListener(ManageFavouriteSetupsButtonClick);
 
+		StopButton.onClick.RemoveAllListeners();
+		StopButton.onClick.AddListener(StopWaiting);
+		StopButton.gameObject.SetActive(false);
+
 		ArmySetupWidget.gameObject.SetActive(false);
 
 		UpdateGameListButtonClick();
-
-		/*
-		List<GameDTO> testGames = new() {
-			GetGame("fulano's game"),
-			GetGame("mengano's game"),
-			GetGame("zutano's game"),
-			GetGame("zetano's game"),
-			GetGame("setano's game"),
-		};
-
-		OnGamesGot(testGames);
-		*/
+		ActivateButtons();
 	}
-
-	/*
-	private GameDTO GetGame(string name) 
-	{
-		var game = new GameDTO
-		{
-			host = new PlayerDTO()
-			{
-				id = 1,
-				username = "fulano",
-			},
-			guest = null,
-			creationDate = DateTime.Now,
-			name = name,
-			phase = GamePhase.WAITING_FOR_SETUP_2_PLAYERS,
-		};
-
-		return game;
-	}
-	*/
 
 	private void ClearList()
 	{
@@ -126,6 +106,8 @@ public class GameListWidget : MonoBehaviour
 			var gameItem = item.GetComponent<GameItemWidget>();
 			gameItem.SetGameData(game, JoinGame);
 		}
+
+		ActivateButtons();
 	}
 
 	private void ManageFavouriteSetupsButtonClick()
@@ -138,18 +120,43 @@ public class GameListWidget : MonoBehaviour
 
 	private void UpdateGameListButtonClick()
 	{
+		DeactivateButtons();
 		var token = GetToken();
 		StartCoroutine(BackendService.GetInstance().GetGameList(token, OnGamesGot, OnError));
 	}
 
+	private void StopWaiting()
+	{
+		ActivateButtons();
+	}
+
 	private void CreateGameButtonClick()
 	{
+		DeactivateButtons();
 		var token = GetToken();
 		StartCoroutine(BackendService.GetInstance().CreateGame(token, OnCreatedGame, OnError));
 	}
 	private void JoinGame(int gameId)
 	{
+		DeactivateButtons();
 		var token = GetToken();
 		StartCoroutine(BackendService.GetInstance().JoinGame(gameId, token, OnJoinedGame, OnError));
 	}
+
+	private void ActivateButtons()
+	{
+		CreateGameButton.interactable = true;
+		UpdateGameListButton.interactable = true;
+		ManageFavouriteSetupsButton.interactable = true;
+		StopButton.interactable = false;
+	}
+
+	private void DeactivateButtons()
+	{
+		CreateGameButton.interactable = false;
+		UpdateGameListButton.interactable = false;
+		ManageFavouriteSetupsButton.interactable = false;
+		StopButton.interactable = true;
+	}
+
 }

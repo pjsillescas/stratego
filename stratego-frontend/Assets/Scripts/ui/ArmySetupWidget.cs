@@ -159,6 +159,7 @@ public class ArmySetupWidget : MonoBehaviour
 
 	private void UseSetupButtonClick()
 	{
+		DeactivateButtons();
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
@@ -172,6 +173,7 @@ public class ArmySetupWidget : MonoBehaviour
 		WaitForSetupWidget.Initialize((gameState) =>
 		{
 			onGameStart?.Invoke(gameState);
+			ActivateButtons();
 			gameObject.SetActive(false);
 		});
 	}
@@ -180,4 +182,23 @@ public class ArmySetupWidget : MonoBehaviour
 	{
 		Debug.Log($"Error {error.message}");
 	}
+
+	private void ActivateButtons()
+	{
+		UseSetupButton.interactable = true;
+		UseRandomSetupButton.interactable = true;
+		FavouriteSetupsButton.interactable = true;
+		CloseButton.interactable = true;
+		ResetButton.interactable = true;
+	}
+
+	private void DeactivateButtons()
+	{
+		UseSetupButton.interactable = false;
+		UseRandomSetupButton.interactable = false;
+		FavouriteSetupsButton.interactable = false;
+		CloseButton.interactable = false;
+		ResetButton.interactable = false;
+	}
+
 }
