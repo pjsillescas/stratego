@@ -19,7 +19,7 @@ public class ChatDebugClient : MonoBehaviour
 	private string roomId;
 
 	private bool isReconnecting = false;
-	private float reconnectDelay = 3f;
+	private readonly float reconnectDelay = 3f;
 
 	
 
@@ -28,7 +28,7 @@ public class ChatDebugClient : MonoBehaviour
 		sendButton.onClick.RemoveAllListeners();
 		sendButton.onClick.AddListener(SendClick);
 
-		var jwt = "token";
+		var jwt = CommData.GetInstance().GetToken() ?? "token";
 		websocket = new WebSocket("ws://localhost:8080/ws?roomId=123", new Dictionary<string, string> { { "Authorization", $"Bearer {jwt}" } });
 
 		websocket.OnOpen += () =>
@@ -97,7 +97,7 @@ public class ChatDebugClient : MonoBehaviour
 			$"ws://localhost:8080/ws?roomId={roomId}",
 			new Dictionary<string, string>
 			{
-			{ "Authorization", "Bearer " + jwtToken }
+				{ "Authorization", "Bearer " + jwtToken }
 			}
 		);
 
@@ -106,7 +106,7 @@ public class ChatDebugClient : MonoBehaviour
 			Debug.Log("Connected");
 			isReconnecting = false;
 
-			SendSyncRequest(); // 🔥 important
+			//SendSyncRequest();
 		};
 
 		websocket.OnClose += (code) =>
