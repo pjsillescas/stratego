@@ -88,8 +88,20 @@ public class ChatWidget : MonoBehaviour
 	private void OnMessageReceived(string message)
 	{
 		Debug.Log($"received '{message}'");
+		var messageDto = JsonUtility.FromJson<ChatMessageDTO>(message);
 		var textItem = Instantiate(ChatTextItemPrefab, MessageBoard).GetComponent<ChatItemWidget>();
-		textItem.Init(message, Color.red);
+
+		var commData = CommData.GetInstance();
+		Color textColor;
+		if (commData.GetMyUsername() == messageDto.player)
+		{
+			textColor = commData.GetIsHost() ? Color.blue : Color.red;
+		}
+		else
+		{
+			textColor = commData.GetIsHost() ? Color.red : Color.blue;
+		}
+		textItem.Init(messageDto.player,messageDto.message, textColor);
 		//chatOutput.text += "\n" + message;
 	}
 

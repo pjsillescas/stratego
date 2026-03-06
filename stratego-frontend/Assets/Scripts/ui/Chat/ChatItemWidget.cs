@@ -7,9 +7,9 @@ public class ChatItemWidget : MonoBehaviour
 	private TextMeshProUGUI TextItem;
 
 
-	public void Init(string text, Color textColor)
+	public void Init(string player, string message, Color textColor)
 	{
-		TextItem.text = text;
+		TextItem.text = $"{player} : {message}";
 		TextItem.color = textColor;
 		TextItem.alpha = 1f;
 	}
