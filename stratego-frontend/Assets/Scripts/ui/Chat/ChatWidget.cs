@@ -1,4 +1,5 @@
 using NativeWebSocket;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -6,6 +7,8 @@ using UnityEngine.UI;
 
 public class ChatWidget : MonoBehaviour
 {
+	public static event EventHandler<string> OnMessageReceived;
+
 	[SerializeField]
 	private TMP_InputField InputField;
 	[SerializeField]
@@ -35,7 +38,7 @@ public class ChatWidget : MonoBehaviour
 		var commData = CommData.GetInstance();
 		token = commData.GetToken() ?? "token";
 		roomId = commData.GetGameId().ToString() ?? "noroom";
-		websocket = backendService.BuildWebSocket(token, roomId, OnMessageReceived, OnReconnect);
+		websocket = backendService.BuildWebSocket(token, roomId, MessageReceived, OnReconnect);
 		
 		Connect();
 	}
@@ -85,8 +88,10 @@ public class ChatWidget : MonoBehaviour
 		await websocket.Connect();
 	}
 
-	private void OnMessageReceived(string message)
+	private void MessageReceived(string message)
 	{
+		OnMessageReceived?.Invoke(this, message);
+
 		Debug.Log($"received '{message}'");
 		var messageDto = JsonUtility.FromJson<ChatMessageDTO>(message);
 		var textItem = Instantiate(ChatTextItemPrefab, MessageBoard).GetComponent<ChatItemWidget>();
