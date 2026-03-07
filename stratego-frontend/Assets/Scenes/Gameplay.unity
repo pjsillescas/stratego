@@ -558,14 +558,14 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 10
+    m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -1081,7 +1081,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 672701967}
   m_HandleRect: {fileID: 672701966}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1407,7 +1407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ScrollRect
   m_Content: {fileID: 132254653}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1
@@ -6780,6 +6780,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1491035561758986591, guid: 6de17819e769e96468c2a9623b9c3df4, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1491035561758986591, guid: 6de17819e769e96468c2a9623b9c3df4, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -6825,6 +6829,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6681095444971569902, guid: 6de17819e769e96468c2a9623b9c3df4, type: 3}
       propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6681095444971569902, guid: 6de17819e769e96468c2a9623b9c3df4, type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6681095444971569902, guid: 6de17819e769e96468c2a9623b9c3df4, type: 3}
@@ -6925,6 +6933,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7886655837691030222, guid: 6de17819e769e96468c2a9623b9c3df4, type: 3}
       propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7886655837691030222, guid: 6de17819e769e96468c2a9623b9c3df4, type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7886655837691030222, guid: 6de17819e769e96468c2a9623b9c3df4, type: 3}
