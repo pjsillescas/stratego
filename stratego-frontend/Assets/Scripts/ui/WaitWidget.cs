@@ -5,15 +5,18 @@ public class WaitWidget : MonoBehaviour
 {
 	[SerializeField]
 	private TextMeshProUGUI MessageText;
-	
+
+	private string message;
+
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		MessageText.text = "";
+		MessageText.text = message ?? "";
 	}
 
 	public void Activate(string message)
 	{
+		this.message = message;
 		MessageText.text = message;
 		gameObject.SetActive(true);
 	}

@@ -8,10 +8,10 @@ using UnityEngine.Networking;
 
 public class BackendService : MonoBehaviour
 {
-	private const string URL = "http://localhost:8080/api"; // for builds
-	private const string WEBSOCKET_URL = "ws://localhost:8080/ws";
-	//private const string URL = "https://stratego-backend-ux6n.onrender.com/api";
-	//private const string WEBSOCKET_URL = "wss://stratego-backend-ux6n.onrender.com/ws";
+	//private const string URL = "http://localhost:8080/api"; // for builds
+	//private const string WEBSOCKET_URL = "ws://localhost:8080/ws";
+	private const string URL = "https://stratego-backend-ux6n.onrender.com/api";
+	private const string WEBSOCKET_URL = "wss://stratego-backend-ux6n.onrender.com/ws";
 
 	private static BackendService instance = null;
 	public static BackendService GetInstance() => instance;
@@ -450,7 +450,8 @@ public class BackendService : MonoBehaviour
 
 	public WebSocket BuildWebSocket(string token, string roomId, Action<string> OnMessageReceived, Action OnReconnect)
 	{
-		var websocket = new WebSocket($"{WEBSOCKET_URL}?roomId={roomId}", new Dictionary<string, string> { { "Authorization", $"Bearer {token}" } });
+		//var websocket = new WebSocket($"{WEBSOCKET_URL}?roomId={roomId}", new Dictionary<string, string> { { "Authorization", $"Bearer {token}" } });
+		var websocket = new WebSocket($"{WEBSOCKET_URL}?roomId={roomId}&token={token}");
 
 		websocket.OnOpen += () =>
 		{

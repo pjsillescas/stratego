@@ -38,8 +38,9 @@ public class ChatWidget : MonoBehaviour
 		var commData = CommData.GetInstance();
 		token = commData.GetToken() ?? "token";
 		roomId = commData.GetGameId().ToString() ?? "noroom";
-		websocket = backendService.BuildWebSocket(token, roomId, MessageReceived, OnReconnect);
-		
+		websocket = null;
+
+
 		Connect();
 	}
 
@@ -85,6 +86,12 @@ public class ChatWidget : MonoBehaviour
 
 	async void Connect()
 	{
+		if (websocket != null && (websocket.State == WebSocketState.Open || websocket.State == WebSocketState.Connecting))
+		{
+			return;
+		}
+		websocket = backendService.BuildWebSocket(token, roomId, MessageReceived, OnReconnect);
+
 		await websocket.Connect();
 	}
 
@@ -106,7 +113,7 @@ public class ChatWidget : MonoBehaviour
 		{
 			textColor = commData.GetIsHost() ? Color.red : Color.blue;
 		}
-		textItem.Init(messageDto.player,messageDto.message, textColor);
+		textItem.Init(messageDto.player, messageDto.message, textColor);
 		//chatOutput.text += "\n" + message;
 	}
 
