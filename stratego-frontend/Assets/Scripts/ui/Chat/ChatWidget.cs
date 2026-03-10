@@ -62,6 +62,9 @@ public class ChatWidget : MonoBehaviour
 			await websocket.SendText(InputField.text);
 			InputField.text = "";
 		}
+
+		InputField.Select();
+		InputField.ActivateInputField();
 	}
 
 	void Update()
