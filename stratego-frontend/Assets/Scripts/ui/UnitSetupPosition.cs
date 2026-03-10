@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -23,6 +25,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	private void Awake()
 	{
 		canvas = FindFirstObjectByType<Canvas>();
+		unitSetupDragPosition = null;
 	}
 
 
@@ -105,7 +108,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		}
 		else
 		{
-			unitSetupDragPosition.SwapData(this);
+			GetUnitSetupDragPosition().SwapData(this);
 		}
 
 	}
@@ -125,12 +128,6 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	{
 		StartCoroutine(GetPositionCoroutine());
 		ResetData();
-
-		unitSetupDragPosition = FindFirstObjectByType<UnitSetupDragPosition>();
-		if (unitSetupDragPosition == null)
-		{
-			throw new System.Exception("There is no UnitSetupDragPosition element in the scene");
-		}
 	}
 
 	public void ResetData()
@@ -140,10 +137,25 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		HideImage();
 	}
 
+	private UnitSetupDragPosition GetUnitSetupDragPosition()
+	{
+		if (unitSetupDragPosition == null)
+		{
+			var dragPositions = FindObjectsByType<UnitSetupDragPosition>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+			unitSetupDragPosition = new List<UnitSetupDragPosition> (dragPositions).FirstOrDefault();
+			if (unitSetupDragPosition == null)
+			{
+				throw new System.Exception("There is no UnitSetupDragPosition element in the scene");
+			}
+		}
+
+		return unitSetupDragPosition;
+	}
 	private IEnumerator GetPositionCoroutine()
 	{
 		yield return new WaitForSeconds(1.0f);
 		defaultPosition = transform.position;
+
 		yield return null;
 	}
 
@@ -159,7 +171,8 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		{
 			return;
 		}
-		unitSetupDragPosition.AddAnchoredPosition(eventData.delta / canvas.scaleFactor);
+
+		GetUnitSetupDragPosition().AddAnchoredPosition(eventData.delta / canvas.scaleFactor);
 
 	}
 
@@ -170,8 +183,8 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 			return;
 		}
 
-		unitSetupDragPosition.SetPosition(defaultPosition);
-		unitSetupDragPosition.Init(this);
+		GetUnitSetupDragPosition().SetPosition(defaultPosition);
+		GetUnitSetupDragPosition().Init(this);
 	}
 
 	public void OnEndDrag(PointerEventData eventData)
@@ -180,6 +193,6 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 		{
 			return;
 		}
-		unitSetupDragPosition.Deactivate();
+		GetUnitSetupDragPosition().Deactivate();
 	}
 }

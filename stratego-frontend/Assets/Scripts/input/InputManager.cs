@@ -26,6 +26,7 @@ public class InputManager : MonoBehaviour
 	private GameManager gameManager;
 	private bool isMyTurn;
 	private bool inputsEnabled;
+	private bool isGameActive;
 
 	public Piece GetSelectedPiece() => selectedPiece;
 	public Tile GetSelectedTile() => selectedTile;
@@ -62,8 +63,11 @@ public class InputManager : MonoBehaviour
 	void Start()
 	{
 		gameManager = FindFirstObjectByType<GameManager>();
+
+		isGameActive = gameManager != null;
+
 		mainCamera = Camera.main;
-		isHost = gameManager.GetIsHost();
+		isHost = CommData.GetInstance().GetIsHost();
 
 		ResetSelections();
 	}
@@ -78,29 +82,32 @@ public class InputManager : MonoBehaviour
 			return;
 		}
 
-		var mousePosition = Mouse.current.position.ReadValue();
-		var mouseWorldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
-
-		var ray = new Ray(mouseWorldPosition, Vector3.down);
-
-		var interact = actions.Player.Interact.WasPressedThisFrame();
-
-		if (interact && isMyTurn)
-		{
-			if (!ProcessSelectedTile(ray))
-			{
-				ProcessSelectedPiece(ray);
-			}
-		}
-		else
-		{
-			ProcessHighlightTile(ray);
-			ProcessHighlightedPiece(ray);
-		}
-
 		if (actions.Player.ToggleConsole.WasPressedThisFrame())
 		{
 			OnDebugConsoleToggle?.Invoke(this, EventArgs.Empty);
+		}
+
+		if (isGameActive)
+		{
+			var mousePosition = Mouse.current.position.ReadValue();
+			var mouseWorldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
+
+			var ray = new Ray(mouseWorldPosition, Vector3.down);
+
+			var interact = actions.Player.Interact.WasPressedThisFrame();
+
+			if (interact && isMyTurn)
+			{
+				if (!ProcessSelectedTile(ray))
+				{
+					ProcessSelectedPiece(ray);
+				}
+			}
+			else
+			{
+				ProcessHighlightTile(ray);
+				ProcessHighlightedPiece(ray);
+			}
 		}
 	}
 
