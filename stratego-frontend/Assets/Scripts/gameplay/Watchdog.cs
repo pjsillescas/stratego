@@ -1,62 +1,81 @@
+using NativeWebSocket;
 using System.Collections;
 using UnityEngine;
 
 public class Watchdog : MonoBehaviour
 {
-	private const float WAIT_TIME_SECONDS_TURN_CHANGE = 0.6f;
-	private const float WAIT_TIME_SECONDS_END_GAME = 5f;
-
-
 	private GameManager gameManager;
-	private bool hasTurnChanged;
 	private GameStateDTO lastGameStateDto;
+	private WebSocket websocket;
+
+	private string token;
+	private string roomId;
+	private int gameId;
+	private bool isReconnecting = false;
+	private readonly float reconnectDelay = 3f;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
 		lastGameStateDto = null;
 		gameManager = FindFirstObjectByType<GameManager>();
+
+		token = CommData.GetInstance().GetToken();
+		gameId = CommData.GetInstance().GetGameId();
+		roomId = gameId.ToString();
+		//websocket = BackendService.GetInstance().BuildNotificationWebSocket(token, roomId, OnMessageReceived, OnReconnect);
+		Connect();
 	}
 
-
-	private void OnEnable()
+	private void OnMessageReceived(string message)
 	{
-		GameManager.OnGameStateUpdated += OnGameStateUpdated;
-	}
-
-	private void OnDisable()
-	{
-		GameManager.OnGameStateUpdated -= OnGameStateUpdated;
-	}
-
-	private void OnGameStateUpdated(object sender, GameStateDTO gameStateDto)
-	{
-		if (gameStateDto.myTurn)
+		Debug.Log($"received message '{message}'");
+		var notification = JsonUtility.FromJson<NotificationDTO>(message);
+		
+		if (notification == null)
 		{
-			StartCoroutine(CheckForEndGame());
+			Debug.Log($"bad notification '{message}'");
+			return;
+		}
+
+		if (notification.message == "Add movement")
+		{
+			StartCoroutine(BackendService.GetInstance().GetStatus(gameId, token, OnGameStateGot, OnError));
 		}
 		else
 		{
-			StartCoroutine(WaitForMyTurn());
+			Debug.Log($"otra cosa '{notification.message}'");
 		}
 	}
 
-	private IEnumerator WaitForMyTurn()
+	private void OnReconnect()
 	{
-		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS_TURN_CHANGE);
+		if (isReconnecting) return;
 
-		var commData = CommData.GetInstance();
-		var gameId = commData.GetGameId();
-		var token = commData.GetToken();
+		isReconnecting = true;
+		StartCoroutine(ReconnectRoutine());
+	}
 
-		hasTurnChanged = false;
-		while (!hasTurnChanged)
+	IEnumerator ReconnectRoutine()
+	{
+		while (isReconnecting)
 		{
-			StartCoroutine(BackendService.GetInstance().GetStatus(gameId, token, OnGameStateGot, OnError));
-			yield return waitForSeconds;
+			Debug.Log("Trying reconnect...");
+			Connect();
+			yield return new WaitForSeconds(reconnectDelay);
+		}
+	}
+
+	async void Connect()
+	{
+		if (websocket != null && (websocket.State == WebSocketState.Open || websocket.State == WebSocketState.Connecting))
+		{
+			return;
 		}
 
-		yield return null;
+		websocket = BackendService.GetInstance().BuildNotificationWebSocket(token, roomId, OnMessageReceived, OnReconnect);
+
+		await websocket.Connect();
 	}
 
 	private bool IsTheLastMovement(GameStateDTO gameStateDto)
@@ -77,27 +96,8 @@ public class Watchdog : MonoBehaviour
 		if (gameStateDto.myTurn && !IsTheLastMovement(gameStateDto))
 		{
 			lastGameStateDto = gameStateDto;
-			hasTurnChanged = true;
 			gameManager.OnMovementAdded(gameStateDto);
 		}
-	}
-
-	private IEnumerator CheckForEndGame()
-	{
-		var waitForSeconds = new WaitForSeconds(WAIT_TIME_SECONDS_END_GAME);
-
-		var commData = CommData.GetInstance();
-		var gameId = commData.GetGameId();
-		var token = commData.GetToken();
-
-		hasTurnChanged = false;
-		while (!hasTurnChanged)
-		{
-			StartCoroutine(BackendService.GetInstance().GetStatus(gameId, token, OnGameStateGotEndGame, OnError));
-			yield return waitForSeconds;
-		}
-
-		yield return null;
 	}
 
 	private void OnGameStateGotEndGame(GameStateDTO gameStateDto)
@@ -105,7 +105,6 @@ public class Watchdog : MonoBehaviour
 		if (gameStateDto.guestPlayerId == 0 || gameStateDto.hostPlayerId == 0 || gameStateDto.phase == GamePhase.ABORTED)
 		{
 			// The other player quit the game
-			hasTurnChanged = true;
 			gameManager.LeaveGame();
 		}
 	}
