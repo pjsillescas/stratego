@@ -10,8 +10,10 @@ public class BackendService : MonoBehaviour
 {
 	private const string URL = "http://localhost:8080/api"; // for builds
 	private const string WEBSOCKET_URL = "ws://localhost:8080/ws";
+	private const string WEBSOCKET_NOTIFICATIONS_URL = "ws://localhost:8080/wsn";
 	//private const string URL = "https://stratego-backend-ux6n.onrender.com/api";
 	//private const string WEBSOCKET_URL = "wss://stratego-backend-ux6n.onrender.com/ws";
+	//private const string WEBSOCKET_NOTIFICATIONS_URL = "wss://stratego-backend-ux6n.onrender.com/wsn";
 
 	private static BackendService instance = null;
 	public static BackendService GetInstance() => instance;
@@ -448,10 +450,41 @@ public class BackendService : MonoBehaviour
 		}
 	}
 
-	public WebSocket BuildWebSocket(string token, string roomId, Action<string> OnMessageReceived, Action OnReconnect)
+	public WebSocket BuildChatWebSocket(string token, string roomId, Action<string> OnMessageReceived, Action OnReconnect)
 	{
 		//var websocket = new WebSocket($"{WEBSOCKET_URL}?roomId={roomId}", new Dictionary<string, string> { { "Authorization", $"Bearer {token}" } });
 		var websocket = new WebSocket($"{WEBSOCKET_URL}?roomId={roomId}&token={token}");
+
+		websocket.OnOpen += () =>
+		{
+			Debug.Log("Connected to server");
+		};
+
+		websocket.OnMessage += (bytes) =>
+		{
+			string msg = System.Text.Encoding.UTF8.GetString(bytes);
+			OnMessageReceived(msg);
+		};
+
+		websocket.OnError += (e) =>
+		{
+			Debug.Log("Error: " + e);
+			OnReconnect();
+		};
+
+		websocket.OnClose += (e) =>
+		{
+			Debug.Log("Connection closed");
+			OnReconnect();
+		};
+
+		return websocket;
+	}
+
+	public WebSocket BuildNotificationWebSocket(string token, string roomId, Action<string> OnMessageReceived, Action OnReconnect)
+	{
+		//var websocket = new WebSocket($"{WEBSOCKET_URL}?roomId={roomId}", new Dictionary<string, string> { { "Authorization", $"Bearer {token}" } });
+		var websocket = new WebSocket($"{WEBSOCKET_NOTIFICATIONS_URL}?roomId={roomId}&token={token}");
 
 		websocket.OnOpen += () =>
 		{

@@ -93,7 +93,7 @@ public class ChatWidget : MonoBehaviour
 		{
 			return;
 		}
-		websocket = backendService.BuildWebSocket(token, roomId, MessageReceived, OnReconnect);
+		websocket = backendService.BuildChatWebSocket(token, roomId, MessageReceived, OnReconnect);
 
 		await websocket.Connect();
 	}
