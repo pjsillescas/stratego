@@ -163,7 +163,7 @@ public class GameManager : MonoBehaviour
 
 	private Piece GetPieceAtCoordinates(int row, int col, List<Piece> pieces)
 	{
-		return pieces.Where(piece => piece.GetTile().HasCoordinates(row, col)).FirstOrDefault();
+		return pieces.FirstOrDefault(piece => piece.GetTile().HasCoordinates(row, col));
 	}
 
 	public void SendMovement(StrategoMovementDTO movement)
@@ -172,7 +172,7 @@ public class GameManager : MonoBehaviour
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
 		Debug.Log(JsonConvert.SerializeObject(movement));
-		StartCoroutine(BackendService.GetInstance().AddMovement(gameId, token, movement, OnMovementAdded, OnError));
+		StartCoroutine(BackendService.GetInstance().AddMovement(gameId, token, movement, OnMovementAdded2, OnError));
 	}
 
 
@@ -240,6 +240,11 @@ public class GameManager : MonoBehaviour
 		}
 
 		return upperRanks.Contains(rankAttacker) ? 1 : -1;
+	}
+
+	public void OnMovementAdded2(GameStateDTO gameStateDto)
+	{
+		;
 	}
 
 	public void OnMovementAdded(GameStateDTO gameStateDto)

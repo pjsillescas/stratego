@@ -40,12 +40,18 @@ public class Watchdog : MonoBehaviour
 
 		if (notification.message == "Add movement")
 		{
-			StartCoroutine(BackendService.GetInstance().GetStatus(gameId, token, OnGameStateGot, OnError));
+			StartCoroutine(GetDelayedStatus());
 		}
 		else
 		{
 			Debug.Log($"otra cosa '{notification.message}'");
 		}
+	}
+
+	private IEnumerator GetDelayedStatus()
+	{
+		yield return new WaitForSeconds(0.5f);
+		yield return BackendService.GetInstance().GetStatus(gameId, token, OnGameStateGot, OnError);
 	}
 
 	private void OnReconnect()
@@ -90,10 +96,13 @@ public class Watchdog : MonoBehaviour
 
 	private void OnGameStateGot(GameStateDTO gameStateDto)
 	{
+		var json = JsonUtility.ToJson(gameStateDto);
+		var movement = gameStateDto.movement;
+		Debug.Log($"Got state from notification {gameStateDto.movement.rank} from ({movement.rowInitial},{movement.colInitial}) to ({movement.rowFinal},{movement.colFinal})");
 		OnGameStateGotEndGame(gameStateDto);
 
-		// Check that it is our turn and the samee gameState does not come for a second time
-		if (gameStateDto.myTurn && !IsTheLastMovement(gameStateDto))
+		// Check that it is our turn and the same gameState does not come for a second time
+		if (!IsTheLastMovement(gameStateDto))
 		{
 			lastGameStateDto = gameStateDto;
 			gameManager.OnMovementAdded(gameStateDto);
@@ -117,6 +126,14 @@ public class Watchdog : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-
+#if !UNITY_WEBGL || UNITY_EDITOR
+		websocket.DispatchMessageQueue();
+#endif
 	}
+
+	private async void OnApplicationQuit()
+	{
+		await websocket.Close();
+	}
+
 }
