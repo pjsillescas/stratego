@@ -164,11 +164,7 @@ public class ArmySetupWidget : MonoBehaviour
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
 		List<List<Rank>> setup = GetSetup();
-		StartCoroutine(BackendService.GetInstance().AddSetup(gameId, token, setup, OnSetupAdded, OnError));
-	}
 
-	private void OnSetupAdded(GameStateDTO gameStateDto)
-	{
 		WaitForSetupWidget.gameObject.SetActive(true);
 		WaitForSetupWidget.Initialize((gameState) =>
 		{
@@ -176,6 +172,13 @@ public class ArmySetupWidget : MonoBehaviour
 			ActivateButtons();
 			gameObject.SetActive(false);
 		});
+
+		StartCoroutine(BackendService.GetInstance().AddSetup(gameId, token, setup, OnSetupAdded, OnError));
+	}
+
+	private void OnSetupAdded(GameStateDTO gameStateDto)
+	{
+		;
 	}
 
 	private void OnError(StrategoErrorDTO error)
