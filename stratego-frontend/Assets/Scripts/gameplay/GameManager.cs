@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -168,6 +169,7 @@ public class GameManager : MonoBehaviour
 
 	public void SendMovement(StrategoMovementDTO movement)
 	{
+		StartCoroutine(DoAnimateMovement(movement));
 		var commData = CommData.GetInstance();
 		var gameId = commData.GetGameId();
 		var token = commData.GetToken();
@@ -264,88 +266,101 @@ public class GameManager : MonoBehaviour
 
 			while (gameQueue.Count > 0)
 			{
-				yield return DoAnimateMovement(gameQueue.Dequeue());
+				var gameStateDto = gameQueue.Dequeue();
+				yield return DoAnimateMovement(gameStateDto.movement);
+				OnGameStateUpdated?.Invoke(this, gameStateDto);
 			}
 
 			isAnimationGoing = false;
+			yield return null;
 		}
 	}
 
-	private IEnumerator DoAnimateMovement(GameStateDTO gameStateDto)
+	private StrategoMovementDTO lastMovement = null;
+
+	private IEnumerator DoAnimateMovement(StrategoMovementDTO movement)
 	{
-		var piece = GetPieceAtCoordinates(gameStateDto.movement.rowInitial, gameStateDto.movement.colInitial);
-		var pieceTarget = GetPieceAtCoordinates(gameStateDto.movement.rowFinal, gameStateDto.movement.colFinal);
-
-		int clashResult = 1;
-		var showData = pieceTarget != null && (isHost != piece.IsHost());
-		if (showData)
+		if (!movement.Equals(lastMovement))
 		{
-			piece.ShowData();
-		}
+			lastMovement = movement;
 
-		if (pieceTarget != null)
-		{
-			if (isHost != pieceTarget.IsHost())
+			var piece = GetPieceAtCoordinates(movement.rowInitial, movement.colInitial);
+			if(piece == null)
 			{
-				pieceTarget.ShowData();
+				Debug.LogError($"no piece at ({movement.rowInitial},{movement.colInitial})");
+			}
+			var pieceTarget = GetPieceAtCoordinates(movement.rowFinal, movement.colFinal);
+
+			int clashResult = 1;
+			var showData = pieceTarget != null && (isHost != piece.IsHost());
+			if (showData)
+			{
+				piece.ShowData();
 			}
 
-			clashResult = ClashPieces(piece, pieceTarget);
-		}
-
-		var targetRow = gameStateDto.movement.rowFinal;
-		var targetCol = gameStateDto.movement.colFinal;
-
-		var initialPosition = piece.transform.position;
-		var targetPosition = Board.GetWorldPosition(targetRow, targetCol);
-		var direction = (targetPosition - initialPosition).normalized;
-		var threshold = 0.1f;
-
-		audioManager.StartWalk();
-		OnPieceAnimationBegin?.Invoke(this, piece);
-
-		var speed = 1f / 0.5f;
-		while ((piece.transform.position - targetPosition).sqrMagnitude > threshold)
-		{
-			piece.transform.position = piece.transform.position + direction * speed * Time.deltaTime;
-			yield return null;
-		}
-
-
-		piece.transform.position = targetPosition;
-		var tile = Board.GetTile(targetRow, targetCol);
-		piece.SetTile(tile);
-
-		audioManager.StopWalk();
-
-		var attackerRank = piece.GetRank();
-		var defenderRank = (pieceTarget != null) ? pieceTarget.GetRank() : 0;
-
-		PlayAttackAudio(attackerRank, defenderRank);
-
-		if (pieceTarget != null)
-		{
-			if (clashResult == 1 || clashResult == 0)
+			if (pieceTarget != null)
 			{
-				yield return DestroyPiece(pieceTarget);
+				if (isHost != pieceTarget.IsHost())
+				{
+					pieceTarget.ShowData();
+				}
+
+				clashResult = ClashPieces(piece, pieceTarget);
 			}
-			else if (isHost != pieceTarget.IsHost())
+
+			var targetRow = movement.rowFinal;
+			var targetCol = movement.colFinal;
+
+			var initialPosition = piece.transform.position;
+			var targetPosition = Board.GetWorldPosition(targetRow, targetCol);
+			var direction = (targetPosition - initialPosition).normalized;
+			var threshold = 0.1f;
+
+			audioManager.StartWalk();
+			OnPieceAnimationBegin?.Invoke(this, piece);
+
+			var speed = 1f / 0.5f;
+			while ((piece.transform.position - targetPosition).sqrMagnitude > threshold)
 			{
-				pieceTarget.HideData();
+				piece.transform.position = piece.transform.position + direction * speed * Time.deltaTime;
+				yield return null;
 			}
-		}
 
-		if (clashResult == -1 || clashResult == 0)
-		{
-			yield return DestroyPiece(piece);
-		}
-		else if (showData)
-		{
-			piece.HideData();
-		}
 
-		OnPieceAnimationEnd?.Invoke(this, piece);
-		OnGameStateUpdated?.Invoke(this, gameStateDto);
+			piece.transform.position = targetPosition;
+			var tile = Board.GetTile(targetRow, targetCol);
+			piece.SetTile(tile);
+
+			audioManager.StopWalk();
+
+			var attackerRank = piece.GetRank();
+			var defenderRank = (pieceTarget != null) ? pieceTarget.GetRank() : 0;
+
+			PlayAttackAudio(attackerRank, defenderRank);
+
+			if (pieceTarget != null)
+			{
+				if (clashResult == 1 || clashResult == 0)
+				{
+					yield return DestroyPiece(pieceTarget);
+				}
+				else if (isHost != pieceTarget.IsHost())
+				{
+					pieceTarget.HideData();
+				}
+			}
+
+			if (clashResult == -1 || clashResult == 0)
+			{
+				yield return DestroyPiece(piece);
+			}
+			else if (showData)
+			{
+				piece.HideData();
+			}
+
+			OnPieceAnimationEnd?.Invoke(this, piece);
+		}
 
 		yield return null;
 	}
