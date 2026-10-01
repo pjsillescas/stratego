@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 [Serializable]
 public class GameExtendedDTO
@@ -11,6 +12,10 @@ public class GameExtendedDTO
 
 	public PlayerDTO host;
 	public PlayerDTO guest;
+
+	public List<PlayerDTO> players;
+
+	public GameTemplateDTO gameTemplate;
 
 	public string joinCode;
 

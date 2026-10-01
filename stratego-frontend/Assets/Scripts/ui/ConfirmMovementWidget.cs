@@ -13,7 +13,7 @@ public class ConfirmMovementWidget : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		gameManager = FindFirstObjectByType<GameManager>();
+		gameManager = FindAnyObjectByType<GameManager>();
 		ConfirmMovementButton.enabled = false;
 		ConfirmMovementButton.onClick.RemoveAllListeners();
 		ConfirmMovementButton.onClick.AddListener(ConfirmMovementClick);

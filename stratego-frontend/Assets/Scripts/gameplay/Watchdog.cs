@@ -13,7 +13,7 @@ public class Watchdog : MonoBehaviour
 	void Start()
 	{
 		lastGameStateDto = null;
-		gameManager = FindFirstObjectByType<GameManager>();
+		gameManager = FindAnyObjectByType<GameManager>();
 
 		token = CommData.GetInstance().GetToken();
 		gameId = CommData.GetInstance().GetGameId();

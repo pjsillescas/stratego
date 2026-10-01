@@ -49,7 +49,7 @@ public class UnitImage : MonoBehaviour, IUnitTool, IDragHandler, IBeginDragHandl
 		parent = transform.parent;
 		defaultPosition = transform.localPosition;
 		rectTransform = GetComponent<RectTransform>();
-		canvas = FindFirstObjectByType<Canvas>();
+		canvas = FindAnyObjectByType<Canvas>();
 		canvasGroup = GetComponent<CanvasGroup>();
 		rawImage = GetComponent<RawImage>();
 

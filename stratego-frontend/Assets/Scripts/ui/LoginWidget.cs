@@ -87,7 +87,7 @@ public class LoginWidget : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
-		waitWidget = FindFirstObjectByType<WaitWidget>();
+		waitWidget = (WaitWidget) FindAnyObjectByType(typeof(WaitWidget));
 		waitWidget.Deactivate();
 
 		SelectUIElement(0);
@@ -109,7 +109,7 @@ public class LoginWidget : MonoBehaviour
 			ShowPasswordToggle.onValueChanged.RemoveAllListeners();
 			ShowPasswordToggle.onValueChanged.AddListener(OnShowPasswordToggleChanged);
 
-			backendService = FindFirstObjectByType<BackendService>();
+			backendService = FindAnyObjectByType<BackendService>();
 		}
 	}
 

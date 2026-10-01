@@ -3,11 +3,14 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
 public class BackendService : MonoBehaviour
 {
+	private const int STRATEGO_TEMPLATE_ID = 1;
+
 	// Localhost
 	private const string URL = "http://localhost:8080/api"; // for builds
 	private const string WEBSOCKET_URL = "ws://localhost:8080/ws";
@@ -91,9 +94,31 @@ public class BackendService : MonoBehaviour
 		}
 	}
 
+	private GameDTO FixGame(GameDTO game)
+	{
+		if (game.players != null && game.players.Count > 0)
+		{
+			game.host = game.players[0];
+			game.guest = (game.players.Count > 1) ? game.players[1] : null;
+		}
+
+		return game;
+	}
+
+	private GameExtendedDTO FixGameExtended(GameExtendedDTO game)
+	{
+		if (game.players != null && game.players.Count > 0)
+		{
+			game.host = game.players[0];
+			game.guest = (game.players.Count > 1) ? game.players[1] : null;
+		}
+
+		return game;
+	}
+
 	public IEnumerator GetGameList(string token, Action<List<GameDTO>> onGamesGot, Action<StrategoErrorDTO> onError)
 	{
-		using UnityWebRequest request = UnityWebRequest.Get(URL + "/game");
+		using UnityWebRequest request = UnityWebRequest.Get(URL + $"/game?game_template_id={STRATEGO_TEMPLATE_ID}");
 		request.SetRequestHeader("Authorization", $"Bearer {token}");
 		yield return request.SendWebRequest();
 
@@ -104,7 +129,7 @@ public class BackendService : MonoBehaviour
 			//Debug.Log("Game list received: " + json);
 
 			var gameList = JsonUtility.FromJson<GameListDTO>("{\"games\":" + json + "}");
-			onGamesGot?.Invoke(gameList.games);
+			onGamesGot?.Invoke(gameList.games.Select(game => FixGame(game)).ToList());
 		}
 		else
 		{
@@ -133,7 +158,8 @@ public class BackendService : MonoBehaviour
 
 	public IEnumerator CreateGame(string token, Action<GameDTO> onGameCreated, Action<StrategoErrorDTO> onError)
 	{
-		var data = JsonUtility.ToJson(new GameInputDTO(GetJoinCode()));
+		var data = JsonUtility.ToJson(new GameInputDTO(GetJoinCode(), STRATEGO_TEMPLATE_ID));
+		Debug.Log(data);
 		using UnityWebRequest request = UnityWebRequest.Put(URL + "/game", data);
 		//request.SetRequestHeader("Accept", "application/json");
 		request.SetRequestHeader("Content-Type", "application/json");
@@ -147,7 +173,7 @@ public class BackendService : MonoBehaviour
 			//Debug.Log("Logged in. Received: " + json);
 
 			var gameDto = JsonUtility.FromJson<GameDTO>(json);
-			onGameCreated?.Invoke(gameDto);
+			onGameCreated?.Invoke(FixGame(gameDto));
 		}
 		else
 		{
@@ -174,7 +200,7 @@ public class BackendService : MonoBehaviour
 			//Debug.Log("Game joined. Received: " + json);
 
 			var gameExtendedDto = JsonUtility.FromJson<GameExtendedDTO>(json);
-			onJoinedGame?.Invoke(gameExtendedDto);
+			onJoinedGame?.Invoke(FixGameExtended(gameExtendedDto));
 		}
 		else
 		{
@@ -200,7 +226,7 @@ public class BackendService : MonoBehaviour
 			//Debug.Log("Game left. Received: " + json);
 
 			var gameDto = JsonUtility.FromJson<GameDTO>(json);
-			onLeftGame?.Invoke(gameDto);
+			onLeftGame?.Invoke(FixGame(gameDto));
 		}
 		else
 		{
@@ -316,7 +342,7 @@ public class BackendService : MonoBehaviour
 
 			//var gameStateDto = JsonUtility.FromJson<GameStateDTO>(json);
 			var gameStateDto = JsonConvert.DeserializeObject<GameExtendedDTO>(json);
-			onGameGot?.Invoke(gameStateDto);
+			onGameGot?.Invoke(FixGameExtended(gameStateDto));
 		}
 		else
 		{

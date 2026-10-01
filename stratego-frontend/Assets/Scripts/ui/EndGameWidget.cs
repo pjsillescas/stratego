@@ -18,7 +18,7 @@ public class EndGameWidget : MonoBehaviour
 	{
 		gameObject.SetActive(false);
 		
-		gameManager = FindFirstObjectByType<GameManager>();
+		gameManager = FindAnyObjectByType<GameManager>();
 		isHost = gameManager.GetIsHost();
 		MainMenuButton.onClick.RemoveAllListeners();
 		MainMenuButton.onClick.AddListener(MainMenuClick);

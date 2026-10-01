@@ -24,7 +24,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 
 	private void Awake()
 	{
-		canvas = FindFirstObjectByType<Canvas>();
+		canvas = (Canvas) FindAnyObjectByType(typeof(Canvas));
 		unitSetupDragPosition = null;
 	}
 
@@ -141,7 +141,7 @@ public class UnitSetupPosition : MonoBehaviour, IDropHandler, IDragHandler, IBeg
 	{
 		if (unitSetupDragPosition == null)
 		{
-			var dragPositions = FindObjectsByType<UnitSetupDragPosition>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+			var dragPositions = FindObjectsByType<UnitSetupDragPosition>(FindObjectsInactive.Include);
 			unitSetupDragPosition = new List<UnitSetupDragPosition> (dragPositions).FirstOrDefault();
 			if (unitSetupDragPosition == null)
 			{

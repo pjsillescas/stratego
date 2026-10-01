@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -54,7 +53,7 @@ public class GameManager : MonoBehaviour
 		isAnimationGoing = false;
 		gameQueue = new();
 
-		audioManager = FindFirstObjectByType<AudioManager>();
+		audioManager = FindAnyObjectByType<AudioManager>();
 
 		if (GameWidget != null)
 		{
@@ -73,8 +72,8 @@ public class GameManager : MonoBehaviour
 
 	public void DisableGame()
 	{
-		FindFirstObjectByType<Watchdog>().gameObject.SetActive(false);
-		FindFirstObjectByType<InputManager>().gameObject.SetActive(false);
+		FindAnyObjectByType<Watchdog>().gameObject.SetActive(false);
+		FindAnyObjectByType<InputManager>().gameObject.SetActive(false);
 	}
 
 	public bool GetIsHost() => isHost;
@@ -430,7 +429,7 @@ public class GameManager : MonoBehaviour
 
 		if (commData.GetGameId() != 0)
 		{
-			var backendService = FindFirstObjectByType<BackendService>();
+			BackendService backendService = FindAnyObjectByType<BackendService>();
 			var gameId = commData.GetGameId();
 			var token = commData.GetToken();
 			StartCoroutine(backendService.LeaveGame(gameId, token, OnLeftGame, OnError));

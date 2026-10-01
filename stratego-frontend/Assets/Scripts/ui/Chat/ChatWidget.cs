@@ -33,7 +33,7 @@ public class ChatWidget : MonoBehaviour
 		SendButton.onClick.AddListener(SendClick);
 		InputField.onSubmit.RemoveAllListeners();
 		InputField.onSubmit.AddListener(InputSubmit);
-		backendService = FindFirstObjectByType<BackendService>();
+		backendService = (BackendService) FindAnyObjectByType(typeof(BackendService));
 
 		var commData = CommData.GetInstance();
 		token = commData.GetToken() ?? "token";

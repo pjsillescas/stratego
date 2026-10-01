@@ -22,7 +22,7 @@ public class UsernameWidget : MonoBehaviour
     {
         UsernameText.text = "";
         Widget.SetActive(false);
-        gameManager = FindFirstObjectByType<GameManager>();
+        gameManager = FindAnyObjectByType<GameManager>();
         LogoutButton.onClick.RemoveAllListeners();
         LogoutButton.onClick.AddListener(LogoutClick);
     }

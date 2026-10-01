@@ -44,7 +44,7 @@ public class FavouriteSetupListWidget : MonoBehaviour
 	void Start()
 	{
 		previewWidget = GetComponentInChildren<FavouriteSetupPreviewWidget>();
-		backendService = FindFirstObjectByType<BackendService>();
+		backendService = FindAnyObjectByType<BackendService>();
 
 		AddSetupButton.onClick.RemoveAllListeners();
 		AddSetupButton.onClick.AddListener(AddSetupButtonClick);
